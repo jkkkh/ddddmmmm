@@ -1,0 +1,77 @@
+# page.ui.yaml — 会员登录页
+meta:
+  page_id: member-login
+  page_name: 会员登录
+  surface: c_end
+  page_type: c_form
+  anti_slop: pass
+  design_plan_ref: design-plan.md
+  canvas:
+    width: 375
+    height: 812
+  figma:
+    file_key: ""
+    frame_name: "P02-会员登录"
+    frame_node_id: ""
+
+shell:
+  type: c_mobile_shell
+  title: 登录
+  show_back: true
+
+regions:
+  - id: topbar
+    type: topbar
+    label: 顶栏
+    layout:
+      direction: row
+      gap: 8
+      padding: 16
+    components:
+      - kind: text
+        label: 返回
+        sample_value: "‹ 返回"
+      - kind: text
+        label: 页面标题
+        sample_value: 登录
+
+  - id: form_section
+    type: form_section
+    label: 登录表单
+    layout:
+      direction: column
+      gap: 16
+      padding: 16
+    components:
+      - kind: text
+        label: 主标题
+        sample_value: 欢迎回来
+      - kind: input
+        label: 手机号
+        sample_value: 请输入手机号
+      - kind: input
+        label: 验证码
+        sample_value: 请输入验证码
+      - kind: button
+        label: 获取验证码
+        variant: ghost
+      - kind: button
+        label: 微信一键登录
+        variant: secondary
+      - kind: text
+        label: 协议勾选
+        sample_value: "☐ 同意《用户协议》与《隐私政策》"
+
+  - id: bottom_cta
+    type: bottom_cta
+    label: 底部操作栏
+    layout:
+      direction: row
+      gap: 12
+      padding: 16
+    constraints:
+      primary_actions_max: 1
+    components:
+      - kind: button
+        label: 登录并继续
+        variant: primary

@@ -1,0 +1,76 @@
+# page.ui.yaml — 授权与绑定弹窗（场景A：未绑定关系）
+# 无 shell：全屏遮罩 + 居中卡片，复用 c_form 结构约束
+meta:
+  page_id: popup-bind-auth
+  page_name: 授权与绑定弹窗
+  surface: c_end
+  page_type: c_form
+  anti_slop: pass
+  design_plan_ref: design-plan.md
+  canvas:
+    width: 375
+    height: 812
+  figma:
+    file_key: ""
+    frame_name: "P03-授权与绑定弹窗（场景A）"
+    frame_node_id: ""
+
+shell:
+  type: none
+
+regions:
+  - id: dialog_backdrop
+    type: dialog_backdrop
+    label: 遮罩
+    layout:
+      direction: column
+      gap: 12
+      padding: 24
+    components:
+      - kind: text
+        label: 遮罩
+        sample_value: "rgba(0,0,0,0.45) 全屏遮罩"
+
+  - id: form_section
+    type: form_section
+    label: 弹窗内容
+    layout:
+      direction: column
+      gap: 12
+      padding: 24
+    components:
+      - kind: text
+        label: 弹窗标题
+        sample_value: 同步订单需要您的授权
+      - kind: text
+        label: 说明
+        sample_value: 为了将您的订单信息在公域与私域之间同步，便于订单管理、售后服务及会员权益发放，我们需要：
+      - kind: text
+        label: 说明 1
+        sample_value: "1. 将您当前公域账号与私域会员号绑定；"
+      - kind: text
+        label: 说明 2
+        sample_value: "2. 授权我们同步您的交易订单信息。"
+      - kind: text
+        label: 协议勾选
+        sample_value: "☐ 我已阅读并同意《订单同步授权协议》（默认不勾选）"
+      - kind: button
+        label: 查看协议
+        variant: link
+
+  - id: bottom_cta
+    type: bottom_cta
+    label: 弹窗按钮
+    layout:
+      direction: row
+      gap: 12
+      padding: 16
+    constraints:
+      primary_actions_max: 1
+    components:
+      - kind: button
+        label: 暂不
+        variant: secondary
+      - kind: button
+        label: 同意并绑定
+        variant: primary

@@ -1,0 +1,102 @@
+# page.ui.yaml — 授权与绑定管理页
+meta:
+  page_id: auth-bind-manage
+  page_name: 授权与绑定管理
+  surface: c_end
+  page_type: c_profile
+  anti_slop: pass
+  design_plan_ref: design-plan.md
+  canvas:
+    width: 375
+    height: 812
+  figma:
+    file_key: ""
+    frame_name: "P06-授权与绑定管理"
+    frame_node_id: ""
+
+shell:
+  type: c_mobile_shell
+  title: 授权与绑定
+  show_back: true
+
+regions:
+  - id: topbar
+    type: topbar
+    label: 顶栏
+    layout:
+      direction: row
+      gap: 8
+      padding: 16
+    components:
+      - kind: text
+        label: 返回
+        sample_value: "‹ 返回"
+      - kind: text
+        label: 页面标题
+        sample_value: 授权与绑定
+
+  - id: profile_header
+    type: profile_header
+    label: 会员信息
+    layout:
+      direction: row
+      gap: 12
+      padding: 16
+    components:
+      - kind: avatar
+        label: 会员头像
+        sample_value: 会员头像
+      - kind: text
+        label: 会员号
+        sample_value: 会员 138****8888
+
+  - id: summary_strip
+    type: summary_strip
+    label: 当前绑定卡片
+    layout:
+      direction: column
+      gap: 8
+      padding: 16
+    components:
+      - kind: text
+        label: 当前绑定
+        sample_value: 当前绑定：公域账号 A
+      - kind: tag
+        label: 授权状态
+        sample_value: 已授权同步
+      - kind: text
+        label: 协议版本
+        sample_value: 授权协议 v2.0（2026-08-01 同意）
+
+  - id: menu_list
+    type: menu_list
+    label: 管理菜单
+    layout:
+      direction: column
+      gap: 8
+      padding: 16
+    components:
+      - kind: list_item
+        label: 订单同步授权
+        sample_value: 订单同步授权 — 已开启
+      - kind: list_item
+        label: 授权协议
+        sample_value: 授权协议（v2.0）
+      - kind: list_item
+        label: 重新绑定
+        sample_value: 重新绑定公域账号
+
+  - id: danger_zone
+    type: danger_zone
+    label: 撤回操作区
+    layout:
+      direction: column
+      gap: 8
+      padding: 16
+    components:
+      - kind: text
+        label: 撤回说明
+        sample_value: 撤回后，新订单将不再同步至公域
+      - kind: button
+        label: 撤回绑定与授权
+        variant: danger

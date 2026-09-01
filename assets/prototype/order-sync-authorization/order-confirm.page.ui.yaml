@@ -1,0 +1,110 @@
+# page.ui.yaml — 订单确认页
+# sync_status_bar 为自定义 region 类型，见 design-plan.md Signature「同步链路条」
+meta:
+  page_id: order-confirm
+  page_name: 订单确认
+  surface: c_end
+  page_type: c_form
+  anti_slop: pass
+  design_plan_ref: design-plan.md
+  canvas:
+    width: 375
+    height: 812
+  figma:
+    file_key: ""
+    frame_name: "P05-订单确认"
+    frame_node_id: ""
+
+shell:
+  type: c_mobile_shell
+  title: 确认订单
+  show_back: true
+
+regions:
+  - id: topbar
+    type: topbar
+    label: 顶栏
+    layout:
+      direction: row
+      gap: 8
+      padding: 16
+    components:
+      - kind: text
+        label: 返回
+        sample_value: "‹ 返回"
+      - kind: text
+        label: 页面标题
+        sample_value: 确认订单
+
+  - id: sync_status_bar
+    type: sync_status_bar
+    label: 订单同步状态栏
+    layout:
+      direction: column
+      gap: 8
+      padding: 16
+    components:
+      - kind: text
+        label: 同步链路
+        sample_value: "公域账号 B ↔ 会员 138****8888"
+      - kind: tag
+        label: 同步状态
+        sample_value: 已授权同步
+      - kind: button
+        label: 管理入口
+        variant: link
+        sample_value: 管理
+
+  - id: form_section
+    type: form_section
+    label: 商品与金额
+    layout:
+      direction: column
+      gap: 16
+      padding: 16
+    components:
+      - kind: list_item
+        label: 商品 1
+        sample_value: 纯棉短袖 T 恤 ×1 ¥149
+      - kind: list_item
+        label: 商品 2
+        sample_value: 帆布托特包 ×1 ¥129
+      - kind: divider
+        label: 分隔线
+      - kind: text
+        label: 商品小计
+        sample_value: 商品小计 ¥278
+      - kind: text
+        label: 运费
+        sample_value: 运费 ¥0
+      - kind: text
+        label: 合计
+        sample_value: 合计 ¥278
+      - kind: input
+        label: 订单备注
+        sample_value: 选填，给商家留言
+
+  - id: bottom_cta
+    type: bottom_cta
+    label: 底部操作栏
+    layout:
+      direction: row
+      gap: 12
+      padding: 16
+    constraints:
+      primary_actions_max: 1
+    components:
+      - kind: button
+        label: 提交订单
+        variant: primary
+
+states:
+  - id: synced
+    label: 已授权同步
+    description: 公域账号与会员号一致且已授权，支付后自动同步
+  - id: not_authorized
+    label: 未授权同步
+    description: 展示再次授权入口；提交订单时轻提示但不阻断
+  - id: sync_to_original
+    label: 同步至原绑定账号
+    description: 场景C保持原绑定时，显著提示当前同步目标账号 A

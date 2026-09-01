@@ -1,0 +1,70 @@
+# page.ui.yaml — 重新绑定确认弹窗（场景C：绑定不一致）
+# 无 shell：全屏遮罩 + 居中卡片，复用 c_form 结构约束
+meta:
+  page_id: popup-rebind-check
+  page_name: 重新绑定确认弹窗
+  surface: c_end
+  page_type: c_form
+  anti_slop: pass
+  design_plan_ref: design-plan.md
+  canvas:
+    width: 375
+    height: 812
+  figma:
+    file_key: ""
+    frame_name: "P04-重新绑定确认弹窗（场景C）"
+    frame_node_id: ""
+
+shell:
+  type: none
+
+regions:
+  - id: dialog_backdrop
+    type: dialog_backdrop
+    label: 遮罩
+    layout:
+      direction: column
+      gap: 12
+      padding: 24
+    components:
+      - kind: text
+        label: 遮罩
+        sample_value: "rgba(0,0,0,0.45) 全屏遮罩"
+
+  - id: form_section
+    type: form_section
+    label: 弹窗内容
+    layout:
+      direction: column
+      gap: 12
+      padding: 24
+    components:
+      - kind: text
+        label: 弹窗标题
+        sample_value: 检测到当前公域账号与已绑定账号不一致
+      - kind: text
+        label: 当前账号
+        sample_value: 您当前登录的公域账号为：B
+      - kind: text
+        label: 已绑定账号
+        sample_value: 已绑定的公域账号为：A
+      - kind: text
+        label: 更新说明
+        sample_value: 更新后，后续订单将同步至账号 B。
+
+  - id: bottom_cta
+    type: bottom_cta
+    label: 弹窗按钮
+    layout:
+      direction: row
+      gap: 12
+      padding: 16
+    constraints:
+      primary_actions_max: 1
+    components:
+      - kind: button
+        label: 保持原绑定
+        variant: secondary
+      - kind: button
+        label: 确认重新绑定
+        variant: primary

@@ -1,0 +1,109 @@
+# page.ui.yaml — 商品详情页
+meta:
+  page_id: product-detail
+  page_name: 商品详情
+  surface: c_end
+  page_type: c_detail
+  anti_slop: pass
+  design_plan_ref: design-plan.md
+  canvas:
+    width: 375
+    height: 812
+  figma:
+    file_key: ""
+    frame_name: "P01-商品详情"
+    frame_node_id: ""
+
+shell:
+  type: c_mobile_shell
+  title: 商品详情
+  show_back: true
+
+regions:
+  - id: topbar
+    type: topbar
+    label: 顶栏
+    layout:
+      direction: row
+      gap: 8
+      padding: 16
+    components:
+      - kind: text
+        label: 返回
+        sample_value: "‹ 返回"
+      - kind: text
+        label: 页面标题
+        sample_value: 商品详情
+      - kind: text
+        label: 更多
+        sample_value: "···"
+
+  - id: media_header
+    type: media_header
+    label: 商品主图
+    layout:
+      direction: column
+      gap: 8
+      padding: 8
+    components:
+      - kind: image
+        label: 商品主图
+        sample_value: 商品主图 320×240
+
+  - id: summary_strip
+    type: summary_strip
+    label: 商品摘要
+    layout:
+      direction: column
+      gap: 8
+      padding: 16
+    components:
+      - kind: text
+        label: 商品名称
+        sample_value: 纯棉短袖 T 恤 燕麦色
+      - kind: text
+        label: 价格
+        sample_value: ¥149
+      - kind: text
+        label: 销量
+        sample_value: 已售 2.3k+
+
+  - id: info_sections
+    type: info_sections
+    label: 规格与服务
+    layout:
+      direction: column
+      gap: 16
+      padding: 16
+    components:
+      - kind: divider
+        label: 分隔线
+      - kind: text
+        label: 规格
+        sample_value: 规格：S / M / L / XL
+      - kind: text
+        label: 配送
+        sample_value: 配送：48 小时内发货
+      - kind: text
+        label: 服务
+        sample_value: 服务：7 天无理由退换
+      - kind: text
+        label: 同步说明
+        sample_value: 本页不主动弹出同步授权，避免打断浏览
+
+  - id: bottom_cta
+    type: bottom_cta
+    label: 底部操作栏
+    layout:
+      direction: row
+      gap: 12
+      padding: 16
+    constraints:
+      primary_actions_max: 1
+    components:
+      - kind: button
+        label: 加入购物车
+        variant: secondary
+      - kind: button
+        label: 立即购买
+        variant: primary

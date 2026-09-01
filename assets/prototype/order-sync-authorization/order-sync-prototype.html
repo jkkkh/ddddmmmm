@@ -1,0 +1,2831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>私域-公域订单同步授权与绑定 · 原型</title>
+
+<!-- @proto-gen:theme:start -->
+<style>
+/*
+ * proto-gen 默认主题：violet
+ * tweakcn: https://tweakcn.com/themes/cmpm3t0xk000104jq47h88i1g
+ *
+ * 切换主题：./assets/extract-theme.sh <new-tweakcn-url-or-id>
+ * 切换后须手工补：sidebar 子 token、状态色派生（tweakcn 不给）
+ */
+
+/* === 字体 CDN（与 --font-sans / --font-mono 配套） === */
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  /* === 19 个 shadcn 核心 token（OKLCH，来源 tweakcn） === */
+  --background: oklch(1.0000 0 0);
+  --foreground: oklch(0.2722 0.0494 286.0078);
+  --card: oklch(0.9885 0.0054 274.9676);
+  --card-foreground: oklch(0.2722 0.0494 286.0078);
+  --popover: oklch(1.0000 0 0);
+  --popover-foreground: oklch(0.2722 0.0494 286.0078);
+  --primary: oklch(0.5554 0.2460 273.0245);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.2722 0.0494 286.0078);
+  --secondary-foreground: oklch(1.0000 0 0);
+  --muted: oklch(0.9769 0.0109 274.8971);
+  --muted-foreground: oklch(0.2722 0.0494 286.0078);  /* 规范=foreground 同值，次级文字靠 opacity/font-size 区分 */
+  --accent: oklch(0.9221 0.0381 280.7675);
+  --accent-foreground: oklch(0.4805 0.2921 264.2112);
+  --destructive: oklch(0.6526 0.2348 32.3008);
+  --destructive-foreground: oklch(1.0000 0 0);
+  --border: oklch(0.9224 0.0184 258.3541);
+  --input: oklch(0.9809 0.0025 228.7836);
+  --ring: oklch(0.6081 0.2114 266.2130);
+  --radius: 1.3rem;
+
+  /* === Sidebar 子 token（HSL，tweakcn 不给，须从项目 src/index.css 抽） === */
+  --sidebar: hsl(228 100% 98.04%);
+  --sidebar-foreground: hsl(244.44 27.84% 19.02%);
+  --sidebar-primary: hsl(237.30 100% 65.10%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(234.19 100% 93.92%);
+  --sidebar-accent-foreground: hsl(228.85 99.22% 50%);
+  --sidebar-border: hsl(216 43.48% 90.98%);
+  --sidebar-ring: hsl(225 100% 63.92%);
+
+  /* === 状态色派生（HSL，tweakcn 不给，按项目主题文件真值） === */
+  --success: hsl(158.11 64.37% 40.98%);
+  --success-foreground: hsl(0 0% 100%);
+  --success-muted: hsl(151.76 81% 95.88%);
+  --success-border: hsl(156.22 71.65% 66.86%);
+
+  --warning: hsl(32.13 94.62% 43.73%);
+  --warning-foreground: hsl(0 0% 100%);
+  --warning-muted: hsl(36.52 92% 95.10%);
+  --warning-border: hsl(48 96.49% 76.67%);
+
+  /* info 系列 = primary 系列（shadcn 惯例：--info: var(--primary)）*/
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --info-muted: hsl(234.19 100% 96.47%);
+  --info-border: hsl(234.19 100% 88%);
+
+  /* === 字体 === */
+  --font-sans: 'Google Sans Flex', ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+  /* === proto-gen 兼容别名（旧 shared.css 用过的 token 软迁移，逐步淘汰） === */
+  --bg: var(--background);
+  --surface: var(--card);
+  --text: var(--foreground);
+  --text-2: color-mix(in oklch, var(--muted-foreground) 65%, transparent);
+  --text-3: color-mix(in oklch, var(--muted-foreground) 45%, transparent);
+  --border-2: color-mix(in oklch, var(--border) 70%, var(--foreground));
+  --primary-hover: color-mix(in oklch, var(--primary) 88%, black);
+  --primary-light: color-mix(in oklch, var(--primary) 10%, transparent);
+  --error: var(--destructive);
+
+  /* radius 阶梯（shadcn 标准 cascade + proto-gen 扩展，详见 references/default-theme.md 圆角速查）
+     当 --radius = 1.3rem (20.8px) 时实际像素：
+       chip  ≈  5px  — menu/dropdown 内 option、嵌套小子项
+       sm    ≈ 17px  — 输入框小元素备选（少用）
+       btn   ≈ 19px  — button / input / select
+       lg    ≈ 21px  — 通用容器（= --radius 本身）
+       card  ≈ 25px  — 大型卡片（Card / Dialog 整块）
+       full  = 9999  — pill / 头像 / badge 胶囊
+     装饰例外（不走阶梯）：scrollbar / kbd / 品牌图标 tile / 小 icon button ≤6px */
+  --radius-chip: calc(var(--radius) - 16px);    /* menu option / 嵌套小子项 */
+  --radius-sm:   calc(var(--radius) - 4px);     /* 小元素备选 */
+  --radius-btn:  calc(var(--radius) - 2px);     /* button / input */
+  --radius-panel: calc(var(--radius) - 4px);    /* 小面板（= sm） */
+  --radius-card: calc(var(--radius) + 4px);     /* 卡片 / 大容器 */
+  --radius-full: 9999px;
+}
+</style>
+<!-- @proto-gen:theme:end -->
+<!-- @proto-gen:shared:start -->
+<style>
+/*
+ * proto-gen shared.css —— 组件类骨架
+ * 所有颜色 / 字体 / 圆角 token 来自 theme.css（必须先于 shared.css 引入）
+ *
+ * 旧 v1 版本保留为 shared.legacy.css 作对照（脚手架，不入 git）
+ *
+ * 写法约定：
+ *   ✅ 颜色：var(--token)；半透明用 color-mix(in oklch, var(--token) N%, transparent)
+ *   ✅ 字体：var(--font-sans) / var(--font-mono)（取消旧 --font-display / --font-body 二分）
+ *   ✅ 圆角：var(--radius-chip|btn|panel|card|full)（阶梯，跟随主题 --radius）
+ *   ❌ 禁用：写死 hex / 写死 px 圆角 / 半透明色用 rgba(R,G,B,A)
+ *   例外：macOS traffic light（#ff5f57/#febc2e/#28c840）属平台装饰；纯黑阴影 rgba(0,0,0,X)
+ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans); font-size: 13px; color: var(--foreground);
+  background: oklch(0.92 0.005 280);                  /* macOS 桌面浅灰，原型悬浮其上 */
+  line-height: 1.5; -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 32px 24px;
+  box-sizing: border-box;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+
+.page-header { text-align: center; margin-bottom: 40px; }
+.page-header h1 { font-family: var(--font-sans); font-size: 32px; font-weight: 700; color: var(--foreground); letter-spacing: -0.03em; }
+.page-header p { font-size: 14px; color: var(--text-2); margin-top: 4px; }
+.page-stack { display: flex; flex-direction: column; align-items: center; gap: 48px; }   /* 旧布局：纯纵向堆叠，无 TOC */
+.section-label { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: color-mix(in oklch, var(--foreground) 75%, transparent); letter-spacing: 0.01em; padding: 0 4px; }
+
+/* 三栏布局骨架：TOC | 原型纵列 | 每个原型内右侧 PRD */
+.proto-layout {
+  display: flex; flex-direction: row;
+  align-items: flex-start; gap: 24px;
+  max-width: 100%;
+}
+.sections-col {
+  display: flex; flex-direction: column;
+  gap: 48px; min-width: 0;
+}
+.proto-stack {
+  display: flex; flex-direction: column;
+  gap: 12px; flex-shrink: 0;
+}
+
+/* macOS window：默认 1460×910（对齐常见 PC 桌面应用窗口尺寸，参 references/shadcn-tweakcn-theme.md） */
+.macos-window {
+  width: 1460px; max-width: 100%;
+  height: 910px;
+  background: var(--background);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.15),
+    0 8px 20px rgba(0,0,0,0.10),
+    0 0 0 1px rgba(0,0,0,0.06);
+}
+.macos-titlebar { background: var(--muted); height: 36px; flex-shrink: 0; display: flex; align-items: center; padding: 0 14px; gap: 10px; border-bottom: 1px solid var(--border); }
+.macos-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+/* traffic light：平台装饰，保留固定色 */
+.macos-dot.red { background: #ff5f57; } .macos-dot.yellow { background: #febc2e; } .macos-dot.green { background: #28c840; }
+.macos-title { flex: 1; text-align: center; font-size: 12px; font-weight: 500; color: var(--text-2); margin-right: 40px; }
+.macos-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 212px 1fr; grid-template-rows: 36px 1fr; position: relative; }
+
+/* Sidebar */
+.app-sidebar {
+  width: 212px; flex-shrink: 0; background: var(--sidebar); border-right: 1px solid var(--sidebar-border);
+  display: flex; flex-direction: column; padding: 16px 0; font-size: 12px;
+  grid-column: 1; grid-row: 1 / 3;
+}
+.sidebar-section { padding: 0 14px; margin-bottom: 8px; }
+.sidebar-section-header {
+  font-family: var(--font-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+  color: var(--text-3); padding: 8px 8px 6px; text-transform: uppercase;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius-btn);
+  color: var(--sidebar-foreground); cursor: pointer; transition: all 0.12s;
+}
+.sidebar-item:hover { background: color-mix(in oklch, var(--sidebar-accent) 60%, transparent); color: var(--sidebar-foreground); }
+.sidebar-item.active {
+  background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 600;
+}
+.sidebar-item .si-badge {
+  margin-left: auto; font-family: var(--font-mono); font-size: 9px;
+  border-radius: var(--radius-full);
+  padding: 0px 5px; min-width: 15px; text-align: center; line-height: 16px;
+}
+.sidebar-divider { height: 1px; background: var(--sidebar-border); margin: 8px 16px; }
+.sidebar-apps { flex: 1; overflow-y: auto; min-height: 0; }
+
+/* Main content */
+.app-main { flex: 1; padding: 24px 28px; overflow-y: auto; grid-column: 2; grid-row: 2; min-height: 0; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; border-radius: var(--radius-btn); cursor: pointer; transition: all 0.15s; border: none; white-space: nowrap; }
+.btn-primary { background: var(--primary); color: var(--primary-foreground); padding: 8px 18px; }
+.btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px color-mix(in oklch, var(--primary) 35%, transparent); transform: translateY(-1px); }
+.btn-primary[disabled], .btn-primary.is-disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary { background: transparent; color: var(--foreground); border: 1px solid var(--border); padding: 7px 18px; }
+.btn-secondary:hover { border-color: var(--border-2); background: var(--muted); }
+.btn-ghost { background: transparent; color: var(--text-2); padding: 6px 12px; }
+.btn-ghost:hover { background: var(--muted); color: var(--foreground); }
+.btn-sm { font-size: 11px; padding: 5px 10px; }
+.btn-lg { font-size: 14px; padding: 10px 24px; }
+.btn-danger { color: var(--destructive); border: 1px solid var(--destructive); background: transparent; padding: 7px 18px; }
+.btn-danger:hover { background: var(--destructive); color: var(--destructive-foreground); }
+
+/* Input */
+.input { font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; }
+.input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); }
+.input::placeholder { color: var(--text-3); }
+.input-mono { font-family: var(--font-mono); font-size: 11px; }
+
+/* Tabs */
+.inline-tabs { display: flex; gap: 2px; margin-bottom: 16px; }
+.inline-tab { padding: 6px 14px; font-size: 12px; font-weight: 500; background: transparent; border: none; color: var(--text-2); cursor: pointer; border-radius: var(--radius-btn); }
+.inline-tab.active { background: var(--primary-light); color: var(--primary); }
+
+/* Cards */
+.info-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px 18px; }
+.info-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 10px; }
+.info-row:last-child { border-bottom: none; }
+.info-label { font-size: 12px; color: var(--text-2); flex-shrink: 0; }
+.info-value { font-size: 12px; font-weight: 500; color: var(--foreground); text-align: right; }
+
+/* Badge — shadcn 公式：font-weight: 600，纯文字 + 颜色背景 */
+.badge { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); border: 1px solid; letter-spacing: 0; line-height: 1; height: 22px; box-sizing: border-box; }
+.badge-success { background: var(--success-muted); color: var(--success); border-color: var(--success-border); }
+.badge-warn { background: var(--warning-muted); color: var(--warning); border-color: var(--warning-border); }
+.badge-error { background: color-mix(in oklch, var(--destructive) 12%, transparent); color: var(--destructive); border-color: color-mix(in oklch, var(--destructive) 30%, transparent); }
+.badge-info { background: var(--info-muted); color: var(--info); border-color: var(--info-border); }
+.badge-default { background: color-mix(in oklch, var(--muted) 60%, transparent); color: var(--text-2); border-color: var(--border); }
+
+.section-title { font-family: var(--font-sans); font-size: 16px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 2px; }
+.section-desc { font-size: 12px; color: var(--text-2); margin-bottom: 14px; }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+/* Toggle */
+.toggle-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: var(--border-2); border-radius: var(--radius-full); cursor: pointer; transition: background 0.2s; }
+.toggle-slider::before { content: ""; position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; background: var(--background); border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.toggle-switch input:checked + .toggle-slider { background: var(--primary); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+.toggle-switch input[disabled] + .toggle-slider, .toggle-switch.is-disabled .toggle-slider { opacity: 0.5; cursor: not-allowed; }
+
+/* Progress */
+.progress-bar { height: 6px; background: var(--muted); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; }
+.progress-fill.indigo { background: var(--primary); }
+.progress-fill.amber { background: var(--warning); }
+
+.pulse-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px color-mix(in oklch, var(--success) 50%, transparent); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 4px color-mix(in oklch, var(--success) 40%, transparent)} 50%{box-shadow:0 0 12px color-mix(in oklch, var(--success) 70%, transparent)} }
+@keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
+.spin { animation: spin 1s linear infinite; }
+@keyframes breathe { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+.bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 100px; padding-top: 8px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar-fill { width: 100%; background: var(--primary); border-radius: 2px 2px 0 0; min-height: 3px; }
+.bar-label { font-size: 9px; color: var(--text-3); font-family: var(--font-mono); }
+
+.dist-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.dist-name { font-size: 11px; color: var(--text-2); width: 70px; flex-shrink: 0; text-align: right; }
+.dist-bar-wrap { flex: 1; height: 7px; background: var(--muted); border-radius: 4px; overflow: hidden; }
+.dist-bar-fill { height: 100%; border-radius: 4px; }
+.dist-val { font-size: 11px; font-weight: 500; width: 40px; text-align: right; font-family: var(--font-mono); }
+.dist-name img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; margin-right: 4px; vertical-align: -2px; }
+.dist-name .ch-fallback { display: inline-flex; align-items: center; justify-content: center; width: 12px; height: 12px; border-radius: 2px; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); color: var(--primary-foreground); font-size: 8px; font-weight: 700; margin-right: 4px; vertical-align: -2px; }
+
+/* 用量看板 — 金刚区 4 卡 */
+.kpi-cards .info-card { padding: 14px 12px; text-align: center; }
+.kpi-label { font-size: 10px; color: var(--text-2); letter-spacing: 0.04em; }
+.kpi-value { font-family: var(--font-sans); font-size: 18px; font-weight: 700; line-height: 1.2; margin-top: 2px; }
+.kpi-trend { font-size: 10px; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px; }
+.kpi-trend i { width: 10px; height: 10px; }
+.kpi-trend.up { color: var(--success); }
+.kpi-trend.down { color: var(--destructive); }
+.kpi-trend.flat { color: var(--text-3); }
+.kpi-sub { font-size: 9px; color: var(--text-3); margin-top: 4px; letter-spacing: 0.02em; font-family: var(--font-mono); }
+.kpi-card-quota .progress-bar { height: 4px; margin-top: 6px; }
+.kpi-card-quota .kpi-balance { font-size: 10px; color: var(--text-2); margin-top: 4px; }
+.kpi-card-quota .kpi-balance .bal-val { color: var(--warning); font-weight: 600; }
+
+/* 用量看板 — 分布卡固定高度 + 块内滚动 */
+.dist-list { height: 110px; overflow-y: auto; padding-right: 4px; }
+.dist-list::-webkit-scrollbar { width: 4px; }
+.dist-list::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+.dist-list::-webkit-scrollbar-track { background: transparent; }
+
+/* 用量看板 — 顶部工具条 */
+.usage-toolbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+.usage-toolbar .toolbar-left { display: flex; flex-direction: column; gap: 2px; }
+.usage-toolbar .toolbar-right { display: flex; align-items: center; gap: 8px; }
+
+/* 用量看板 — Agent 筛选 + 导出下拉 */
+.agent-filter, .export-dropdown { position: relative; }
+.agent-filter-btn, .export-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; font-size: 12px;
+  background: var(--background); border: 1px solid var(--border);
+  border-radius: var(--radius-btn); cursor: pointer; color: var(--foreground);
+  font-family: var(--font-sans);
+}
+.agent-filter-btn:hover, .export-btn:hover { background: var(--muted); }
+.agent-filter-btn .chev, .export-btn .chev { transition: transform 0.15s; width: 12px; height: 12px; color: var(--text-3); }
+.agent-filter.open .agent-filter-btn .chev,
+.export-dropdown.open .export-btn .chev { transform: rotate(180deg); }
+.agent-filter-menu, .export-menu {
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: 10;
+  background: var(--background); border: 1px solid var(--border);
+  border-radius: var(--radius-card); padding: 4px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1); min-width: 160px;
+  display: none;
+}
+.agent-filter.open .agent-filter-menu,
+.export-dropdown.open .export-menu { display: block; }
+.agent-filter-item, .export-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; font-size: 12px; cursor: pointer; border-radius: 4px;
+  color: var(--foreground);
+}
+.agent-filter-item:hover, .export-item:hover { background: var(--muted); }
+.agent-filter-item.active { color: var(--primary); font-weight: 600; }
+.agent-filter-item .check { width: 12px; height: 12px; opacity: 0; margin-left: auto; }
+.agent-filter-item.active .check { opacity: 1; }
+.agent-filter-item .afi-icon, .export-item .ei-icon { width: 12px; height: 12px; flex-shrink: 0; }
+.agent-filter-item i.afi-icon, .export-item i.ei-icon { color: var(--text-2); }
+.agent-filter-item img.afi-icon { border-radius: 2px; object-fit: contain; }
+.agent-filter-item .ag-fallback, .usage-detail-table .td-agent .ag-fallback {
+  width: 12px; height: 12px; border-radius: 2px;
+  background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white));
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--primary-foreground); font-size: 8px; font-weight: 700; flex-shrink: 0;
+}
+.export-item .fmt { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); margin-left: auto; }
+
+/* 用量看板 — 调用明细列表 */
+.dist-card-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 12px; margin-bottom: 6px; }
+.dist-card-header .view-all { font-size: 11px; color: var(--primary); cursor: pointer; font-weight: 500; }
+.usage-detail-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+.usage-detail-table thead th {
+  text-align: left; font-weight: 600; color: var(--text-2);
+  padding: 6px 8px; border-bottom: 1px solid var(--border);
+  font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.usage-detail-table tbody td {
+  padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle;
+}
+.usage-detail-table tbody tr:last-child td { border-bottom: none; }
+.usage-detail-table .td-agent { display: flex; align-items: center; gap: 6px; }
+.usage-detail-table .td-agent i { width: 12px; height: 12px; color: var(--text-2); }
+.usage-detail-table .td-agent img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; flex-shrink: 0; }
+.usage-detail-table .td-channel { display: flex; align-items: center; gap: 6px; }
+.usage-detail-table .td-channel img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; }
+.usage-detail-table .td-channel .ch-fallback {
+  width: 12px; height: 12px; border-radius: 2px;
+  background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white));
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--primary-foreground); font-size: 8px; font-weight: 700;
+}
+.usage-detail-table .td-model { font-family: var(--font-mono); font-size: 10px; color: var(--text-2); }
+.usage-detail-table .td-num { font-family: var(--font-mono); text-align: right; }
+.usage-detail-table .td-ts { color: var(--text-3); font-family: var(--font-mono); font-size: 10px; }
+
+.pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.price-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px; text-align: center; position: relative; }
+.price-card.featured { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.price-card .pc-tag { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--primary-foreground); font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-full); }
+.price-card .pc-name { font-family: var(--font-sans); font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.price-card .pc-price { font-family: var(--font-sans); font-size: 28px; font-weight: 700; }
+.price-card .pc-unit { font-size: 11px; color: var(--text-2); }
+.price-card .pc-desc { font-size: 11px; color: var(--text-2); margin: 10px 0; line-height: 1.5; }
+.price-card .pc-credits { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 10px; }
+
+.channel-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 14px 16px; margin-bottom: 8px; position: relative; }
+.channel-card.default { border-left: 3px solid var(--primary); }
+.channel-icon { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; object-fit: contain; }
+.channel-icon-fallback { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); display: inline-flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 10px; font-weight: 700; }
+.channel-card .channel-actions { position: absolute; top: 12px; right: 14px; display: none; gap: 4px; }
+.channel-card:hover .channel-actions,
+.channel-card.show-actions .channel-actions { display: flex; }
+.channel-action-btn { width: 26px; height: 26px; border-radius: 5px; background: transparent; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-2); position: relative; }
+.channel-action-btn:hover { background: var(--muted); color: var(--foreground); }
+.channel-action-btn .ca-tip { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: var(--foreground); color: var(--background); font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.12s; }
+.channel-action-btn:hover .ca-tip { opacity: 1; }
+.channel-action-btn.danger:hover { color: var(--destructive); }
+.channel-action-btn.is-disabled, .channel-action-btn[disabled] { color: var(--text-3); cursor: not-allowed; }
+.channel-action-btn.is-disabled:hover, .channel-action-btn[disabled]:hover { background: transparent; color: var(--text-3); }
+.model-badges { display: flex; flex-wrap: wrap; gap: 4px; max-height: 24px; overflow: hidden; transition: max-height 0.2s; }
+.model-badges.expanded { max-height: 999px; }
+.model-toggle { font-size: 11px; color: var(--primary); cursor: pointer; background: none; border: none; padding: 4px 0; margin-top: 2px; }
+
+/* 空状态占位卡片 */
+.empty-card { background: transparent; border: 1.5px dashed var(--border-2); border-radius: var(--radius-card); padding: 28px 20px; margin-bottom: 8px; text-align: center; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.empty-card:hover { border-color: var(--primary); background: var(--primary-light); }
+.empty-card__icon { width: 36px; height: 36px; margin: 0 auto 10px; border-radius: var(--radius-panel); background: var(--muted); display: flex; align-items: center; justify-content: center; color: var(--text-3); }
+.empty-card__title { font-size: 13px; font-weight: 600; color: var(--foreground); margin-bottom: 4px; }
+.empty-card__desc { font-size: 11px; color: var(--text-3); }
+
+/* Form */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
+.form-label--sm { font-size: 10px; margin-bottom: 4px; }
+.form-input { font-family: var(--font-mono); font-size: 12px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; transition: border-color 0.12s; }
+.form-input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); }
+.form-input::placeholder { color: var(--text-3); }
+.form-input[readonly] { background: var(--muted); cursor: default; }
+.form-input--sm { font-size: 11px; padding: 6px 10px; }
+.form-textarea { font-family: var(--font-mono); font-size: 12px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; resize: vertical; transition: border-color 0.12s; }
+.form-textarea:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); }
+.form-textarea::placeholder { color: var(--text-3); }
+.form-tip { font-size: 11px; color: var(--text-3); margin-top: 4px; line-height: 1.5; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-input-wrap { position: relative; }
+.form-input-wrap .form-input { padding-right: 36px; }
+.form-combobox { position: relative; display: block; width: 100%; }
+.form-combobox .form-input { padding-right: 32px; }
+.form-combobox .form-chevron { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; padding: 0; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-3); border-radius: var(--radius-chip); transition: color 0.12s, background 0.12s; }
+.form-combobox .form-chevron > svg { transition: transform 0.15s; transform-origin: center; }
+.form-combobox .form-chevron:hover { color: var(--foreground); }
+.form-combobox.open .form-chevron { color: var(--foreground); }
+.form-combobox.open .form-chevron > svg { transform: rotate(180deg); }
+.combobox-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-btn); box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 4px; max-height: 220px; overflow-y: auto; z-index: 20; display: none; }
+.form-combobox.open .combobox-menu { display: block; }
+.combobox-option { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; color: var(--popover-foreground); font-family: var(--font-sans); }
+.combobox-option:hover { background: var(--accent); color: var(--accent-foreground); }
+.combobox-option img { width: 16px; height: 16px; flex-shrink: 0; border-radius: 3px; object-fit: contain; }
+.combobox-option .co-fallback { width: 16px; height: 16px; flex-shrink: 0; border-radius: 3px; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 9px; font-weight: 600; }
+.form-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-3); padding: 4px; display: flex; align-items: center; border-radius: 3px; }
+.form-eye:hover { color: var(--foreground); }
+.form-eye .eye-off { display: none; }
+.form-eye.shown .eye-on { display: none; }
+.form-eye.shown .eye-off { display: inline-flex; }
+.form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.form-dialog-title { font-family: var(--font-sans); font-size: 15px; font-weight: 600; margin-bottom: 20px; }
+.form-dialog { background: var(--popover); color: var(--popover-foreground); border-radius: var(--radius-card); padding: 24px 28px; width: 420px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); position: relative; }
+.modal-close-x {
+  position: absolute; top: 14px; right: 14px; width: 28px; height: 28px;
+  border: none; background: transparent; cursor: pointer; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; color: var(--text-3);
+  transition: background 0.12s; padding: 0; z-index: 1;
+}
+.modal-close-x:hover { background: var(--muted); color: var(--foreground); }
+.modal-close-x svg, .modal-close-x i { width: 16px; height: 16px; stroke-width: 1.75; }
+.apply-popover { position: absolute; top: 44px; right: 14px; z-index: 5; background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 8px 4px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); min-width: 180px; }
+.apply-popover .ap-title { font-size: 10px; color: var(--text-3); padding: 4px 12px 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+.apply-popover .ap-item { display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--popover-foreground); }
+.apply-popover .ap-item:hover { background: var(--accent); color: var(--accent-foreground); }
+.apply-popover .ap-item input[type="checkbox"] { margin: 0; }
+.apply-popover .ap-footer { display: flex; gap: 6px; justify-content: flex-end; padding: 8px 8px 4px; border-top: 1px solid var(--border); margin-top: 4px; }
+
+/* Agent tabs（带品牌 logo） */
+.agent-tabs { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+.agent-tab { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 12px; font-weight: 500; background: transparent; border: 1px solid var(--border); border-radius: var(--radius-btn); color: var(--text-2); cursor: pointer; font-family: var(--font-sans); }
+.agent-tab:hover { color: var(--foreground); background: var(--muted); }
+.agent-tab--active { color: var(--primary); border-color: var(--primary); background: var(--primary-light); }
+.agent-tab img { width: 14px; height: 14px; border-radius: 2px; object-fit: contain; }
+.agent-tab__badge { font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border-radius: 3px; background: var(--muted); color: var(--text-3); }
+.agent-tab--active .agent-tab__badge { background: var(--primary-light); color: var(--primary); }
+.agent-tab__fallback { width: 14px; height: 14px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 9px; font-weight: 700; }
+.agent-pane { animation: agent-pane-in 0.18s ease; }
+@keyframes agent-pane-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+.launch-btn { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; }
+.launch-btn:hover { transform: scale(1.05); }
+
+/* QR Code */
+.qr-placeholder {
+  width: 140px; height: 140px; background: var(--muted); border-radius: var(--radius-panel);
+  margin: 0 auto 12px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--border);
+}
+.qr-placeholder .qr-icon { font-size: 40px; opacity: 0.4; }
+.qr-placeholder .qr-text { font-size: 11px; color: var(--text-3); }
+
+/* 顶栏 */
+.app-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.app-topbar .user-area { display: flex; align-items: center; gap: 10px; }
+.app-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-weight: 600; font-size: 11px; }
+
+/* mac 风格主区顶部操作栏 */
+.win-chrome-bar {
+  grid-column: 2; grid-row: 1;
+  display: flex; align-items: stretch; height: 36px;
+  background: var(--background); border-bottom: 1px solid var(--border);
+}
+.win-chrome-drag { flex: 1; }
+.win-chrome-actions {
+  display: flex; align-items: center; gap: 8px; padding: 0 12px;
+}
+.win-chrome-icon { width: 14px; height: 14px; stroke-width: 1.75; }
+.win-chrome-btn {
+  width: 28px; height: 28px; border: none; background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-btn); color: var(--text-2);
+}
+.win-chrome-btn:hover { background: var(--muted); color: var(--foreground); }
+.win-credits {
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--foreground);
+  padding: 0 6px;
+}
+.win-credits i { color: var(--primary); }
+.win-avatar-chip { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.win-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--primary); color: var(--primary-foreground);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 10px; flex-shrink: 0;
+}
+
+.nav-icon { width: 16px; height: 16px; stroke-width: 1.75; flex-shrink: 0; }
+img.nav-icon { border-radius: 3px; object-fit: contain; }
+
+.badge-free {
+  display: inline-block; font-family: var(--font-mono); font-size: 8px; font-weight: 600;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 3px; padding: 1px 4px; letter-spacing: 0.04em;
+}
+
+/* 登录浮层 */
+.login-modal {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-modal__backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+}
+.login-modal__card {
+  position: relative; background: var(--popover); border-radius: var(--radius-card);
+  padding: 28px 28px 24px; width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  color: var(--popover-foreground);
+}
+.login-modal__close {
+  position: absolute; top: 14px; right: 14px; width: 28px; height: 28px;
+  border: none; background: transparent; cursor: pointer; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; color: var(--text-3);
+  transition: background 0.12s;
+}
+.login-modal__close:hover { background: var(--muted); color: var(--foreground); }
+.login-modal__close svg { width: 16px; height: 16px; }
+.login-modal__title {
+  font-family: var(--font-sans); font-size: 18px; font-weight: 600;
+  letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.login-tabs { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+.login-tab {
+  padding: 6px 14px; font-size: 12px; font-weight: 500; background: transparent;
+  border: none; color: var(--text-2); cursor: pointer; border-radius: var(--radius-btn) var(--radius-btn) 0 0;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.12s;
+}
+.login-tab--active { color: var(--primary); border-bottom-color: var(--primary); }
+.login-pane label { display: block; font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 4px; margin-top: 10px; }
+.login-pane label:first-child { margin-top: 0; }
+.login-pane input { font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; }
+.login-pane input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); }
+.login-code-row { display: flex; gap: 8px; }
+.login-code-row input { flex: 1; }
+.login-code-btn {
+  font-family: var(--font-sans); font-size: 12px; font-weight: 500; white-space: nowrap;
+  padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border);
+  background: transparent; color: var(--foreground); cursor: pointer; transition: all 0.12s;
+}
+.login-code-btn:hover { border-color: var(--border-2); background: var(--muted); }
+.login-submit {
+  display: block; width: 100%; margin-top: 14px; padding: 10px;
+  background: var(--primary); color: var(--primary-foreground); font-family: var(--font-sans);
+  font-size: 13px; font-weight: 500; border: none; border-radius: var(--radius-btn);
+  cursor: pointer; transition: background 0.15s;
+}
+.login-submit:hover { background: var(--primary-hover); }
+.login-footer { margin-top: 12px; font-size: 11px; color: var(--text-3); display: flex; flex-direction: column; gap: 4px; }
+.login-footer a { color: var(--primary); text-decoration: none; }
+.login-qr-placeholder {
+  width: 140px; height: 140px; background: var(--muted); border-radius: var(--radius-panel);
+  margin: 20px auto 12px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); font-size: 13px; color: var(--text-3);
+}
+.login-qr-tip { text-align: center; font-size: 12px; color: var(--text-2); margin-bottom: 20px; }
+
+.login-overlay {
+  position: absolute; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-overlay__backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.25);
+}
+.login-overlay__card {
+  position: relative; background: var(--popover); border-radius: var(--radius-card);
+  padding: 28px 28px 24px; width: 340px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  color: var(--popover-foreground);
+}
+.login-overlay__subtitle {
+  font-size: 12px; color: var(--text-2); margin-top: -10px; margin-bottom: 18px;
+}
+
+.phone-input-wrap { position: relative; }
+.phone-input-wrap input { padding-left: 56px; }
+.phone-input-wrap .phone-input-prefix {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; color: var(--text-2);
+  border-right: 1px solid var(--border); padding-right: 8px;
+  pointer-events: none;
+}
+
+.win-login-btn {
+  height: 28px; padding: 0 14px;
+  border: none; background: var(--primary); color: var(--primary-foreground);
+  cursor: pointer; font-family: var(--font-sans);
+  font-size: 12px; font-weight: 500;
+  border-radius: var(--radius-btn);
+  transition: background 0.12s;
+}
+.win-login-btn:hover { background: var(--primary-hover); }
+.hero-icon { width: 28px; height: 28px; stroke-width: 1.5; }
+img.hero-icon { border-radius: 6px; object-fit: contain; }
+.info-icon { width: 14px; height: 14px; stroke-width: 1.75; vertical-align: -2px; margin-right: 4px; }
+.store-card { cursor: pointer; transition: box-shadow 0.15s, transform 0.15s; }
+.store-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+.detail-screenshot {
+  width: 100%; height: 180px; background: var(--muted); border-radius: var(--radius-panel);
+  border: 1px solid var(--border); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px; color: var(--text-3);
+}
+
+.detail-section-title {
+  font-size: 12px; font-weight: 600; color: var(--foreground); margin-bottom: 10px;
+}
+
+.search-shortcut {
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-3);
+  background: var(--muted); border-radius: 4px; padding: 2px 6px;
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* TOC 目录导航：sticky 卡片，跟随滚动；360px 宽参 ai-store 规范 */
+.toc-sidebar {
+  position: sticky; top: 32px;
+  width: 280px; flex-shrink: 0;
+  background: var(--background);
+  border-radius: var(--radius-card);
+  padding: 20px 16px;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.06),
+    0 0 0 1px rgba(0,0,0,0.04);
+  max-height: calc(100vh - 64px); overflow-y: auto;
+}
+.toc-sidebar .toc-title {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: color-mix(in oklch, var(--muted-foreground) 60%, transparent);
+  margin-bottom: 14px; padding-left: 4px;
+}
+.toc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-btn);
+  font-size: 13px; color: var(--foreground); text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.toc-item:hover { background: color-mix(in oklch, var(--muted) 60%, transparent); }
+.toc-item.active {
+  background: var(--accent); color: var(--accent-foreground);
+  font-weight: 500;
+}
+.toc-dot { width: 6px; height: 6px; border-radius: 50%; background: color-mix(in oklch, var(--primary) 55%, transparent); flex-shrink: 0; transition: background 0.15s; }
+.toc-item.active .toc-dot { background: var(--accent-foreground); }
+.toc-mirror-tag {
+  font-size: 9px; padding: 1px 5px; border-radius: 3px;
+  background: var(--muted); color: var(--text-3); flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+
+/* env issue / action chip / 抽屉 */
+.env-issue-summary {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; margin-bottom: 12px;
+  background: color-mix(in oklch, var(--warning) 8%, transparent); border: 1px solid color-mix(in oklch, var(--warning) 20%, transparent);
+  border-radius: var(--radius-btn);
+  font-size: 11px; color: var(--text-2);
+}
+.env-issue-summary .env-issue-summary__count {
+  font-weight: 600; color: var(--foreground);
+}
+.env-issue-summary .env-issue-summary__time {
+  margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--text-3);
+}
+
+.env-issue-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; margin-left: 6px;
+  background: color-mix(in oklch, var(--warning) 12%, transparent); color: var(--warning);
+  border-radius: 10px; font-size: 10px; font-weight: 500;
+  cursor: pointer; transition: all 0.12s;
+}
+.env-issue-badge:hover { background: color-mix(in oklch, var(--warning) 20%, transparent); }
+.env-issue-badge--info { background: color-mix(in oklch, var(--muted-foreground) 12%, transparent); color: var(--text-2); }
+.env-issue-badge--info:hover { background: color-mix(in oklch, var(--muted-foreground) 20%, transparent); }
+
+.env-action-chip {
+  display: inline-block; padding: 2px 6px;
+  background: var(--muted); color: var(--text-2);
+  font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+  border-radius: 3px; letter-spacing: 0.02em;
+}
+
+.env-source-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 7px;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 3px; font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+}
+.env-prereq-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 0;
+  font-family: var(--font-mono); font-size: 11px;
+}
+.env-prereq-row .env-prereq-icon { width: 12px; height: 12px; flex-shrink: 0; }
+.env-prereq-row .env-prereq-name { color: var(--foreground); }
+.env-prereq-row .env-prereq-meta { color: var(--text-3); margin-left: auto; font-size: 10px; }
+
+.win-avatar-menu {
+  position: absolute; top: 36px; right: 12px; z-index: 5;
+  background: var(--popover); border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  width: 260px; padding: 6px; font-size: 12px;
+  color: var(--popover-foreground);
+}
+.win-avatar-menu__header {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px;
+}
+.win-avatar-menu__name { font-weight: 600; font-size: 13px; color: var(--foreground); }
+.win-avatar-menu__email { font-size: 11px; color: var(--text-3); }
+.win-avatar-menu__plan {
+  padding: 8px 12px; margin-bottom: 4px;
+  background: var(--primary-light); border-radius: var(--radius-btn);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.win-avatar-menu__plan-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
+.win-avatar-menu__plan-row .plan-label { color: var(--text-2); }
+.win-avatar-menu__plan-row .plan-value { color: var(--primary); font-weight: 600; }
+.win-avatar-menu__divider { height: 1px; background: var(--border); margin: 4px -6px; }
+.win-avatar-menu__item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 4px; cursor: pointer;
+  color: var(--foreground); transition: background 0.12s;
+}
+.win-avatar-menu__item:hover { background: var(--muted); }
+.win-avatar-menu__item i.nav-icon { width: 14px; height: 14px; stroke-width: 1.75; color: var(--text-2); flex-shrink: 0; }
+.win-avatar-menu__item--danger { color: var(--destructive); }
+.win-avatar-menu__item--danger i { color: var(--destructive); }
+
+.app-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-3); margin-bottom: 10px;
+}
+.app-breadcrumb a { color: var(--text-2); text-decoration: none; cursor: pointer; }
+.app-breadcrumb a:hover { color: var(--foreground); }
+.app-breadcrumb .sep { color: var(--border-2); font-size: 10px; }
+.app-breadcrumb .current { color: var(--foreground); font-weight: 500; }
+
+.env-drawer {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 380px;
+  background: var(--background);
+  box-shadow: -8px 0 24px rgba(0,0,0,0.12);
+  z-index: 11; display: flex; flex-direction: column;
+}
+.env-drawer__header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+}
+.env-drawer__meta {
+  padding: 12px 20px; background: var(--muted); border-bottom: 1px solid var(--border);
+  font-size: 11px; color: var(--text-2); display: flex; flex-direction: column; gap: 4px;
+}
+.env-drawer__meta code {
+  font-family: var(--font-mono); font-size: 10px; color: var(--foreground);
+}
+.env-drawer__body {
+  flex: 1; overflow-y: auto; padding: 0;
+}
+.env-drawer__item {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+}
+.env-drawer__item-head {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+}
+.env-drawer__item-level {
+  margin-left: auto; font-family: var(--font-sans); font-size: 10px; font-weight: 500;
+  padding: 1px 6px; border-radius: 8px;
+}
+.env-drawer__item-level--warning { background: color-mix(in oklch, var(--warning) 15%, transparent); color: var(--warning); }
+.env-drawer__item-level--info { background: color-mix(in oklch, var(--muted-foreground) 12%, transparent); color: var(--text-2); }
+.env-drawer__item-msg { font-size: 12px; color: var(--foreground); margin-bottom: 6px; }
+.env-drawer__item-cmd {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--muted); padding: 6px 8px; border-radius: 3px;
+  color: var(--text-2); margin-bottom: 8px; overflow-x: auto;
+}
+.env-drawer__footer {
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end;
+}
+
+/* Proto navigation shell */
+.proto-nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 40px; padding: 0 20px;
+  background: color-mix(in oklch, var(--background) 92%, transparent); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.proto-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-2);
+  text-decoration: none; padding: 4px 10px; border-radius: 6px;
+  transition: background 0.15s;
+}
+.proto-back:hover { background: var(--muted); color: var(--foreground); }
+.proto-back i { width: 14px; height: 14px; stroke-width: 1.75; }
+.proto-title { font-size: 12px; color: var(--text-3); font-family: var(--font-sans); }
+
+/* 原型旁注 PRD 面板：宽 360 sticky 顶；与 macos-window (910) 同高，超长内容内部滚动 */
+.proto-with-prd {
+  display: flex; flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+}
+.proto-with-prd .macos-window { flex-shrink: 0; }
+.prd-panel-wrap {
+  width: 360px; flex-shrink: 0;
+  position: sticky; top: 32px;
+  height: 910px;
+  max-height: calc(100vh - 64px);
+  /* section-label 在 proto-with-prd 之外（proto-stack 直接子节点），PRD 与 macos-window 自然顶部对齐，无需 margin-top 下移 */
+}
+.prd-panel {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: var(--background);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.06),
+    0 0 0 1px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+.prd-panel__title {
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 700;
+  color: var(--foreground);
+  padding: 16px 22px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+  flex-shrink: 0;
+}
+.prd-panel__body {
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto;
+  padding: 16px 22px 20px;
+}
+.prd-section { margin-bottom: 18px; }
+.prd-section:last-child { margin-bottom: 0; }
+.prd-section__title {
+  font-size: 12px; font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.prd-section ul { margin: 0; padding-left: 16px; list-style: disc; }
+.prd-section li {
+  font-size: 11.5px; line-height: 1.7;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+.prd-section li:last-child { margin-bottom: 0; }
+
+/* ============ PRD ↔ 原型 双向高亮联动 ============ */
+[data-comp].is-highlight {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+  border-radius: inherit;
+  transition: outline-color .12s, box-shadow .12s;
+}
+li[data-target] { cursor: pointer; transition: background .12s; border-radius: 4px; }
+li[data-target].is-highlight {
+  background: color-mix(in oklch, var(--primary) 8%, transparent);
+  outline: 1px solid color-mix(in oklch, var(--primary) 30%, transparent);
+}
+.channel-card.is-bullet-active { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 35%, transparent); }
+.channel-card.is-bullet-active .channel-actions { display: flex; }
+</style>
+<!-- @proto-gen:shared:end -->
+<!-- @proto-gen:highlight:start -->
+<script>
+/**
+ * PRD ↔ 原型 双向高亮联动
+ *
+ * 用法：
+ *   1) 引入 shared.css（含 .is-highlight / li[data-target] / .is-bullet-active 样式）
+ *   2) 在原型组件上加 data-comp="<key>"，在 PRD bullet (<li>) 上加 data-target="<key>"
+ *   3) 多对一写法：data-target="key1,key2"（hover 该 bullet 高亮多个组件）
+ *
+ * Scope：每个 .proto-with-prd 是独立命名空间，跨 section 不传染。
+ * 视觉键：outline + var(--primary) 描边（跟随当前主题）/ 外发光，与组件自身 :hover 的 background 完全分离。
+ */
+(function() {
+  function init() {
+    document.querySelectorAll('.proto-with-prd').forEach(function(scope) {
+      function decorateCard(target, on) {
+        var card = target.closest && target.closest('.channel-card');
+        if (!card) return;
+        card.classList[on ? 'add' : 'remove']('is-bullet-active');
+      }
+
+      /* 正向：bullet → component */
+      scope.querySelectorAll('li[data-target]').forEach(function(bullet) {
+        var keys = bullet.dataset.target.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+        var targets = [];
+        keys.forEach(function(k) {
+          scope.querySelectorAll('[data-comp="' + k + '"]').forEach(function(el) { targets.push(el); });
+        });
+        if (!targets.length) return;
+        bullet.addEventListener('mouseenter', function() {
+          bullet.classList.add('is-highlight');
+          targets.forEach(function(t) { t.classList.add('is-highlight'); decorateCard(t, true); });
+        });
+        bullet.addEventListener('mouseleave', function() {
+          bullet.classList.remove('is-highlight');
+          targets.forEach(function(t) { t.classList.remove('is-highlight'); decorateCard(t, false); });
+        });
+      });
+
+      /* 反向：component → bullet（子组件 stopPropagation 避免被父组件遮盖） */
+      scope.querySelectorAll('[data-comp]').forEach(function(comp) {
+        var key = comp.dataset.comp;
+        var matched = [];
+        scope.querySelectorAll('li[data-target]').forEach(function(b) {
+          if (b.dataset.target.split(',').map(function(s) { return s.trim(); }).indexOf(key) !== -1) matched.push(b);
+        });
+        if (!matched.length) return;
+        comp.addEventListener('mouseenter', function(e) {
+          e.stopPropagation();
+          comp.classList.add('is-highlight');
+          matched.forEach(function(b) { b.classList.add('is-highlight'); });
+        });
+        comp.addEventListener('mouseleave', function(e) {
+          e.stopPropagation();
+          comp.classList.remove('is-highlight');
+          matched.forEach(function(b) { b.classList.remove('is-highlight'); });
+        });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+<!-- @proto-gen:highlight:end -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<style>
+  /* ============================================================
+     本页特有样式：移动端小程序预览壳（phone-frame）+ 页面布局。
+     通用组件（按钮/卡片/弹窗/badge/表单）全部复用 shared.css 类名，
+     不在此处重复定义。
+     Mobile 系列在 proto-gen 中尚为规划态，故以页面样式实现，
+     不覆写 skill 资产（theme.css / shared.css）。
+     ============================================================ */
+
+  /* 设计系统覆盖：design-plan.md 的 c_end refined-consumer token（主题可插拔，页面级覆盖） */
+  :root {
+    --primary: #FF6B35;
+    --primary-foreground: #FFFFFF;
+    --background: #FFFFFF;
+    --foreground: #1A1A1A;
+    --card: #FFFFFF;
+    --card-foreground: #1A1A1A;
+    --popover: #FFFFFF;
+    --popover-foreground: #1A1A1A;
+    --secondary: #1A1A1A;
+    --secondary-foreground: #FFFFFF;
+    --muted: #F7F8FA;
+    --muted-foreground: #666666;
+    --accent: #FFF1E8;
+    --accent-foreground: #FF6B35;
+    --destructive: #FA5151;
+    --destructive-foreground: #FFFFFF;
+    --border: #EBEDF0;
+    --input: #EBEDF0;
+    --ring: #FF6B35;
+    --sidebar: #FFFFFF;
+    --sidebar-foreground: #1A1A1A;
+    --sidebar-accent: #FFF1E8;
+    --sidebar-accent-foreground: #FF6B35;
+    --sidebar-border: #EBEDF0;
+    --success: #00B578;
+    --success-muted: #E6F7F0;
+    --success-border: #B7E8D5;
+    --warning: #FF8F1F;
+    --warning-muted: #FFF3E3;
+    --warning-border: #FFD9A8;
+    --info: #FF6B35;
+    --info-muted: #FFF1E8;
+    --info-border: #FFD2B8;
+    --font-sans: "PingFang SC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    --font-mono: "SF Mono", ui-monospace, Menlo, Monaco, monospace;
+    --radius: 16px;
+    --radius-chip: 6px;
+    --radius-sm: 12px;
+    --radius-btn: 22px;
+    --radius-panel: 12px;
+    --radius-card: 12px;
+    --text-2: #666666;
+    --text-3: #999999;
+  }
+
+  body { overflow-x: auto; }
+
+  /* 手机预览舞台：macos-body 内居中放置 phone-frame（页面特有外壳） */
+  .macos-body.mp-stage {
+    display: flex; align-items: center; justify-content: center;
+    background: oklch(0.955 0.004 280);
+  }
+  .phone-frame {
+    position: relative; width: 375px; height: 812px; flex-shrink: 0;
+    background: var(--background);
+    border-radius: 32px; overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.14);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.20), 0 0 0 1px rgba(0,0,0,0.05);
+    display: flex; flex-direction: column;
+    font-size: 15px;
+  }
+  .phone-notch {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 26px; background: #1A1A1A;
+    border-radius: 999px; z-index: 6;
+  }
+  .mp-statusbar {
+    height: 44px; flex-shrink: 0;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 20px 8px; font-size: 12px; font-weight: 600;
+  }
+  .mp-statusbar .sb-icons { display: flex; align-items: center; gap: 4px; }
+  .mp-statusbar .sb-icons i { width: 13px; height: 13px; stroke-width: 2; }
+  .mp-page {
+    flex: 1; min-height: 0; position: relative;
+    display: flex; flex-direction: column; background: var(--background);
+  }
+  .mp-topbar {
+    height: 44px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 12px; border-bottom: 1px solid var(--border);
+  }
+  .mp-topbar .t-back {
+    display: inline-flex; align-items: center; gap: 2px;
+    background: none; border: none; padding: 4px; cursor: pointer;
+    color: var(--foreground); font-size: 15px;
+  }
+  .mp-topbar .t-back i { width: 20px; height: 20px; stroke-width: 2; }
+  .mp-topbar .t-title { font-size: 17px; font-weight: 600; }
+  .mp-topbar .t-right { width: 32px; display: flex; justify-content: flex-end; }
+  .mp-content { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
+  .mp-bottom-bar {
+    flex-shrink: 0; display: flex; gap: 12px;
+    padding: 12px 16px 16px;
+    border-top: 1px solid var(--border); background: var(--background);
+  }
+  .mp-bottom-bar .btn { flex: 1; padding: 12px 0; font-size: 15px; }
+  .mp-context {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--info-muted); color: var(--info);
+    border-radius: 6px; padding: 8px 10px; font-size: 12px; margin-bottom: 12px;
+  }
+  .mp-context i { width: 13px; height: 13px; flex-shrink: 0; }
+  /* 组合既有 .info-card 的移动端卡片间距（通用卡样式在 shared.css） */
+  .mp-card { margin-bottom: 12px; }
+  .mp-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .mp-row:last-child { border-bottom: none; }
+  .mp-row .r-label { color: var(--text-2); }
+  .mp-row .r-value { font-weight: 500; }
+  .mp-price { color: var(--danger); font-weight: 600; font-size: 15px; }
+  .mp-section-title { font-size: 14px; font-weight: 600; margin: 16px 0 8px; }
+  .mp-check {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 13px; color: var(--text-2); margin: 14px 0 4px; cursor: pointer;
+  }
+  .mp-check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); flex-shrink: 0; }
+  .mp-menu-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 2px; border-bottom: 1px solid var(--border);
+    font-size: 14px; cursor: pointer;
+  }
+  .mp-menu-item:last-child { border-bottom: none; }
+  .mp-menu-item .mi-left { display: flex; align-items: center; gap: 10px; }
+  .mp-menu-item .mi-left i { width: 16px; height: 16px; color: var(--text-2); stroke-width: 1.75; }
+  .mp-menu-item .mi-right { display: flex; align-items: center; gap: 6px; color: var(--text-3); font-size: 12px; }
+  .mp-menu-item .mi-right i { width: 14px; height: 14px; }
+  .mp-menu-item .mi-right.danger { color: var(--destructive); }
+
+  /* 同步链路条（design-plan Signature）：双端对照 + 状态徽标 */
+  .sync-bar {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-card);
+    padding: 12px 14px; margin-bottom: 12px; background: var(--card);
+  }
+  .sync-bar .sb-icon {
+    width: 34px; height: 34px; border-radius: var(--radius-full); flex-shrink: 0;
+    background: var(--info-muted); color: var(--info);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sync-bar .sb-icon i { width: 16px; height: 16px; stroke-width: 1.75; }
+  .sync-bar .sb-main { flex: 1; min-width: 0; }
+  .sync-bar .sb-link { font-size: 13px; font-weight: 600; }
+  .sync-bar .sb-meta { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+  /* 弹窗 / 遮罩 / toast（手机壳内，页面特有） */
+  .mp-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.45);
+    z-index: 20; display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .phone-frame .form-dialog { width: 100%; max-width: 340px; padding: 24px 20px 20px; border-radius: var(--radius-card); }
+  .phone-frame .form-dialog .form-actions { margin-top: 18px; }
+  .phone-frame .form-actions .btn { flex: 1; padding: 11px 0; font-size: 15px; }
+  .mp-dialog-note { font-size: 13px; color: var(--text-2); line-height: 1.7; margin-bottom: 10px; }
+  .mp-dialog-sub { font-size: 12px; color: var(--text-3); }
+  .mp-toast {
+    position: absolute; left: 50%; bottom: 96px; z-index: 30;
+    transform: translateX(-50%) translateY(8px);
+    background: rgba(26,26,26,0.92); color: #FFFFFF;
+    font-size: 12px; padding: 8px 14px; border-radius: 999px;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
+    white-space: nowrap; max-width: 300px; text-align: center;
+  }
+  .mp-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* 状态对照行（场景C / 订单详情） */
+  .mp-compare {
+    border: 1px solid var(--border); border-radius: var(--radius-card);
+    padding: 12px 14px; margin-bottom: 12px; background: var(--muted);
+  }
+  .mp-compare .cmp-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; font-size: 13px; }
+  .mp-compare .cmp-row + .cmp-row { border-top: 1px solid var(--border); }
+  .mp-compare .cmp-label { color: var(--text-2); }
+  .mp-compare .cmp-value { font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
+
+  /* 状态提示条（领券结果 / 边界提示） */
+  .mp-banner {
+    display: flex; align-items: center; gap: 8px;
+    border-radius: 6px; padding: 10px 12px; font-size: 12px; margin-bottom: 12px;
+  }
+  .mp-banner i { width: 13px; height: 13px; flex-shrink: 0; }
+  .mp-banner.warn { background: var(--warning-muted); color: var(--warning); }
+  .mp-banner.success { background: var(--success-muted); color: var(--success); }
+  .mp-banner.error { background: color-mix(in oklch, var(--destructive) 10%, transparent); color: var(--destructive); }
+</style>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="proto-nav">
+  <a href="#section-01-product" class="proto-back"><i data-lucide="arrow-left"></i>返回顶部</a>
+  <span class="proto-title">私域-公域订单同步授权与绑定 · 点击交互演示（含 data-comp/data-target 评审脚手架，研发交付时剥离）</span>
+</nav>
+
+<!-- 三栏布局：左 TOC + 中原型纵列 + 右 PRD（每个 section 内） -->
+<div class="proto-layout">
+
+  <nav class="toc-sidebar">
+    <div class="toc-title">页面导航</div>
+    <a class="toc-item" href="#section-01-product"><span class="toc-dot"></span>订单同步-01 商品详情</a>
+    <a class="toc-item" href="#section-02-login"><span class="toc-dot"></span>订单同步-02 会员登录</a>
+    <a class="toc-item" href="#section-03-bind-auth"><span class="toc-dot"></span>订单同步-03 授权绑定弹窗（场景A）</a>
+    <a class="toc-item" href="#section-03-protocol-update"><span class="toc-dot"></span>订单同步-03-协议更新</a>
+    <a class="toc-item" href="#section-04-rebind"><span class="toc-dot"></span>订单同步-04 重新绑定确认（场景C）</a>
+    <a class="toc-item" href="#section-05-confirm-on"><span class="toc-dot"></span>订单同步-05 订单确认·已开启</a>
+    <a class="toc-item" href="#section-05-coupon"><span class="toc-dot"></span>订单同步-05-优惠券 使用校验</a>
+    <a class="toc-item" href="#section-06-confirm-off"><span class="toc-dot"></span>订单同步-06 订单确认·未开启</a>
+    <a class="toc-item" href="#section-06-no-public"><span class="toc-dot"></span>订单同步-06-边界 未检测公域</a>
+    <a class="toc-item" href="#section-07-manage"><span class="toc-dot"></span>订单同步-07 授权与绑定管理</a>
+    <a class="toc-item" href="#section-07-unbind"><span class="toc-dot"></span>订单同步-07-解绑</a>
+    <a class="toc-item" href="#section-08-order-fail"><span class="toc-dot"></span>订单同步-08 订单详情·同步失败</a>
+    <a class="toc-item" href="#section-09-coupon-page"><span class="toc-dot"></span>订单同步-09 领券页（公域优惠券）</a>
+    <a class="toc-item" href="#section-09-coupon-auth"><span class="toc-dot"></span>订单同步-09-A 领券·场景A授权</a>
+    <a class="toc-item" href="#section-09-coupon-rebind"><span class="toc-dot"></span>订单同步-09-C 领券·场景C重绑</a>
+    <a class="toc-item" href="#section-09-coupon-boundary"><span class="toc-dot"></span>订单同步-09-边界 非公域环境</a>
+    <a class="toc-item" href="#section-09-my-coupons"><span class="toc-dot"></span>订单同步-09-我的券 撤回后失效</a>
+  </nav>
+
+  <div class="sections-col">
+
+<!-- ============ Section 01：商品详情页 ============ -->
+<div id="section-01-product" class="proto-stack">
+  <div class="section-label">订单同步-01 商品详情页</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 商品详情</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">商品详情</span>
+              <span class="t-right"><button class="t-back" data-toast="已唤起转发（演示）"><i data-lucide="share-2"></i></button></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-context" data-comp="ctx-public"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="detail-screenshot" style="height:220px;margin-bottom:12px;" data-comp="media-main">商品主图 375×220</div>
+              <div class="info-card mp-card" data-comp="summary-main">
+                <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                <div style="display:flex;align-items:baseline;gap:8px;margin-top:6px;">
+                  <span class="mp-price">¥149</span>
+                  <span style="font-size:12px;color:var(--text-3);">已售 2.3k+</span>
+                </div>
+              </div>
+              <div class="info-card mp-card" data-comp="info-service">
+                <div class="mp-row"><span class="r-label">规格</span><span class="r-value">S / M / L / XL</span></div>
+                <div class="mp-row"><span class="r-label">配送</span><span class="r-value">48 小时内发货</span></div>
+                <div class="mp-row"><span class="r-label">服务</span><span class="r-value">7 天无理由退换</span></div>
+              </div>
+              <div class="info-card mp-card" style="background:var(--muted);" data-comp="note-nopop">
+                <div style="font-size:12px;color:var(--text-2);">本页不主动弹出授权/绑定弹窗，避免打断浏览（PRD 5.1）</div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary" data-comp="btn-cart" data-toast="已加入购物车（演示）">加入购物车</button>
+              <button class="btn btn-primary" data-comp="btn-buy" data-goto="#section-02-login">立即购买</button>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-01：商品详情页</div>
+            <ul>
+              <li data-target="ctx-public"><strong>公域来源条</strong>：展示「来自 视频号直播间 · 公域账号 B」，标识由公域跳转进入并携带公域ID（获取方式见 PRD 7.2）</li>
+              <li><strong>顶栏</strong>：展示「返回 / 商品详情 / 分享」，返回跳回公域直播间</li>
+              <li data-target="media-main"><strong>商品主图</strong>：展示商品头图（纯棉短袖 T 恤 燕麦色）</li>
+              <li data-target="summary-main"><strong>商品摘要</strong>：展示商品名称、价格 ¥149、销量 已售 2.3k+</li>
+              <li data-target="info-service"><strong>规格与服务</strong>：展示规格（S/M/L/XL）、配送（48 小时内发货）、服务（7 天无理由退换）</li>
+              <li data-target="note-nopop"><strong>无弹窗原则</strong>：浏览本页时不主动弹出任何授权/绑定弹窗（PRD 5.1）</li>
+              <li data-target="btn-cart"><strong>「加入购物车」按钮</strong>：展示次按钮（应用 .btn-secondary 风格），点击后加入购物车</li>
+              <li data-target="btn-buy"><strong>「立即购买」按钮</strong>：展示主按钮（应用 .btn-primary 风格），点击后检测登录状态，未登录前往会员登录页</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 02：会员登录页 ============ -->
+<div id="section-02-login" class="proto-stack">
+  <div class="section-label">订单同步-02 会员登录页</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 会员登录</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back" data-toast="已返回商品详情（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">登录</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div style="font-size:24px;font-weight:700;margin:8px 0 20px;">欢迎回来</div>
+              <div class="form-group" data-comp="field-phone">
+                <label class="form-label">手机号</label>
+                <input class="form-input" placeholder="请输入手机号" />
+              </div>
+              <div class="form-group" data-comp="field-code">
+                <label class="form-label">验证码</label>
+                <div class="login-code-row">
+                  <input class="form-input" placeholder="请输入验证码" />
+                  <button class="login-code-btn" data-toast="验证码已发送（演示）">获取验证码</button>
+                </div>
+              </div>
+              <button class="btn btn-secondary" style="width:100%;margin-top:4px;" data-comp="btn-wechat" data-toast="已发起微信一键登录（演示）">微信一键登录</button>
+              <label class="mp-check"><input type="checkbox" /><span>同意《用户协议》与《隐私政策》</span></label>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary" data-comp="btn-login" data-toast="登录成功，正在检测绑定与授权状态…">登录并继续</button>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-02：会员登录页</div>
+            <ul>
+              <li><strong>顶栏</strong>：展示「返回 / 登录」，返回回到商品详情页</li>
+              <li><strong>主标题</strong>：展示「欢迎回来」，为本页唯一主标题层级</li>
+              <li data-target="field-phone"><strong>手机号输入框</strong>：展示手机号输入框（应用 .form-input 风格）</li>
+              <li data-target="field-code"><strong>验证码输入框</strong>：展示验证码输入框 + 「获取验证码」按钮（应用 .login-code-btn 风格），点击后发送验证码</li>
+              <li data-target="btn-wechat"><strong>「微信一键登录」按钮</strong>：展示次按钮（应用 .btn-secondary 风格），作为主要登录方式的快捷入口</li>
+              <li><strong>协议勾选</strong>：展示「同意《用户协议》与《隐私政策》」勾选项</li>
+              <li data-target="btn-login"><strong>「登录并继续」按钮</strong>：展示主按钮（应用 .btn-primary 风格），登录成功后继续原购买流程并检测绑定/授权状态（决定触发 03/04）</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 03：授权与绑定弹窗（场景A） ============ -->
+<div id="section-03-bind-auth" class="proto-stack">
+  <div class="section-label">订单同步-03 授权与绑定弹窗（场景A）· 点击「立即购买」可重新弹出</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 授权与绑定弹窗（场景A）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">商品详情</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content" style="pointer-events:none;filter:brightness(0.97);">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="detail-screenshot" style="height:220px;margin-bottom:12px;">商品主图 375×220</div>
+              <div class="info-card mp-card">
+                <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                <div style="margin-top:6px;"><span class="mp-price">¥149</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+              <button class="btn btn-primary" id="btnBuy03" data-comp="btn-buy-03">立即购买</button>
+            </div>
+          </div>
+
+          <div class="mp-overlay" id="overlayA">
+            <div class="form-dialog" data-comp="dialog-bind-auth">
+              <button class="modal-close-x" data-toast="已关闭弹窗，继续购物（7 天内不再主动弹出）"><i data-lucide="x"></i></button>
+              <div class="form-dialog-title" data-comp="dlg-title-a">同步订单需要您的授权</div>
+              <div class="mp-dialog-note">
+                为了将您的订单信息在公域与私域之间同步，便于订单管理、售后服务及会员权益发放，我们需要：<br />
+                1. 将您当前公域账号与私域会员号绑定；<br />
+                2. 授权我们同步您的交易订单信息。
+              </div>
+              <label class="mp-check" data-comp="check-agree"><input type="checkbox" id="agreeA" /><span>我已阅读并同意《订单同步授权协议》</span></label>
+              <div style="margin-bottom:6px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》（演示）">查看授权协议</a></div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-comp="btn-skip-a" data-toast="已跳过，7 天内不再主动弹出（PRD 7.3）">暂不</button>
+                <button class="btn btn-primary" id="btnAgreeA" disabled data-comp="btn-agree-a">同意并绑定</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-03：授权与绑定弹窗（场景A）</div>
+            <ul>
+              <li><strong>触发条件</strong>：已登录私域会员，但当前公域ID未绑定任何私域会员号（PRD 6.2）</li>
+              <li><strong>遮罩</strong>：全屏半透明遮罩，底层商品页置灰不可操作</li>
+              <li data-target="dlg-title-a"><strong>弹窗标题</strong>：展示「同步订单需要您的授权」</li>
+              <li><strong>正文</strong>：说明两项内容（1. 绑定公域账号与私域会员号；2. 授权同步交易订单信息）</li>
+              <li data-target="check-agree"><strong>协议勾选</strong>：展示「我已阅读并同意《订单同步授权协议》」勾选项，默认不勾选（PRD 8 单独勾选）</li>
+              <li data-target="btn-agree-a"><strong>「同意并绑定」按钮</strong>：展示主按钮（应用 .btn-primary 风格），勾选协议前为禁用态，勾选后可用；点击完成绑定与授权并继续购买流程</li>
+              <li data-target="btn-skip-a"><strong>「暂不」按钮</strong>：展示次按钮，点击后关闭弹窗继续购物，7 天内不再主动弹出相同弹窗（弹窗疲劳控制，PRD 7.3）</li>
+              <li><strong>协议链接</strong>：提供「查看授权协议」链接，点击查看协议内容</li>
+              <li data-target="btn-buy-03"><strong>「立即购买」按钮</strong>：底层商品页点击后重新弹出授权弹窗，便于反复演示触发态（PRD 4.1 步骤4-5）</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 03-协议更新（场景B 变体） ============ -->
+<div id="section-03-protocol-update" class="proto-stack">
+  <div class="section-label">订单同步-03-协议更新</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 授权协议更新重授权</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">确认订单</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content" style="pointer-events:none;filter:brightness(0.97);">
+              <div class="sync-bar">
+                <span class="sb-icon"><i data-lucide="link-2"></i></span>
+                <div class="sb-main">
+                  <div class="sb-link">公域账号 B ↔ 会员 138****8888</div>
+                  <div class="sb-meta">同步状态：待重新授权</div>
+                </div>
+                <span class="badge badge-warn">待授权</span>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary">提交订单</button>
+            </div>
+          </div>
+
+          <div class="mp-overlay">
+            <div class="form-dialog" data-comp="dialog-protocol-update">
+              <button class="modal-close-x" data-toast="已关闭弹窗（演示）"><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">授权协议已更新，请重新授权</div>
+              <div class="mp-dialog-note">
+                您此前已授权订单同步，但《订单同步授权协议》已从 v1.0 更新至 v2.0。请阅读最新协议并重新确认授权。
+              </div>
+              <label class="mp-check"><input type="checkbox" id="agreeP" /><span>我已阅读并同意《订单同步授权协议》（v2.0）</span></label>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-toast="已暂缓，订单确认页持续展示待授权状态">暂不</button>
+                <button class="btn btn-primary" id="btnAgreeP" disabled data-comp="btn-agree-p">同意并重新授权</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-03-协议更新（场景B 变体）</div>
+            <ul>
+              <li><strong>触发条件</strong>：已绑定且授权状态正常，但授权协议版本更新（PRD 6.2）</li>
+              <li><strong>结构与交互</strong>：遮罩、弹窗结构、勾选后主按钮可用、按钮层级同「订单同步-03」</li>
+              <li><strong>弹窗标题</strong>：展示「授权协议已更新，请重新授权」</li>
+              <li><strong>正文</strong>：说明协议从 v1.0 更新至 v2.0，需重新阅读并确认授权，文案强调协议更新</li>
+              <li data-target="btn-agree-p"><strong>「同意并重新授权」按钮</strong>：勾选新协议后可用，点击后恢复「已授权同步」状态</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 04：重新绑定确认弹窗（场景C） ============ -->
+<div id="section-04-rebind" class="proto-stack">
+  <div class="section-label">订单同步-04 重新绑定确认弹窗（场景C）</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 重新绑定确认弹窗（场景C）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">确认订单</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content" style="pointer-events:none;filter:brightness(0.97);">
+              <div class="sync-bar">
+                <span class="sb-icon"><i data-lucide="link-2"></i></span>
+                <div class="sb-main">
+                  <div class="sb-link">公域账号 B ↔ 会员 138****8888</div>
+                  <div class="sb-meta">同步目标待确认</div>
+                </div>
+                <span class="badge badge-warn">待确认</span>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary">提交订单</button>
+            </div>
+          </div>
+
+          <div class="mp-overlay">
+            <div class="form-dialog" data-comp="dialog-rebind">
+              <button class="modal-close-x" data-toast="已关闭弹窗（演示）"><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">检测到当前公域账号与已绑定账号不一致</div>
+              <div class="mp-compare" data-comp="compare-accounts">
+                <div class="cmp-row"><span class="cmp-label">您当前登录的公域账号</span><span class="cmp-value">B</span></div>
+                <div class="cmp-row"><span class="cmp-label">已绑定的公域账号</span><span class="cmp-value">A</span></div>
+              </div>
+              <div class="mp-dialog-note">更新后，后续订单将同步至账号 B。</div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-comp="btn-keep-a" data-toast="保持原绑定：当前订单仍将同步至账号 A">保持原绑定</button>
+                <button class="btn btn-primary" data-comp="btn-rebind-b" data-toast="已更新绑定为公域账号 B，订单确认页显示已开启">确认重新绑定</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-04：重新绑定确认弹窗（场景C）</div>
+            <ul>
+              <li><strong>触发条件</strong>：已绑定但当前公域ID与已绑定ID不一致（如已绑定 A，当前为 B，PRD 5.2 场景C）</li>
+              <li><strong>弹窗标题</strong>：展示「检测到当前公域账号与已绑定账号不一致」</li>
+              <li data-target="compare-accounts"><strong>账号对照</strong>：展示当前登录公域账号 B 与已绑定公域账号 A，数据以等宽字体呈现（应用 .mp-compare 风格）</li>
+              <li><strong>更新说明</strong>：展示「更新后，后续订单将同步至账号 B」</li>
+              <li data-target="btn-keep-a"><strong>「保持原绑定」按钮</strong>：展示次按钮，点击后绑定不变，提示「当前订单仍将同步至原绑定账号 A」，订单确认页显著提示同步目标账号</li>
+              <li data-target="btn-rebind-b"><strong>「确认重新绑定」按钮</strong>：展示主按钮（应用 .btn-primary 风格），点击后更新绑定为当前账号 B，订单同步至 B</li>
+              <li><strong>高风险提示</strong>：重新绑定属高风险操作，使用警示色并需二次确认（PRD 8）</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 05：订单确认页 · 已开启 ============ -->
+<div id="section-05-confirm-on" class="proto-stack">
+  <div class="section-label">订单同步-05 订单确认页 · 已开启</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 订单确认（已开启）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back" data-toast="已返回商品详情（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">确认订单</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="sync-bar" data-comp="sync-bar-on">
+                <span class="sb-icon"><i data-lucide="shield-check"></i></span>
+                <div class="sb-main">
+                  <div class="sb-link">公域账号 B ↔ 会员 138****8888</div>
+                  <div class="sb-meta">授权协议 v2.0 · 2026-08-01 同意</div>
+                </div>
+                <span class="badge badge-success" data-comp="badge-on">已授权同步</span>
+              </div>
+              <div style="text-align:right;margin:-4px 0 12px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-comp="link-manage" data-goto="#section-07-manage">管理 ›</a></div>
+              <div class="mp-section-title">商品清单</div>
+              <div class="info-card mp-card" data-comp="goods-list">
+                <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
+                <div class="mp-row"><span class="r-label">帆布托特包 米白</span><span class="r-value">×1 ¥129</span></div>
+              </div>
+              <div class="mp-section-title">金额明细</div>
+              <div class="info-card mp-card" data-comp="amount-detail">
+                <div class="mp-row"><span class="r-label">商品小计</span><span class="r-value">¥278</span></div>
+                <div class="mp-row"><span class="r-label">运费</span><span class="r-value">¥0</span></div>
+                <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥278</span></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">订单备注</label>
+                <input class="form-input" placeholder="选填，给商家留言" />
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary" data-comp="btn-submit-on" data-toast="订单已提交，支付后自动同步至公域账号 B">提交订单</button>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-05：订单确认页 · 已开启</div>
+            <ul>
+              <li><strong>触发条件</strong>：已绑定且当前公域ID一致、已授权（PRD 6.2），不主动弹窗</li>
+              <li><strong>顶栏</strong>：展示「返回 / 确认订单」</li>
+              <li data-target="sync-bar-on"><strong>同步状态栏</strong>（Signature）：展示「公域账号 B ↔ 会员 138****8888」+ 授权协议版本信息，为订单同步状态常驻模块（PRD 5.3）</li>
+              <li data-target="badge-on"><strong>状态徽标</strong>：展示「已授权同步」徽标（应用 .badge-success 风格）</li>
+              <li data-target="link-manage"><strong>「管理」链接</strong>：点击进入授权与绑定管理页（PRD 5.3 常驻快捷操作）</li>
+              <li data-target="goods-list"><strong>商品清单</strong>：展示 2 件商品（纯棉短袖 T 恤 ×1 ¥149 / 帆布托特包 ×1 ¥129）</li>
+              <li data-target="amount-detail"><strong>金额明细</strong>：展示商品小计 ¥278、运费 ¥0、合计 ¥278</li>
+              <li><strong>订单备注</strong>：展示选填备注输入框</li>
+              <li data-target="btn-submit-on"><strong>「提交订单」按钮</strong>：展示主按钮（应用 .btn-primary 风格），已开启状态下提交无额外提示，支付成功后自动同步至公域</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 05-优惠券：订单确认页 · 优惠券使用校验 ============ -->
+<div id="section-05-coupon" class="proto-stack">
+  <div class="section-label">订单同步-05-优惠券 优惠券使用校验</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 订单确认（优惠券使用校验）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">确认订单</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="sync-bar" data-comp="sync-bar-coupon">
+                <span class="sb-icon"><i data-lucide="shield-check"></i></span>
+                <div class="sb-main">
+                  <div class="sb-link">公域账号 B ↔ 会员 138****8888</div>
+                  <div class="sb-meta">授权协议 v2.0 · 2026-08-01 同意</div>
+                </div>
+                <span class="badge badge-success" data-comp="badge-coupon-on">已授权同步</span>
+              </div>
+              <div class="mp-section-title">优惠券</div>
+              <div class="mp-card" style="padding:12px 14px;" data-comp="coupon-private">
+                <label style="display:flex;align-items:center;gap:8px;">
+                  <input type="radio" name="coupon" style="accent-color:var(--primary);width:16px;height:16px;" data-toast="已使用「满99减10」" />
+                  <span style="font-size:13px;font-weight:500;">会员专享券 · 满99减10</span>
+                  <span class="badge badge-default" style="margin-left:2px;">私域券</span>
+                </label>
+                <div class="coupon-reason" style="font-size:12px;color:var(--text-3);margin-top:6px;">不校验公域授权与绑定，直接可用（PRD 5.4）</div>
+              </div>
+              <div class="mp-card" style="padding:12px 14px;" data-comp="coupon-auth">
+                <label style="display:flex;align-items:center;gap:8px;">
+                  <input type="radio" name="coupon" id="couponAuthRadio" disabled style="accent-color:var(--primary);width:16px;height:16px;" />
+                  <span style="font-size:13px;font-weight:500;">直播专享券 · 满199减30</span>
+                  <span class="badge badge-warn" style="margin-left:2px;">公域券</span>
+                </label>
+                <div class="coupon-reason" id="couponAuthReason" style="font-size:12px;color:var(--text-3);margin-top:6px;">需要授权订单同步后使用，<a href="#" data-open="couponAuthOverlay" style="color:var(--primary);text-decoration:none;">去授权</a></div>
+              </div>
+              <div class="mp-card" style="padding:12px 14px;" data-comp="coupon-bind">
+                <label style="display:flex;align-items:center;gap:8px;">
+                  <input type="radio" name="coupon" id="couponBindRadio" disabled style="accent-color:var(--primary);width:16px;height:16px;" />
+                  <span style="font-size:13px;font-weight:500;">直播间新人券 · 满50减5</span>
+                  <span class="badge badge-warn" style="margin-left:2px;">公域券</span>
+                </label>
+                <div class="coupon-reason" id="couponBindReason" style="font-size:12px;color:var(--text-3);margin-top:6px;">需要绑定当前公域账号后使用，<a href="#" data-open="couponBindOverlay" style="color:var(--primary);text-decoration:none;">去绑定</a></div>
+              </div>
+              <div class="mp-section-title">金额明细</div>
+              <div class="mp-card">
+                <div class="mp-row"><span class="r-label">商品小计</span><span class="r-value">¥278</span></div>
+                <div class="mp-row"><span class="r-label">运费</span><span class="r-value">¥0</span></div>
+                <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥278</span></div>
+              </div>
+              <div class="mp-dialog-sub">不愿授权绑定时，可不使用优惠券直接提交订单（走「订单同步-06」同步状态确认）</div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary" data-toast="订单已提交，支付后自动同步至公域账号 B">提交订单</button>
+            </div>
+          </div>
+
+          <div class="mp-overlay" id="couponAuthOverlay" style="display:none;">
+            <div class="form-dialog" data-comp="dialog-coupon-auth">
+              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">使用公域优惠券需要授权</div>
+              <div class="mp-dialog-note">使用公域优惠券需已授权订单同步并完成绑定。授权后该优惠券即可正常使用，本单不强制使用优惠券。</div>
+              <label class="mp-check"><input type="checkbox" id="agreeC" /><span>我已阅读并同意《订单同步授权协议》</span></label>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-close data-toast="暂不使用该优惠券，可继续提交订单">暂不</button>
+                <button class="btn btn-primary" id="btnAgreeC" disabled>同意并绑定</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mp-overlay" id="couponBindOverlay" style="display:none;">
+            <div class="form-dialog" data-comp="dialog-coupon-bind">
+              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">检测到当前公域账号与已绑定账号不一致</div>
+              <div class="mp-compare" style="margin-bottom:12px;">
+                <div class="cmp-row"><span class="cmp-label">您当前登录的公域账号</span><span class="cmp-value">B</span></div>
+                <div class="cmp-row"><span class="cmp-label">已绑定的公域账号</span><span class="cmp-value">A</span></div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-close data-toast="保持原绑定：该公域券仍不可用">保持原绑定</button>
+                <button class="btn btn-primary" id="btnRebindC">确认重新绑定</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-05-优惠券：优惠券使用校验</div>
+            <ul>
+              <li><strong>校验规则</strong>：选择公域优惠券时须满足 已授权 / 已绑定 / 当前公域ID与绑定ID一致 / 协议版本最新，任一不满足则不可选（PRD 6.4）</li>
+              <li data-target="coupon-private"><strong>私域优惠券</strong>：展示「会员专享券 · 满99减10」（应用 .badge-default 标识），不校验公域授权与绑定，直接可用（PRD 5.4）</li>
+              <li data-target="coupon-auth"><strong>公域券 · 未授权</strong>：置灰不可选，展示原因「需要授权订单同步后使用」+「去授权」入口</li>
+              <li data-target="coupon-bind"><strong>公域券 · 未绑定/ID不一致</strong>：置灰不可选，展示原因「需要绑定当前公域账号后使用」+「去绑定」入口</li>
+              <li><strong>「去授权」交互</strong>：弹出场景A授权弹窗，完成后返回订单确认页，该券恢复可选（PRD 5.4-5）</li>
+              <li><strong>「去绑定」交互</strong>：弹出场景C重绑弹窗，完成后返回订单确认页，该券恢复可选（PRD 5.4-5）</li>
+              <li><strong>不使用券的兜底</strong>：不愿授权绑定时可不选优惠券直接提交订单，需走「订单同步-06」的同步状态确认（PRD 5.4-6）</li>
+              <li><strong>协议版本过期</strong>：授权协议非最新时优惠券同样不可用，需先完成重新授权</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 06：订单确认页 · 未开启（含轻量确认弹窗） ============ -->
+<div id="section-06-confirm-off" class="proto-stack">
+  <div class="section-label">订单同步-06 订单确认页 · 未开启</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 订单确认（未开启）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back" data-toast="已返回商品详情（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">确认订单</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="sync-bar" data-comp="sync-bar-off">
+                <span class="sb-icon"><i data-lucide="alert-triangle"></i></span>
+                <div class="sb-main">
+                  <div class="sb-link">同步目标：未绑定 / 未授权</div>
+                  <div class="sb-meta">当前订单将不会同步至公域</div>
+                </div>
+                <span class="badge badge-warn" data-comp="badge-off">未开启</span>
+              </div>
+              <div class="info-card mp-card" style="display:flex;gap:8px;align-items:center;">
+                <button class="btn btn-primary" style="flex:1;" data-comp="btn-auth-now" data-goto="#section-03-bind-auth">立即授权并绑定</button>
+                <a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;white-space:nowrap;" data-toast="已打开《订单同步授权协议》（演示）">查看授权协议</a>
+              </div>
+              <div class="mp-section-title">商品清单</div>
+              <div class="info-card mp-card">
+                <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
+                <div class="mp-row"><span class="r-label">帆布托特包 米白</span><span class="r-value">×1 ¥129</span></div>
+              </div>
+              <div class="mp-section-title">金额明细</div>
+              <div class="info-card mp-card">
+                <div class="mp-row"><span class="r-label">商品小计</span><span class="r-value">¥278</span></div>
+                <div class="mp-row"><span class="r-label">运费</span><span class="r-value">¥0</span></div>
+                <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥278</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary" id="btnSubmitOff" data-comp="btn-submit-off">提交订单</button>
+            </div>
+          </div>
+
+          <div class="mp-overlay" id="overlayLight" style="display:none;">
+            <div class="form-dialog" data-comp="dialog-light-confirm">
+              <button class="modal-close-x" data-close data-toast="已返回订单确认页（演示）"><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">确认继续提交？</div>
+              <div class="mp-dialog-note">当前订单将不会同步至公域，可能影响后续售后或会员权益。是否继续提交？</div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-close data-toast="请先在同步状态栏完成授权（演示）">返回授权</button>
+                <button class="btn btn-primary" data-close data-toast="订单已提交，本单不会同步至公域（演示）">继续提交</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-06：订单确认页 · 未开启</div>
+            <ul>
+              <li><strong>触发条件</strong>：用户选择「暂不」或未授权未绑定（PRD 6.2），订单同步未开启</li>
+              <li><strong>外壳结构</strong>：同步状态栏、商品清单、金额明细同「订单同步-05」</li>
+              <li data-target="sync-bar-off"><strong>同步状态栏差异</strong>：展示「同步目标：未绑定 / 未授权」，提示「当前订单将不会同步至公域」</li>
+              <li data-target="badge-off"><strong>状态徽标差异</strong>：展示「未开启」徽标（应用 .badge-warn 风格）</li>
+              <li data-target="btn-auth-now"><strong>「立即授权并绑定」按钮</strong>：展示主按钮，点击触发「订单同步-03」授权流程；同时提供「查看授权协议」链接</li>
+              <li data-target="btn-submit-off"><strong>「提交订单」按钮</strong>：同步条件不满足时点击弹出轻量确认弹窗（PRD 5.3），不强制阻断</li>
+              <li data-target="dialog-light-confirm"><strong>轻量确认弹窗</strong>：展示「当前订单将不会同步至公域，可能影响后续售后或会员权益。是否继续提交？」</li>
+              <li><strong>「返回授权」按钮</strong>：展示次按钮，关闭弹窗回到授权入口</li>
+              <li><strong>「继续提交」按钮</strong>：展示主按钮，订单正常提交，本单不同步</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 06-边界：未检测到公域环境 ============ -->
+<div id="section-06-no-public" class="proto-stack">
+  <div class="section-label">订单同步-06-边界 未检测到公域环境</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 订单确认（未检测公域）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">确认订单</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="sync-bar" data-comp="sync-bar-nopublic">
+                <span class="sb-icon"><i data-lucide="smartphone"></i></span>
+                <div class="sb-main">
+                  <div class="sb-link">未检测到公域环境</div>
+                  <div class="sb-meta">订单将不同步；可手动进入会员中心绑定</div>
+                </div>
+                <span class="badge badge-default" data-comp="badge-nopublic">不同步</span>
+              </div>
+              <div class="info-card mp-card" style="display:flex;gap:8px;align-items:center;">
+                <button class="btn btn-secondary" style="flex:1;" data-comp="btn-manual-bind" data-goto="#section-07-manage">手动绑定</button>
+                <a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;white-space:nowrap;" data-toast="已打开《订单同步授权协议》（演示）">查看授权协议</a>
+              </div>
+              <div class="mp-section-title">商品清单</div>
+              <div class="info-card mp-card">
+                <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
+              </div>
+              <div class="mp-section-title">金额明细</div>
+              <div class="info-card mp-card">
+                <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥149</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary" data-toast="订单已提交（本单不同步，演示）">提交订单</button>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-06-边界：未检测到公域环境</div>
+            <ul>
+              <li><strong>触发条件</strong>：用户直接打开私域小程序而非从公域进入，无法获取公域ID（PRD 7.1）</li>
+              <li><strong>外壳结构</strong>：订单确认页结构同「订单同步-05」</li>
+              <li data-target="sync-bar-nopublic"><strong>同步状态栏差异</strong>：展示「未检测到公域环境」，提示「订单将不同步」，不主动弹窗</li>
+              <li data-target="badge-nopublic"><strong>状态徽标差异</strong>：展示「不同步」徽标（应用 .badge-default 风格）</li>
+              <li data-target="btn-manual-bind"><strong>「手动绑定」按钮</strong>：点击前往授权与绑定管理页手动绑定（PRD 7.1）</li>
+              <li><strong>公域ID安全性</strong>：公域ID仅通过官方跳转参数 / 平台开放接口 / 安全签名获取，无法验证合法性视为未获取（PRD 7.2）</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 07：授权与绑定管理页 ============ -->
+<div id="section-07-manage" class="proto-stack">
+  <div class="section-label">订单同步-07 授权与绑定管理页</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 授权与绑定管理</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back" data-toast="已返回订单确认页（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">授权与绑定</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="info-card mp-card" style="display:flex;align-items:center;gap:10px;" data-comp="profile-header">
+                <span class="win-avatar" style="width:40px;height:40px;font-size:16px;">会</span>
+                <div>
+                  <div style="font-weight:600;">会员 138****8888</div>
+                  <div style="font-size:12px;color:var(--text-3);">私域会员号：M202608010001</div>
+                </div>
+              </div>
+              <div class="sync-bar" data-comp="bind-card">
+                <span class="sb-icon"><i data-lucide="link-2"></i></span>
+                <div class="sb-main">
+                  <div class="sb-link">当前绑定：公域账号 A</div>
+                  <div class="sb-meta">授权协议 v2.0 · 2026-08-01 同意</div>
+                </div>
+                <span class="badge badge-success" data-comp="badge-manage-on">已授权同步</span>
+              </div>
+              <div class="mp-section-title">管理</div>
+              <div class="info-card mp-card" style="padding:4px 14px;" data-comp="menu-list">
+                <div class="mp-menu-item">
+                  <span class="mi-left"><i data-lucide="shield-check"></i>订单同步授权</span>
+                  <span class="toggle-switch"><input type="checkbox" id="authToggle" checked /><span class="toggle-slider"></span></span>
+                </div>
+                <div class="mp-menu-item" data-toast="已打开《订单同步授权协议》v2.0（演示）">
+                  <span class="mi-left"><i data-lucide="file-text"></i>授权协议</span>
+                  <span class="mi-right">v2.0<i data-lucide="chevron-right"></i></span>
+                </div>
+                <div class="mp-menu-item" data-goto="#section-04-rebind">
+                  <span class="mi-left"><i data-lucide="refresh-cw"></i>重新绑定</span>
+                  <span class="mi-right"><i data-lucide="chevron-right"></i></span>
+                </div>
+                <div class="mp-menu-item" data-goto="#section-07-unbind">
+                  <span class="mi-left"><i data-lucide="unlink"></i>解绑</span>
+                  <span class="mi-right danger">需二次确认<i data-lucide="chevron-right"></i></span>
+                </div>
+              </div>
+              <div class="info-card mp-card" style="background:var(--muted);">
+                <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">撤回后，新订单不再同步至公域，历史已同步订单不受影响；已领取未使用的公域优惠券将标记为不可用（PRD 5.5 / 7.6）</div>
+                <button class="btn btn-danger" style="width:100%;" data-comp="btn-revoke" data-toast="已撤回绑定与授权：新订单不再同步，未使用的公域券将失效（演示）">撤回绑定与授权</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-07：授权与绑定管理页</div>
+            <ul>
+              <li><strong>入口</strong>：订单确认页「管理」链接或会员中心进入（PRD 5.3 / 5.4）</li>
+              <li data-target="profile-header"><strong>会员信息</strong>：展示会员头像、会员号 138****8888 与私域会员号</li>
+              <li data-target="bind-card"><strong>当前绑定卡片</strong>：展示当前绑定公域账号 A、授权协议 v2.0 与同意时间</li>
+              <li data-target="badge-manage-on"><strong>状态徽标</strong>：展示「已授权同步」徽标（应用 .badge-success 风格）</li>
+              <li data-target="menu-list"><strong>订单同步授权开关</strong>：展示开关（应用 .toggle-switch 风格），关闭即撤回授权，后续订单不再同步、历史订单不受影响</li>
+              <li><strong>「授权协议」菜单项</strong>：点击查看授权协议内容（v2.0）</li>
+              <li><strong>「重新绑定」菜单项</strong>：点击触发「订单同步-04」场景C流程</li>
+              <li><strong>「解绑」菜单项</strong>：展示危险色箭头提示，点击需二次确认（见「订单同步-07-解绑」）</li>
+              <li data-target="btn-revoke"><strong>「撤回绑定与授权」按钮</strong>：展示危险按钮（应用 .btn-danger 风格），撤回后新订单不再同步</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 07-解绑：解绑二次确认 ============ -->
+<div id="section-07-unbind" class="proto-stack">
+  <div class="section-label">订单同步-07-解绑 解绑二次确认</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 解绑二次确认</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">授权与绑定</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content" style="pointer-events:none;filter:brightness(0.97);">
+              <div class="info-card mp-card" style="display:flex;align-items:center;gap:10px;">
+                <span class="win-avatar" style="width:40px;height:40px;font-size:16px;">会</span>
+                <div>
+                  <div style="font-weight:600;">会员 138****8888</div>
+                  <div style="font-size:12px;color:var(--text-3);">私域会员号：M202608010001</div>
+                </div>
+              </div>
+              <div class="sync-bar">
+                <span class="sb-icon"><i data-lucide="link-2"></i></span>
+                <div class="sb-main">
+                  <div class="sb-link">当前绑定：公域账号 A</div>
+                  <div class="sb-meta">授权协议 v2.0 · 2026-08-01 同意</div>
+                </div>
+                <span class="badge badge-success">已授权同步</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mp-overlay">
+            <div class="form-dialog" data-comp="dialog-unbind">
+              <button class="modal-close-x" data-toast="已取消解绑（演示）"><i data-lucide="x"></i></button>
+              <div class="form-dialog-title" style="color:var(--destructive);">确认解绑？</div>
+              <div class="mp-dialog-note">解绑后，公域账号 A 与当前会员号的绑定关系将被解除，订单不再同步至公域，历史订单不受影响；解绑后公域优惠券可能无法使用（PRD 5.5）。</div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-toast="已取消解绑（演示）">取消</button>
+                <button class="btn btn-danger" data-comp="btn-confirm-unbind" data-toast="已解绑：绑定关系已解除（演示）">确认解绑</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-07-解绑：解绑二次确认</div>
+            <ul>
+              <li><strong>触发条件</strong>：管理页「解绑」菜单项点击后（PRD 5.4 解绑需二次确认）</li>
+              <li><strong>底层</strong>：授权与绑定管理页 dimmed 态，遮罩同「订单同步-03」</li>
+              <li><strong>弹窗标题</strong>：展示「确认解绑？」，使用警示色（应用 .btn-danger 同级视觉）</li>
+              <li><strong>正文</strong>：说明解绑后绑定关系解除、订单不再同步、历史订单不受影响，并提示公域优惠券可能无法使用（PRD 5.5）</li>
+              <li><strong>「取消」按钮</strong>：展示次按钮，关闭弹窗保留原绑定</li>
+              <li data-target="btn-confirm-unbind"><strong>「确认解绑」按钮</strong>：展示危险按钮（应用 .btn-danger 风格），确认后完成解绑</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 08：订单详情页 · 同步失败 ============ -->
+<div id="section-08-order-fail" class="proto-stack">
+  <div class="section-label">订单同步-08 订单详情页 · 同步失败</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 订单详情（同步失败）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back" data-toast="已返回订单列表（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">订单详情</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="info-card mp-card" data-comp="order-summary">
+                <div class="mp-row"><span class="r-label">订单号</span><span class="r-value" style="font-family:var(--font-mono);font-size:12px;">202608310012345</span></div>
+                <div class="mp-row"><span class="r-label">实付金额</span><span class="r-value" style="color:var(--danger);">¥278</span></div>
+                <div class="mp-row"><span class="r-label">下单时间</span><span class="r-value">2026-08-31 12:31</span></div>
+              </div>
+              <div class="mp-section-title">同步状态</div>
+              <div class="info-card mp-card" data-comp="sync-status-card">
+                <div class="mp-row">
+                  <span class="r-label"><i data-lucide="refresh-cw" class="info-icon"></i>订单同步</span>
+                  <span class="badge badge-error" data-comp="badge-sync-fail">同步失败</span>
+                </div>
+                <div class="mp-dialog-sub" style="margin-top:8px;">支付成功，异步同步未完成，系统将自动重试（PRD 7.4）；同步中展示「同步中」状态，成功后展示「已同步」</div>
+              </div>
+              <div class="info-card mp-card" style="display:flex;gap:8px;align-items:center;">
+                <button class="btn btn-primary" style="flex:1;" data-comp="btn-retry" data-toast="同步重试已触发（演示）">手动同步</button>
+                <a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;white-space:nowrap;" data-toast="已打开客服会话（演示）">联系客服</a>
+              </div>
+              <div class="mp-dialog-sub">若因绑定错误同步至错误账号，可通过客服发起纠错流程（PRD 7.4）</div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-08：订单详情页 · 同步失败</div>
+            <ul>
+              <li><strong>触发条件</strong>：支付成功但订单同步失败（PRD 7.4）</li>
+              <li data-target="order-summary"><strong>订单摘要</strong>：展示订单号（等宽字体）、实付金额 ¥278、下单时间</li>
+              <li data-target="sync-status-card"><strong>同步状态模块</strong>：展示「订单同步」状态行与状态徽标</li>
+              <li data-target="badge-sync-fail"><strong>状态徽标</strong>：失败时展示「同步失败」（应用 .badge-error 风格）；同步中展示「同步中」脉冲点；成功后展示「已同步」（应用 .badge-success 风格）</li>
+              <li><strong>失败处理</strong>：展示自动重试说明，失败原因不阻断其他操作（PRD 7.4）</li>
+              <li data-target="btn-retry"><strong>「手动同步」按钮</strong>：展示主按钮，点击触发同步重试</li>
+              <li><strong>「联系客服」链接</strong>：因绑定错误同步至错误账号时，提供客服与纠错流程入口（PRD 7.4）</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 09：领券页（公域优惠券 · 已绑定已授权） ============ -->
+<div id="section-09-coupon-page" class="proto-stack">
+  <div class="section-label">订单同步-09 领券页（公域优惠券）</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 领券页（公域优惠券）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">领券中心</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-context" data-comp="ctx-coupon-public"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="mp-card" data-comp="coupon-card-public">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div>
+                    <div style="font-size:16px;font-weight:700;">直播专享券</div>
+                    <div style="font-size:12px;color:var(--text-3);margin-top:4px;">满199减30 · 领取后 7 天内有效</div>
+                  </div>
+                  <span class="badge badge-warn">公域券</span>
+                </div>
+              </div>
+              <div class="mp-banner success"><i data-lucide="circle-check"></i>已授权已绑定（公域账号 B ↔ 会员 138****8888），可直接领取（PRD 6.3）</div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary" data-comp="btn-claim" data-toast="领取成功，优惠券已发放至账户（演示）">立即领取</button>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-09：领券页（公域优惠券）</div>
+            <ul>
+              <li><strong>入口</strong>：公域直播间点击「领取优惠券」跳转私域领券页（PRD 4.2）</li>
+              <li data-target="ctx-coupon-public"><strong>公域来源条</strong>：展示「来自 视频号直播间 · 公域账号 B」，携带公域ID</li>
+              <li data-target="coupon-card-public"><strong>优惠券卡片</strong>：展示「直播专享券 · 满199减30」（应用 .badge-warn 标识公域券）与有效期</li>
+              <li><strong>领券规则</strong>：已绑定且已授权、公域ID一致时直接领取，不弹窗（PRD 6.3）；否则弹对应场景A/C 弹窗（PRD 5.1）</li>
+              <li data-target="btn-claim"><strong>「立即领取」按钮</strong>：展示主按钮（应用 .btn-primary 风格），点击后领取成功并发放至账户</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 09-A：领券 · 场景A 授权弹窗 ============ -->
+<div id="section-09-coupon-auth" class="proto-stack">
+  <div class="section-label">订单同步-09-A 领券 · 场景A 授权弹窗</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 领券（场景A 授权弹窗）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">领券中心</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content" style="pointer-events:none;filter:brightness(0.97);">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="mp-card">
+                <div style="font-size:16px;font-weight:700;">直播专享券</div>
+                <div style="font-size:12px;color:var(--text-3);margin-top:4px;">满199减30 · 领取后 7 天内有效</div>
+              </div>
+              <div class="mp-banner" id="couponBannerA" style="display:none;"></div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary">立即领取</button>
+            </div>
+          </div>
+
+          <div class="mp-overlay" id="overlayCouponA">
+            <div class="form-dialog" data-comp="dialog-coupon-claim-a">
+              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">领取优惠券需要授权</div>
+              <div class="mp-dialog-note">为了将优惠券准确发放至您的账号，我们需要：<br />1. 将您当前公域账号与私域会员号绑定；<br />2. 授权我们同步您的交易订单信息。</div>
+              <label class="mp-check"><input type="checkbox" id="agreeA2" /><span>我已阅读并同意《订单同步授权协议》</span></label>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-cancel-a>取消领取</button>
+                <button class="btn btn-primary" id="btnAgreeA2" disabled>同意并绑定</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-09-A：领券 · 场景A 授权弹窗</div>
+            <ul>
+              <li><strong>触发条件</strong>：已登录但未绑定或未授权时进入领券流程（PRD 6.3），领券场景每次领券均检测、无疲劳控制（PRD 7.3）</li>
+              <li><strong>弹窗标题</strong>：领券场景展示「领取优惠券需要授权」（PRD 5.2 场景A 领券文案）</li>
+              <li><strong>正文</strong>：说明绑定公域账号与会员号、授权同步交易订单信息、优惠券发放至账号</li>
+              <li><strong>协议勾选</strong>：默认不勾选，勾选后「同意并绑定」主按钮可用（PRD 8）</li>
+              <li><strong>「同意并绑定」按钮</strong>：展示主按钮，点击后完成绑定与授权，优惠券发放至账户，领取成功</li>
+              <li><strong>「取消领取」按钮</strong>：展示次按钮，点击后领取失败，提示「未授权绑定，无法领取公域优惠券」（PRD 4.2-6 / 5.2）</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 09-C：领券 · 场景C 重绑弹窗 ============ -->
+<div id="section-09-coupon-rebind" class="proto-stack">
+  <div class="section-label">订单同步-09-C 领券 · 场景C 重绑弹窗</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 领券（场景C 重绑弹窗）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">领券中心</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content" style="pointer-events:none;filter:brightness(0.97);">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="mp-card">
+                <div style="font-size:16px;font-weight:700;">直播专享券</div>
+                <div style="font-size:12px;color:var(--text-3);margin-top:4px;">满199减30 · 领取后 7 天内有效</div>
+              </div>
+              <div class="mp-banner" id="couponBannerC" style="display:none;"></div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-primary">立即领取</button>
+            </div>
+          </div>
+
+          <div class="mp-overlay" id="overlayCouponC">
+            <div class="form-dialog" data-comp="dialog-coupon-claim-c">
+              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+              <div id="rebindMainC">
+                <div class="form-dialog-title">检测到当前公域账号与已绑定账号不一致</div>
+                <div class="mp-compare" style="margin-bottom:12px;">
+                  <div class="cmp-row"><span class="cmp-label">您当前登录的公域账号</span><span class="cmp-value">B</span></div>
+                  <div class="cmp-row"><span class="cmp-label">已绑定的公域账号</span><span class="cmp-value">A</span></div>
+                </div>
+                <div class="mp-dialog-note">更新后，优惠券将发放至账号 B。</div>
+                <div class="form-actions">
+                  <button class="btn btn-secondary" data-cancel-c>取消领取</button>
+                  <button class="btn btn-secondary" id="btnKeepA2">保持原绑定</button>
+                  <button class="btn btn-primary" id="btnRebindC2">确认重新绑定</button>
+                </div>
+              </div>
+              <div id="rebindSubC" style="display:none;">
+                <div class="form-dialog-title">保持原绑定 · 二次确认</div>
+                <div class="mp-dialog-note">优惠券将发放至原绑定账号 A。若您希望发放至当前账号 B，请选择重新绑定。</div>
+                <div class="form-actions">
+                  <button class="btn btn-secondary" data-cancel-c>取消领取</button>
+                  <button class="btn btn-primary" id="btnConfirmA2">确认发放至账号 A</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-09-C：领券 · 场景C 重绑弹窗</div>
+            <ul>
+              <li><strong>触发条件</strong>：领券时已绑定但当前公域ID与绑定ID不一致（PRD 6.3）</li>
+              <li><strong>弹窗标题</strong>：展示「检测到当前公域账号与已绑定账号不一致」</li>
+              <li><strong>账号对照</strong>：展示当前登录 B 与已绑定 A（等宽字体数据样式）</li>
+              <li><strong>「确认重新绑定」按钮</strong>：展示主按钮，点击后更新绑定为 B，优惠券发放至账号 B</li>
+              <li><strong>「保持原绑定」按钮</strong>：点击后进入二次确认，提示优惠券将发放至原绑定账号 A（PRD 5.2 场景C 领券分支）</li>
+              <li><strong>「取消领取」按钮</strong>：展示次按钮，点击后关闭弹窗，领取失败</li>
+              <li><strong>二次确认弹层</strong>：展示「确认发放至账号 A」，确认后优惠券发放至 A；不愿发放至 A 可选择取消领取</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 09-边界：领券 · 非公域环境 ============ -->
+<div id="section-09-coupon-boundary" class="proto-stack">
+  <div class="section-label">订单同步-09-边界 领券 · 非公域环境</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 领券（非公域环境）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">领券中心</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-banner warn" data-comp="banner-nopublic-coupon"><i data-lucide="alert-triangle"></i>请在公域渠道领取该优惠券（PRD 7.1）</div>
+              <div class="mp-card" data-comp="coupon-card-blocked">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div>
+                    <div style="font-size:16px;font-weight:700;">直播专享券</div>
+                    <div style="font-size:12px;color:var(--text-3);margin-top:4px;">满199减30 · 公域渠道限定</div>
+                  </div>
+                  <span class="badge badge-default">不可领取</span>
+                </div>
+              </div>
+              <div class="mp-dialog-sub">未检测到公域环境，公域优惠券不可领取；公域ID无法验证合法性时同样视为未获取（PRD 7.2）</div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary is-disabled" style="cursor:not-allowed;" disabled>立即领取</button>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-09-边界：领券 · 非公域环境</div>
+            <ul>
+              <li><strong>触发条件</strong>：直接从私域进入领券页，无法获取公域ID（PRD 7.1）</li>
+              <li data-target="banner-nopublic-coupon"><strong>提示条</strong>：展示「请在公域渠道领取该优惠券」，公域券不可领取</li>
+              <li data-target="coupon-card-blocked"><strong>优惠券卡片</strong>：展示「不可领取」徽标（应用 .badge-default 风格），领取按钮为禁用态</li>
+              <li><strong>公域ID安全性</strong>：公域ID仅通过官方跳转参数 / 平台开放接口 / 安全签名获取，无法验证合法性视为未获取（PRD 7.2）</li>
+              <li><strong>使用侧边界</strong>：已绑定但当前无法获取公域ID时，公域优惠券可能不可用，提示「无法验证公域环境，暂不能使用公域优惠券」（PRD 7.1）</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Section 09-我的券：撤回后公域券失效 ============ -->
+<div id="section-09-my-coupons" class="proto-stack">
+  <div class="section-label">订单同步-09-我的券 撤回后公域券失效</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">品牌私域小程序 — 我的优惠券（撤回后失效）</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="mp-page">
+            <div class="mp-topbar">
+              <button class="t-back"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">我的优惠券</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-card" data-comp="coupon-private-ok">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div>
+                    <div style="font-size:15px;font-weight:600;">会员专享券</div>
+                    <div style="font-size:12px;color:var(--text-3);margin-top:4px;">满99减10 · 2026-09-30 到期</div>
+                  </div>
+                  <span class="badge badge-success">可用</span>
+                </div>
+              </div>
+              <div class="mp-card" data-comp="coupon-public-invalid">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div>
+                    <div style="font-size:15px;font-weight:600;">直播专享券</div>
+                    <div style="font-size:12px;color:var(--text-3);margin-top:4px;">满199减30 · 公域券 · 未使用</div>
+                  </div>
+                  <span class="badge badge-error">不可用</span>
+                </div>
+                <div style="font-size:12px;color:var(--warning);margin-top:8px;">撤回订单同步授权后不可用，<a href="#" style="color:var(--primary);text-decoration:none;" data-goto="#section-07-manage">重新授权</a> 后未过期可恢复（PRD 7.6）</div>
+              </div>
+              <div class="mp-card" data-comp="coupon-used">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div>
+                    <div style="font-size:15px;font-weight:600;">直播间新人券</div>
+                    <div style="font-size:12px;color:var(--text-3);margin-top:4px;">满50减5 · 已于 2026-08-20 使用</div>
+                  </div>
+                  <span class="badge badge-default">已使用</span>
+                </div>
+              </div>
+              <div class="mp-dialog-sub">解绑或撤回授权后，已领取未使用的公域优惠券标记为「不可用」；重新绑定或授权后未过期券可恢复；已使用的券不受影响（PRD 7.6）</div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">订单同步-09-我的券：撤回后公域券失效</div>
+            <ul>
+              <li data-target="coupon-private-ok"><strong>私域券</strong>：展示「会员专享券 · 满99减10」，标记「可用」（应用 .badge-success 风格），不受授权绑定状态影响</li>
+              <li data-target="coupon-public-invalid"><strong>公域券 · 撤回后</strong>：展示「直播专享券 · 满199减30」标记「不可用」（应用 .badge-error 风格），说明原因并提供「重新授权」入口（PRD 7.6）</li>
+              <li data-target="coupon-used"><strong>已使用券</strong>：展示「直播间新人券」标记「已使用」，不受撤回影响（PRD 7.6）</li>
+              <li><strong>恢复规则</strong>：重新绑定或授权后，未过期的公域券恢复可用；解绑同样导致未使用公域券不可用并提示（PRD 5.5）</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* 页面交互（演示用，非业务逻辑） */
+  function showToast(frame, msg) {
+    var t = frame.querySelector('.mp-toast');
+    if (!t) { t = document.createElement('div'); t.className = 'mp-toast'; frame.appendChild(t); }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.classList.remove('show'); }, 2400);
+  }
+
+  (function init() {
+    if (window.lucide) lucide.createIcons();
+
+    /* 通用：data-toast → toast；data-goto → 滚动到目标 section */
+    document.querySelectorAll('[data-toast]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        var frame = el.closest('.phone-frame');
+        if (frame) showToast(frame, el.getAttribute('data-toast'));
+      });
+    });
+    document.querySelectorAll('[data-goto]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        var target = document.querySelector(el.getAttribute('data-goto'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* 场景A：勾选协议后「同意并绑定」可用；点击完成绑定并关闭弹窗 */
+    var agreeA = document.getElementById('agreeA');
+    var btnAgreeA = document.getElementById('btnAgreeA');
+    if (agreeA && btnAgreeA) {
+      var syncAgreeA = function () {
+        var on = agreeA.checked;
+        btnAgreeA.disabled = !on;
+        btnAgreeA.classList.toggle('is-disabled', !on);
+      };
+      agreeA.addEventListener('change', syncAgreeA);
+      btnAgreeA.addEventListener('click', function () {
+        var frame = btnAgreeA.closest('.phone-frame');
+        var overlay = frame.querySelector('#overlayA');
+        if (overlay) overlay.style.display = 'none';
+        showToast(frame, '绑定成功，订单同步已开启，继续购买流程');
+      });
+    }
+    var btnBuy03 = document.getElementById('btnBuy03');
+    if (btnBuy03) {
+      btnBuy03.addEventListener('click', function () {
+        var overlay = btnBuy03.closest('.phone-frame').querySelector('#overlayA');
+        if (overlay) overlay.style.display = 'flex';
+      });
+    }
+
+    /* 协议更新：勾选后「同意并重新授权」可用 */
+    var agreeP = document.getElementById('agreeP');
+    var btnAgreeP = document.getElementById('btnAgreeP');
+    if (agreeP && btnAgreeP) {
+      var syncAgreeP = function () {
+        var on = agreeP.checked;
+        btnAgreeP.disabled = !on;
+        btnAgreeP.classList.toggle('is-disabled', !on);
+      };
+      agreeP.addEventListener('change', syncAgreeP);
+    }
+
+    /* 订单确认·未开启：提交订单 → 轻量确认弹窗 */
+    var btnSubmitOff = document.getElementById('btnSubmitOff');
+    var overlayLight = document.getElementById('overlayLight');
+    if (btnSubmitOff && overlayLight) {
+      btnSubmitOff.addEventListener('click', function () { overlayLight.style.display = 'flex'; });
+      overlayLight.querySelectorAll('[data-close]').forEach(function (el) {
+        el.addEventListener('click', function () { overlayLight.style.display = 'none'; });
+      });
+    }
+
+    /* 管理页：订单同步授权开关 */
+    var authToggle = document.getElementById('authToggle');
+    if (authToggle) {
+      authToggle.addEventListener('change', function () {
+        var frame = authToggle.closest('.phone-frame');
+        if (authToggle.checked) showToast(frame, '订单同步授权已开启');
+        else showToast(frame, '已撤回订单同步授权：后续订单不再同步，未使用的公域券将失效');
+      });
+    }
+
+    /* 通用：data-open / data-close 弹层开关 */
+    document.querySelectorAll('[data-open]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        var overlay = document.getElementById(el.getAttribute('data-open'));
+        if (overlay) overlay.style.display = 'flex';
+      });
+    });
+    document.querySelectorAll('[data-close]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var overlay = el.closest('.mp-overlay');
+        if (overlay) overlay.style.display = 'none';
+      });
+    });
+
+    /* 订单确认·优惠券校验：去授权 → 授权后恢复可选 */
+    var agreeC = document.getElementById('agreeC');
+    var btnAgreeC = document.getElementById('btnAgreeC');
+    if (agreeC && btnAgreeC) {
+      var syncAgreeC = function () {
+        var on = agreeC.checked;
+        btnAgreeC.disabled = !on;
+        btnAgreeC.classList.toggle('is-disabled', !on);
+      };
+      agreeC.addEventListener('change', syncAgreeC);
+      btnAgreeC.addEventListener('click', function () {
+        var frame = btnAgreeC.closest('.phone-frame');
+        var overlay = frame.querySelector('#couponAuthOverlay');
+        var radio = frame.querySelector('#couponAuthRadio');
+        var reason = frame.querySelector('#couponAuthReason');
+        if (overlay) overlay.style.display = 'none';
+        if (radio) radio.disabled = false;
+        if (reason) reason.innerHTML = '已授权，可选择使用';
+        showToast(frame, '授权完成，公域优惠券已恢复可选');
+      });
+    }
+
+    /* 订单确认·优惠券校验：去绑定 → 重绑后恢复可选 */
+    var btnRebindC = document.getElementById('btnRebindC');
+    if (btnRebindC) {
+      btnRebindC.addEventListener('click', function () {
+        var frame = btnRebindC.closest('.phone-frame');
+        var overlay = frame.querySelector('#couponBindOverlay');
+        var radio = frame.querySelector('#couponBindRadio');
+        var reason = frame.querySelector('#couponBindReason');
+        if (overlay) overlay.style.display = 'none';
+        if (radio) radio.disabled = false;
+        if (reason) reason.innerHTML = '已绑定当前账号，可选择使用';
+        showToast(frame, '绑定已更新，公域优惠券已恢复可选');
+      });
+    }
+
+    /* 领券 · 场景A：勾选后主按钮可用；同意/取消 → 领取结果 */
+    function setBanner(id, msg, tone) {
+      var b = document.getElementById(id);
+      if (!b) return;
+      b.className = 'mp-banner ' + tone;
+      b.textContent = msg;
+      b.style.display = 'flex';
+    }
+    var agreeA2 = document.getElementById('agreeA2');
+    var btnAgreeA2 = document.getElementById('btnAgreeA2');
+    if (agreeA2 && btnAgreeA2) {
+      var syncAgreeA2 = function () {
+        var on = agreeA2.checked;
+        btnAgreeA2.disabled = !on;
+        btnAgreeA2.classList.toggle('is-disabled', !on);
+      };
+      agreeA2.addEventListener('change', syncAgreeA2);
+      btnAgreeA2.addEventListener('click', function () {
+        document.getElementById('overlayCouponA').style.display = 'none';
+        setBanner('couponBannerA', '领取成功：优惠券已发放至账户', 'success');
+      });
+    }
+    document.querySelectorAll('[data-cancel-a]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        document.getElementById('overlayCouponA').style.display = 'none';
+        setBanner('couponBannerA', '领取失败：未授权绑定，无法领取公域优惠券', 'error');
+      });
+    });
+
+    /* 领券 · 场景C：重绑 / 保持原绑定二次确认 / 取消 */
+    var btnRebindC2 = document.getElementById('btnRebindC2');
+    if (btnRebindC2) {
+      btnRebindC2.addEventListener('click', function () {
+        document.getElementById('overlayCouponC').style.display = 'none';
+        setBanner('couponBannerC', '领取成功：优惠券已发放至账号 B', 'success');
+      });
+    }
+    var btnKeepA2 = document.getElementById('btnKeepA2');
+    if (btnKeepA2) {
+      btnKeepA2.addEventListener('click', function () {
+        document.getElementById('rebindMainC').style.display = 'none';
+        document.getElementById('rebindSubC').style.display = 'block';
+      });
+    }
+    var btnConfirmA2 = document.getElementById('btnConfirmA2');
+    if (btnConfirmA2) {
+      btnConfirmA2.addEventListener('click', function () {
+        document.getElementById('overlayCouponC').style.display = 'none';
+        setBanner('couponBannerC', '领取成功：优惠券已发放至账号 A', 'success');
+      });
+    }
+    document.querySelectorAll('[data-cancel-c]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        document.getElementById('overlayCouponC').style.display = 'none';
+        setBanner('couponBannerC', '领取失败：已取消领取', 'error');
+      });
+    });
+
+    /* TOC 滚动高亮 */
+    var sectionMap = {
+      'section-01-product': '订单同步-01',
+      'section-02-login': '订单同步-02',
+      'section-03-bind-auth': '订单同步-03',
+      'section-03-protocol-update': '订单同步-03-协议更新',
+      'section-04-rebind': '订单同步-04',
+      'section-05-confirm-on': '订单同步-05',
+      'section-05-coupon': '订单同步-05-优惠券',
+      'section-06-confirm-off': '订单同步-06',
+      'section-06-no-public': '订单同步-06-边界',
+      'section-07-manage': '订单同步-07',
+      'section-07-unbind': '订单同步-07-解绑',
+      'section-08-order-fail': '订单同步-08',
+      'section-09-coupon-page': '订单同步-09',
+      'section-09-coupon-auth': '订单同步-09-A',
+      'section-09-coupon-rebind': '订单同步-09-C',
+      'section-09-coupon-boundary': '订单同步-09-边界',
+      'section-09-my-coupons': '订单同步-09-我的券'
+    };
+    var tocItems = document.querySelectorAll('.toc-item');
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (!ticking) {
+        requestAnimationFrame(function () {
+          var scrollPos = window.scrollY + 120;
+          var currentId = null;
+          var ids = Object.keys(sectionMap);
+          for (var i = ids.length - 1; i >= 0; i--) {
+            var el = document.getElementById(ids[i]);
+            if (el && el.offsetTop <= scrollPos) { currentId = ids[i]; break; }
+          }
+          tocItems.forEach(function (item) {
+            item.classList.remove('active');
+            if (item.getAttribute('href') === '#' + currentId) item.classList.add('active');
+          });
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    if (tocItems.length > 0) tocItems[0].classList.add('active');
+  })();
+</script>
+
+  </div><!-- end .sections-col -->
+</div><!-- end .proto-layout -->
+
+</body>
+</html>
