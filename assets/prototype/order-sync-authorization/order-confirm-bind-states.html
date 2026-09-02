@@ -1615,7 +1615,7 @@ li[data-target].is-highlight {
             </div>
             <div class="mp-bottom-bar">
               <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
-              <button class="btn btn-primary" data-next data-comp="buy-now">立即购买</button>
+              <button class="btn btn-primary" data-next data-next-popup="popup5" data-comp="buy-now">立即购买</button>
             </div>
           </div>
           <div class="mp-page" data-screen="order" style="display:none;">
@@ -1696,9 +1696,9 @@ li[data-target].is-highlight {
             <ul>
               <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，本状态在此呈现</li>
               <li><strong>用户状态</strong>：首次结算，从未授权也未绑定（PRD 6.2：未绑定/未授权）</li>
-              <li data-target="entry-s5"><strong>授权入口卡</strong>：在订单确认页主动展示「授权并绑定」入口（首次不自动弹窗，由用户点击触发）</li>
+              <li data-target="dialog-s5"><strong>授权弹窗（自动弹出）</strong>：点击「立即购买」进入订单确认页时自动弹出两步授权弹窗询问（同意授权 → 检测公域账号 B → 确认绑定），无需用户点击</li>
+              <li data-target="entry-s5"><strong>「授权并绑定」入口卡</strong>：自动弹窗关闭后保留，作为手动再次开启的入口（PRD 7.3 主动触发不受疲劳控制限制）</li>
               <li data-target="sync-s5"><strong>同步状态栏</strong>：绑定前展示「待绑定 / 未开启」</li>
-              <li data-target="btn-start-s5"><strong>「授权并绑定」按钮</strong>：点击弹出两步弹窗——同意授权 → 检测当前公域账号 B → 确认绑定</li>
               <li><strong>绑定完成后</strong>：状态栏更新为「已授权同步」，提交订单无额外提示，正常结算（PRD 5.2 场景A 两步链路）</li>
             </ul>
           </div>
@@ -1740,7 +1740,7 @@ li[data-target].is-highlight {
             </div>
             <div class="mp-bottom-bar">
               <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
-              <button class="btn btn-primary" data-next data-comp="buy-now">立即购买</button>
+              <button class="btn btn-primary" data-next data-next-popup="popup6" data-comp="buy-now">立即购买</button>
             </div>
           </div>
           <div class="mp-page" data-screen="order" style="display:none;">
@@ -1822,7 +1822,8 @@ li[data-target].is-highlight {
             <ul>
               <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，本状态在此呈现</li>
               <li><strong>用户状态</strong>：首次同意授权，系统检测到当前公域账号 B 已与另一个私域会员号（M202608010099）绑定</li>
-              <li data-target="entry-s6"><strong>授权入口卡</strong>：与状态-05 相同，点击触发两步弹窗</li>
+              <li data-target="dialog-s6"><strong>授权弹窗（自动弹出）</strong>：与状态-05 相同，进入订单确认页时自动弹出两步弹窗；同意授权后第二步展示冲突（非绑定确认）</li>
+              <li data-target="entry-s6"><strong>「授权并绑定」入口卡</strong>：自动弹窗关闭后保留，可手动重试</li>
               <li data-target="dialog-s6"><strong>冲突弹层</strong>：同意授权后第二步不进入绑定确认，而是展示冲突：该公域账号已被其他会员绑定（一对一绑定约束，PRD 7.5）</li>
               <li data-target="btn-cs-s6"><strong>「联系客服」按钮</strong>：提供客服与纠错流程入口（PRD 7.4 / 7.5）</li>
               <li><strong>「我知道了」按钮</strong>：关闭弹窗后订单页常驻提示「需先解绑或联系客服」，不自动重弹</li>
@@ -1903,6 +1904,16 @@ li[data-target].is-highlight {
         if (pop) {
           var o = document.getElementById(pop);
           if (o) o.style.display = 'flex';
+          /* 两步弹窗：进入订单页自动弹出时复位到第一步「同意授权」 */
+          var stepReset = { popup5: ['auth5', 'agree5', 'btnAgree5'], popup6: ['auth6', 'agree6', 'btnAgree6'] };
+          var cfg = stepReset[pop];
+          if (cfg && o) {
+            showStep(o, cfg[0]);
+            var chk = document.getElementById(cfg[1]);
+            var btn = document.getElementById(cfg[2]);
+            if (chk) chk.checked = false;
+            if (btn) { btn.disabled = true; btn.classList.add('is-disabled'); }
+          }
         }
       });
     });
