@@ -1205,7 +1205,7 @@ li[data-target].is-highlight {
     <div class="toc-title">页面导航</div>
     <a class="toc-item" href="#section-01-product"><span class="toc-dot"></span>订单同步-01 商品详情</a>
     <a class="toc-item" href="#section-02-login"><span class="toc-dot"></span>订单同步-02 会员登录</a>
-    <a class="toc-item" href="#section-03-bind-auth"><span class="toc-dot"></span>订单同步-03 授权绑定弹窗（场景A）</a>
+    <a class="toc-item" href="#section-03-bind-auth"><span class="toc-dot"></span>订单同步-03 授权→绑定两步弹窗（场景A）</a>
     <a class="toc-item" href="#section-03-protocol-update"><span class="toc-dot"></span>订单同步-03-协议更新</a>
     <a class="toc-item" href="#section-04-rebind"><span class="toc-dot"></span>订单同步-04 重新绑定确认（场景C）</a>
     <a class="toc-item" href="#section-05-confirm-on"><span class="toc-dot"></span>订单同步-05 订单确认·已开启</a>
@@ -1216,7 +1216,7 @@ li[data-target].is-highlight {
     <a class="toc-item" href="#section-07-unbind"><span class="toc-dot"></span>订单同步-07-解绑</a>
     <a class="toc-item" href="#section-08-order-fail"><span class="toc-dot"></span>订单同步-08 订单详情·同步失败</a>
     <a class="toc-item" href="#section-09-coupon-page"><span class="toc-dot"></span>订单同步-09 领券页（公域优惠券）</a>
-    <a class="toc-item" href="#section-09-coupon-auth"><span class="toc-dot"></span>订单同步-09-A 领券·场景A授权</a>
+    <a class="toc-item" href="#section-09-coupon-auth"><span class="toc-dot"></span>订单同步-09-A 领券·两步授权绑定</a>
     <a class="toc-item" href="#section-09-coupon-rebind"><span class="toc-dot"></span>订单同步-09-C 领券·场景C重绑</a>
     <a class="toc-item" href="#section-09-coupon-boundary"><span class="toc-dot"></span>订单同步-09-边界 非公域环境</a>
     <a class="toc-item" href="#section-09-my-coupons"><span class="toc-dot"></span>订单同步-09-我的券 撤回后失效</a>
@@ -1369,7 +1369,7 @@ li[data-target].is-highlight {
 
 <!-- ============ Section 03：授权与绑定弹窗（场景A） ============ -->
 <div id="section-03-bind-auth" class="proto-stack">
-  <div class="section-label">订单同步-03 授权与绑定弹窗（场景A）· 点击「立即购买」可重新弹出</div>
+  <div class="section-label">订单同步-03 授权→绑定 两步弹窗（场景A）· 点击「立即购买」可重新弹出</div>
   <div class="proto-with-prd">
 
     <div class="macos-window">
@@ -1405,18 +1405,34 @@ li[data-target].is-highlight {
 
           <div class="mp-overlay" id="overlayA">
             <div class="form-dialog" data-comp="dialog-bind-auth">
-              <button class="modal-close-x" data-toast="已关闭弹窗，继续购物（7 天内不再主动弹出）"><i data-lucide="x"></i></button>
-              <div class="form-dialog-title" data-comp="dlg-title-a">同步订单需要您的授权</div>
-              <div class="mp-dialog-note">
-                为了将您的订单信息在公域与私域之间同步，便于订单管理、售后服务及会员权益发放，我们需要：<br />
-                1. 将您当前公域账号与私域会员号绑定；<br />
-                2. 授权我们同步您的交易订单信息。
+              <button class="modal-close-x" data-close-auth03><i data-lucide="x"></i></button>
+              <!-- 第一步：同意授权 -->
+              <div id="stepAuth03">
+                <div class="form-dialog-title" data-comp="dlg-title-a">同步订单需要您的授权</div>
+                <div class="mp-dialog-note">
+                  为了将您的订单信息在公域与私域之间同步，便于订单管理、售后服务及会员权益发放，我们需要您授权同步交易订单信息。<br />
+                  账号绑定将在下一步单独确认。
+                </div>
+                <label class="mp-check" data-comp="check-agree"><input type="checkbox" id="agreeA" /><span>我已阅读并同意《订单同步授权协议》</span></label>
+                <div style="margin-bottom:6px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》（演示）">查看授权协议</a></div>
+                <div class="form-actions">
+                  <button class="btn btn-secondary" data-comp="btn-skip-a" data-toast="已跳过，7 天内不再主动弹出（PRD 7.3）">暂不</button>
+                  <button class="btn btn-primary" id="btnAgreeA" disabled data-comp="btn-agree-a">同意授权</button>
+                </div>
               </div>
-              <label class="mp-check" data-comp="check-agree"><input type="checkbox" id="agreeA" /><span>我已阅读并同意《订单同步授权协议》</span></label>
-              <div style="margin-bottom:6px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》（演示）">查看授权协议</a></div>
-              <div class="form-actions">
-                <button class="btn btn-secondary" data-comp="btn-skip-a" data-toast="已跳过，7 天内不再主动弹出（PRD 7.3）">暂不</button>
-                <button class="btn btn-primary" id="btnAgreeA" disabled data-comp="btn-agree-a">同意并绑定</button>
+              <!-- 第二步：检测公域登录ID → 确认绑定微信 -->
+              <div id="stepBind03" style="display:none;">
+                <div class="form-dialog-title" data-comp="dlg-title-bind">确认绑定微信账号</div>
+                <div class="mp-dialog-note">系统已检测到您当前使用的公域登录账号：</div>
+                <div class="mp-compare" style="margin-bottom:12px;" data-comp="detect-account">
+                  <div class="cmp-row"><span class="cmp-label">检测到的公域账号</span><span class="cmp-value">B</span></div>
+                  <div class="cmp-row"><span class="cmp-label">来源</span><span class="cmp-value">视频号直播间 · 微信授权</span></div>
+                </div>
+                <div class="mp-dialog-sub" style="margin-bottom:12px;">确认后，公域账号 B 将与会员 138****8888 建立绑定关系，用于订单同步与优惠券归属。</div>
+                <div class="form-actions">
+                  <button class="btn btn-secondary" id="btnSkipBindA" data-comp="btn-skip-bind">暂不绑定</button>
+                  <button class="btn btn-primary" id="btnBindA" data-comp="btn-bind-a">确认绑定</button>
+                </div>
               </div>
             </div>
           </div>
@@ -1432,15 +1448,20 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">订单同步-03：授权与绑定弹窗（场景A）</div>
             <ul>
-              <li><strong>触发条件</strong>：已登录私域会员，但当前公域ID未绑定任何私域会员号（PRD 6.2）</li>
-              <li><strong>遮罩</strong>：全屏半透明遮罩，底层商品页置灰不可操作</li>
-              <li data-target="dlg-title-a"><strong>弹窗标题</strong>：展示「同步订单需要您的授权」</li>
-              <li><strong>正文</strong>：说明两项内容（1. 绑定公域账号与私域会员号；2. 授权同步交易订单信息）</li>
-              <li data-target="check-agree"><strong>协议勾选</strong>：展示「我已阅读并同意《订单同步授权协议》」勾选项，默认不勾选（PRD 8 单独勾选）</li>
-              <li data-target="btn-agree-a"><strong>「同意并绑定」按钮</strong>：展示主按钮（应用 .btn-primary 风格），勾选协议前为禁用态，勾选后可用；点击完成绑定与授权并继续购买流程</li>
+              <li><strong>触发条件</strong>：已登录私域会员，但当前公域ID未绑定或未授权（PRD 6.2）；采用两步弹窗：先「同意授权」，再「确认绑定微信」（PRD 5.2 场景A）</li>
+              <li><strong>遮罩</strong>：全屏半透明遮罩，底层商品页置灰不可操作；两步在同一弹窗内顺序切换</li>
+              <li data-target="dlg-title-a"><strong>第一步标题</strong>：展示「同步订单需要您的授权」</li>
+              <li><strong>第一步正文</strong>：说明仅授权同步交易订单信息，账号绑定在下一步单独确认（授权与绑定解耦，PRD 4.3）</li>
+              <li data-target="check-agree"><strong>第一步协议勾选</strong>：展示「我已阅读并同意《订单同步授权协议》」勾选项，默认不勾选（PRD 8 单独勾选）</li>
+              <li data-target="btn-agree-a"><strong>「同意授权」按钮</strong>：展示主按钮（应用 .btn-primary 风格），勾选协议前为禁用态；点击写入授权记录，进入第二步（PRD 5.2）</li>
               <li data-target="btn-skip-a"><strong>「暂不」按钮</strong>：展示次按钮，点击后关闭弹窗继续购物，7 天内不再主动弹出相同弹窗（弹窗疲劳控制，PRD 7.3）</li>
-              <li><strong>协议链接</strong>：提供「查看授权协议」链接，点击查看协议内容</li>
-              <li data-target="btn-buy-03"><strong>「立即购买」按钮</strong>：底层商品页点击后重新弹出授权弹窗，便于反复演示触发态（PRD 4.1 步骤4-5）</li>
+              <li><strong>第二步前置动作</strong>：系统检测当前公域登录ID（微信授权登录态，获取方式 PRD 7.2）</li>
+              <li data-target="dlg-title-bind"><strong>第二步标题</strong>：展示「确认绑定微信账号」</li>
+              <li data-target="detect-account"><strong>账号检测结果</strong>：展示检测到的当前公域账号 B 与来源（视频号直播间 · 微信授权）</li>
+              <li data-target="btn-bind-a"><strong>「确认绑定」按钮</strong>：展示主按钮，点击后建立绑定关系，订单同步开启，继续购买流程</li>
+              <li data-target="btn-skip-bind"><strong>「暂不绑定」按钮</strong>：展示次按钮，点击后关闭弹窗；未绑定状态下订单确认页显示「未开启」</li>
+              <li><strong>绑定不一致</strong>：第二步检测到当前公域ID与已绑定ID不一致时按场景C 处理（见「订单同步-04」）</li>
+              <li data-target="btn-buy-03"><strong>「立即购买」按钮</strong>：底层商品页点击后重新弹出授权弹窗（回到第一步），便于反复演示触发态（PRD 4.1 步骤4-5）</li>
             </ul>
           </div>
         </div>
@@ -1758,11 +1779,11 @@ li[data-target].is-highlight {
             <div class="form-dialog" data-comp="dialog-coupon-auth">
               <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
               <div class="form-dialog-title">使用公域优惠券需要授权</div>
-              <div class="mp-dialog-note">使用公域优惠券需已授权订单同步并完成绑定。授权后该优惠券即可正常使用，本单不强制使用优惠券。</div>
+              <div class="mp-dialog-note">使用公域优惠券需已授权订单同步（绑定确认请走「去绑定」流程）。同意授权后该优惠券即可正常使用，本单不强制使用优惠券。</div>
               <label class="mp-check"><input type="checkbox" id="agreeC" /><span>我已阅读并同意《订单同步授权协议》</span></label>
               <div class="form-actions">
                 <button class="btn btn-secondary" data-close data-toast="暂不使用该优惠券，可继续提交订单">暂不</button>
-                <button class="btn btn-primary" id="btnAgreeC" disabled>同意并绑定</button>
+                <button class="btn btn-primary" id="btnAgreeC" disabled>同意授权</button>
               </div>
             </div>
           </div>
@@ -1797,7 +1818,7 @@ li[data-target].is-highlight {
               <li data-target="coupon-private"><strong>私域优惠券</strong>：展示「会员专享券 · 满99减10」（应用 .badge-default 标识），不校验公域授权与绑定，直接可用（PRD 5.4）</li>
               <li data-target="coupon-auth"><strong>公域券 · 未授权</strong>：置灰不可选，展示原因「需要授权订单同步后使用」+「去授权」入口</li>
               <li data-target="coupon-bind"><strong>公域券 · 未绑定/ID不一致</strong>：置灰不可选，展示原因「需要绑定当前公域账号后使用」+「去绑定」入口</li>
-              <li><strong>「去授权」交互</strong>：弹出场景A授权弹窗，完成后返回订单确认页，该券恢复可选（PRD 5.4-5）</li>
+              <li><strong>「去授权」交互</strong>：弹出授权弹窗（场景A 第一步·同意授权），同意授权后返回订单确认页，该券恢复可选；未绑定账号时另需「去绑定」完成绑定确认（PRD 5.4-5）</li>
               <li><strong>「去绑定」交互</strong>：弹出场景C重绑弹窗，完成后返回订单确认页，该券恢复可选（PRD 5.4-5）</li>
               <li><strong>不使用券的兜底</strong>：不愿授权绑定时可不选优惠券直接提交订单，需走「订单同步-06」的同步状态确认（PRD 5.4-6）</li>
               <li><strong>协议版本过期</strong>：授权协议非最新时优惠券同样不可用，需先完成重新授权</li>
@@ -1888,7 +1909,7 @@ li[data-target].is-highlight {
               <li><strong>外壳结构</strong>：同步状态栏、商品清单、金额明细同「订单同步-05」</li>
               <li data-target="sync-bar-off"><strong>同步状态栏差异</strong>：展示「同步目标：未绑定 / 未授权」，提示「当前订单将不会同步至公域」</li>
               <li data-target="badge-off"><strong>状态徽标差异</strong>：展示「未开启」徽标（应用 .badge-warn 风格）</li>
-              <li data-target="btn-auth-now"><strong>「立即授权并绑定」按钮</strong>：展示主按钮，点击触发「订单同步-03」授权流程；同时提供「查看授权协议」链接</li>
+              <li data-target="btn-auth-now"><strong>「立即授权并绑定」按钮</strong>：展示主按钮，点击触发「订单同步-03」两步流程（先同意授权、再确认绑定）；同时提供「查看授权协议」链接</li>
               <li data-target="btn-submit-off"><strong>「提交订单」按钮</strong>：同步条件不满足时点击弹出轻量确认弹窗（PRD 5.3），不强制阻断</li>
               <li data-target="dialog-light-confirm"><strong>轻量确认弹窗</strong>：展示「当前订单将不会同步至公域，可能影响后续售后或会员权益。是否继续提交？」</li>
               <li><strong>「返回授权」按钮</strong>：展示次按钮，关闭弹窗回到授权入口</li>
@@ -2281,7 +2302,7 @@ li[data-target].is-highlight {
 
 <!-- ============ Section 09-A：领券 · 场景A 授权弹窗 ============ -->
 <div id="section-09-coupon-auth" class="proto-stack">
-  <div class="section-label">订单同步-09-A 领券 · 场景A 授权弹窗</div>
+  <div class="section-label">订单同步-09-A 领券 · 授权+绑定两步弹窗</div>
   <div class="proto-with-prd">
 
     <div class="macos-window">
@@ -2317,12 +2338,29 @@ li[data-target].is-highlight {
           <div class="mp-overlay" id="overlayCouponA">
             <div class="form-dialog" data-comp="dialog-coupon-claim-a">
               <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
-              <div class="form-dialog-title">领取优惠券需要授权</div>
-              <div class="mp-dialog-note">为了将优惠券准确发放至您的账号，我们需要：<br />1. 将您当前公域账号与私域会员号绑定；<br />2. 授权我们同步您的交易订单信息。</div>
-              <label class="mp-check"><input type="checkbox" id="agreeA2" /><span>我已阅读并同意《订单同步授权协议》</span></label>
-              <div class="form-actions">
-                <button class="btn btn-secondary" data-cancel-a>取消领取</button>
-                <button class="btn btn-primary" id="btnAgreeA2" disabled>同意并绑定</button>
+              <!-- 第一步：同意授权（领券） -->
+              <div id="stepAuth09A">
+                <div class="form-dialog-title">领取优惠券需要授权</div>
+                <div class="mp-dialog-note">为了将优惠券准确发放至您的账号，需先授权订单同步与优惠券归属校验；账号绑定将在下一步单独确认。</div>
+                <label class="mp-check"><input type="checkbox" id="agreeA2" /><span>我已阅读并同意《订单同步授权协议》</span></label>
+                <div class="form-actions">
+                  <button class="btn btn-secondary" data-cancel-a>取消领取</button>
+                  <button class="btn btn-primary" id="btnAgreeA2" disabled>同意授权</button>
+                </div>
+              </div>
+              <!-- 第二步：确认绑定微信（领券） -->
+              <div id="stepBind09A" style="display:none;">
+                <div class="form-dialog-title">确认绑定微信账号</div>
+                <div class="mp-dialog-note">系统已检测到您当前使用的公域登录账号：</div>
+                <div class="mp-compare" style="margin-bottom:12px;">
+                  <div class="cmp-row"><span class="cmp-label">检测到的公域账号</span><span class="cmp-value">B</span></div>
+                  <div class="cmp-row"><span class="cmp-label">来源</span><span class="cmp-value">视频号直播间 · 微信授权</span></div>
+                </div>
+                <div class="mp-dialog-sub" style="margin-bottom:12px;">确认后，优惠券将发放至公域账号 B 绑定的账户。</div>
+                <div class="form-actions">
+                  <button class="btn btn-secondary" data-cancel-b>取消领取</button>
+                  <button class="btn btn-primary" id="btnBindA2">确认绑定</button>
+                </div>
               </div>
             </div>
           </div>
@@ -2338,12 +2376,14 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">订单同步-09-A：领券 · 场景A 授权弹窗</div>
             <ul>
-              <li><strong>触发条件</strong>：已登录但未绑定或未授权时进入领券流程（PRD 6.3），领券场景每次领券均检测、无疲劳控制（PRD 7.3）</li>
-              <li><strong>弹窗标题</strong>：领券场景展示「领取优惠券需要授权」（PRD 5.2 场景A 领券文案）</li>
-              <li><strong>正文</strong>：说明绑定公域账号与会员号、授权同步交易订单信息、优惠券发放至账号</li>
-              <li><strong>协议勾选</strong>：默认不勾选，勾选后「同意并绑定」主按钮可用（PRD 8）</li>
-              <li><strong>「同意并绑定」按钮</strong>：展示主按钮，点击后完成绑定与授权，优惠券发放至账户，领取成功</li>
-              <li><strong>「取消领取」按钮</strong>：展示次按钮，点击后领取失败，提示「未授权绑定，无法领取公域优惠券」（PRD 4.2-6 / 5.2）</li>
+              <li><strong>触发条件</strong>：已登录但未绑定或未授权时进入领券流程（PRD 6.3），领券场景每次领券均检测、无疲劳控制（PRD 7.3）；采用两步弹窗：① 同意授权 → ② 确认绑定微信（PRD 5.2 场景A）</li>
+              <li><strong>第一步标题</strong>：展示「领取优惠券需要授权」（PRD 5.2 场景A 领券文案）</li>
+              <li><strong>第一步正文</strong>：说明需授权订单同步与优惠券归属校验，账号绑定在下一步单独确认</li>
+              <li><strong>第一步协议勾选</strong>：默认不勾选，勾选后「同意授权」主按钮可用（PRD 8）</li>
+              <li><strong>「同意授权」按钮</strong>：点击进入第二步「确认绑定微信」</li>
+              <li><strong>第二步</strong>：展示检测到的当前公域账号 B 与来源（视频号直播间 · 微信授权），提示确认后优惠券发放至该账号</li>
+              <li><strong>「确认绑定」按钮</strong>：点击完成绑定，优惠券发放至账户，领取成功</li>
+              <li><strong>「取消领取」按钮</strong>：第一步取消提示「未授权，无法领取」；第二步取消提示「未绑定公域账号，无法领取」（PRD 5.2）</li>
             </ul>
           </div>
         </div>
@@ -2612,7 +2652,17 @@ li[data-target].is-highlight {
       });
     });
 
-    /* 场景A：勾选协议后「同意并绑定」可用；点击完成绑定并关闭弹窗 */
+    /* 场景A（两步弹窗）：第一步 同意授权 → 第二步 确认绑定微信 */
+    function resetStep03() {
+      var auth = document.getElementById('stepAuth03');
+      var bind = document.getElementById('stepBind03');
+      if (auth) auth.style.display = 'block';
+      if (bind) bind.style.display = 'none';
+      var agree = document.getElementById('agreeA');
+      var btn = document.getElementById('btnAgreeA');
+      if (agree) agree.checked = false;
+      if (btn) { btn.disabled = true; btn.classList.add('is-disabled'); }
+    }
     var agreeA = document.getElementById('agreeA');
     var btnAgreeA = document.getElementById('btnAgreeA');
     if (agreeA && btnAgreeA) {
@@ -2623,15 +2673,37 @@ li[data-target].is-highlight {
       };
       agreeA.addEventListener('change', syncAgreeA);
       btnAgreeA.addEventListener('click', function () {
-        var frame = btnAgreeA.closest('.phone-frame');
-        var overlay = frame.querySelector('#overlayA');
-        if (overlay) overlay.style.display = 'none';
+        document.getElementById('stepAuth03').style.display = 'none';
+        document.getElementById('stepBind03').style.display = 'block';
+      });
+    }
+    var btnBindA = document.getElementById('btnBindA');
+    if (btnBindA) {
+      btnBindA.addEventListener('click', function () {
+        var frame = btnBindA.closest('.phone-frame');
+        frame.querySelector('#overlayA').style.display = 'none';
         showToast(frame, '绑定成功，订单同步已开启，继续购买流程');
       });
     }
+    var btnSkipBindA = document.getElementById('btnSkipBindA');
+    if (btnSkipBindA) {
+      btnSkipBindA.addEventListener('click', function () {
+        var frame = btnSkipBindA.closest('.phone-frame');
+        frame.querySelector('#overlayA').style.display = 'none';
+        showToast(frame, '已暂不绑定：订单同步未开启，订单确认页将显示未开启');
+      });
+    }
+    document.querySelectorAll('[data-close-auth03]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var frame = el.closest('.phone-frame');
+        frame.querySelector('#overlayA').style.display = 'none';
+        showToast(frame, '已关闭弹窗，继续购物（7 天内不再主动弹出）');
+      });
+    });
     var btnBuy03 = document.getElementById('btnBuy03');
     if (btnBuy03) {
       btnBuy03.addEventListener('click', function () {
+        resetStep03();
         var overlay = btnBuy03.closest('.phone-frame').querySelector('#overlayA');
         if (overlay) overlay.style.display = 'flex';
       });
@@ -2702,7 +2774,7 @@ li[data-target].is-highlight {
         if (overlay) overlay.style.display = 'none';
         if (radio) radio.disabled = false;
         if (reason) reason.innerHTML = '已授权，可选择使用';
-        showToast(frame, '授权完成，公域优惠券已恢复可选');
+        showToast(frame, '授权完成，公域优惠券已恢复可选（如未绑定请先「去绑定」）');
       });
     }
 
@@ -2739,6 +2811,13 @@ li[data-target].is-highlight {
       };
       agreeA2.addEventListener('change', syncAgreeA2);
       btnAgreeA2.addEventListener('click', function () {
+        document.getElementById('stepAuth09A').style.display = 'none';
+        document.getElementById('stepBind09A').style.display = 'block';
+      });
+    }
+    var btnBindA2 = document.getElementById('btnBindA2');
+    if (btnBindA2) {
+      btnBindA2.addEventListener('click', function () {
         document.getElementById('overlayCouponA').style.display = 'none';
         setBanner('couponBannerA', '领取成功：优惠券已发放至账户', 'success');
       });
@@ -2746,7 +2825,13 @@ li[data-target].is-highlight {
     document.querySelectorAll('[data-cancel-a]').forEach(function (el) {
       el.addEventListener('click', function () {
         document.getElementById('overlayCouponA').style.display = 'none';
-        setBanner('couponBannerA', '领取失败：未授权绑定，无法领取公域优惠券', 'error');
+        setBanner('couponBannerA', '领取失败：未授权，无法领取公域优惠券', 'error');
+      });
+    });
+    document.querySelectorAll('[data-cancel-b]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        document.getElementById('overlayCouponA').style.display = 'none';
+        setBanner('couponBannerA', '领取失败：未绑定公域账号，无法领取公域优惠券', 'error');
       });
     });
 
