@@ -1413,16 +1413,16 @@ li[data-target].is-highlight {
               <span class="t-right"></span>
             </div>
             <div class="mp-content">
-              <div class="mp-banner warn" data-comp="notice-s3"><i data-lucide="alert-triangle"></i><span>当前公域账号与已绑定账号不一致，请先确认绑定关系（点击下方「重新绑定」可再次弹出）</span></div>
+              <div class="mp-banner warn" id="notice3" data-comp="notice-s3"><i data-lucide="alert-triangle"></i><span>当前公域账号与已绑定账号不一致，请先确认绑定关系（点击下方「重新绑定」可再次弹出）</span></div>
               <div class="sync-bar" data-comp="sync-s3">
                 <span class="sb-icon"><i data-lucide="link-2"></i></span>
                 <div class="sb-main">
-                  <div class="sb-link">已绑定 公域账号 A ↔ 会员 138****8888</div>
-                  <div class="sb-meta">当前登录公域账号 B · 不一致</div>
+                  <div class="sb-link" id="sync3link">已绑定 公域账号 A ↔ 会员 138****8888</div>
+                  <div class="sb-meta" id="sync3meta">当前登录公域账号 B · 不一致</div>
                 </div>
-                <span class="badge badge-warn">待确认</span>
+                <span class="badge badge-warn" id="sync3badge">待确认</span>
               </div>
-              <div class="info-card mp-card" style="padding:12px 14px;display:flex;align-items:center;gap:8px;" data-comp="rebind-entry-s3">
+              <div class="info-card mp-card" id="rebindCard3" style="padding:12px 14px;display:flex;align-items:center;gap:8px;" data-comp="rebind-entry-s3">
                 <button class="btn btn-primary" style="flex:1;" data-open="popup3">重新绑定</button>
                 <a href="#" class="mb-link" data-toast="已打开《订单同步授权协议》（演示）">查看授权协议</a>
               </div>
@@ -1436,7 +1436,7 @@ li[data-target].is-highlight {
               </div>
             </div>
             <div class="mp-bottom-bar">
-              <button class="btn btn-primary" data-toast="订单已提交，将同步至已绑定账号 A">提交订单</button>
+              <button class="btn btn-primary" id="submit3" data-comp="submit-s3">提交订单</button>
             </div>
           </div>
 
@@ -1471,10 +1471,11 @@ li[data-target].is-highlight {
               <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，进入本状态后自动弹出重新绑定弹窗</li>
               <li><strong>用户状态</strong>：已同意授权，但检测当前公域账号 B 与已绑定账号 A 不一致（PRD 5.2 场景C / 6.2）</li>
               <li data-target="dialog-s3"><strong>重新绑定弹窗</strong>：进入本状态时自动弹出，展示当前账号 B / 已绑定账号 A 对照</li>
-              <li data-target="btn-rebind-s3"><strong>「确认重新绑定」按钮</strong>：点击后绑定关系更新为 B，订单同步至 B，状态栏变为「已开启」</li>
+              <li data-target="btn-rebind-s3"><strong>「确认重新绑定」按钮</strong>：点击后绑定关系更新为 B，订单同步至 B；页面不一致提示消除，状态栏更新为「已授权同步」（公域账号 B ↔ 会员）</li>
               <li data-target="btn-keep-s3"><strong>「保持原绑定」按钮</strong>：点击后绑定不变，本单仍同步至账号 A</li>
-              <li data-target="sync-s3"><strong>同步状态栏</strong>：弹窗关闭后常驻展示「待确认」与不一致原因</li>
-              <li data-target="rebind-entry-s3"><strong>「重新绑定」入口</strong>：弹窗关闭后可手动再次触发（主动操作不受疲劳控制限制）</li>
+              <li data-target="sync-s3"><strong>同步状态栏</strong>：未处理时弹窗关闭后常驻展示「待确认」与不一致原因；确认重新绑定后不一致提示消除，更新为「已授权同步 · 检测一致」</li>
+              <li data-target="rebind-entry-s3"><strong>「重新绑定」入口</strong>：弹窗关闭后可手动再次触发（主动操作不受疲劳控制限制）；确认重新绑定后该入口移除</li>
+              <li data-target="submit-s3"><strong>「提交订单」按钮</strong>：按当前绑定关系提示同步目标——重新绑定后同步至 B，保持原绑定则同步至 A</li>
             </ul>
           </div>
         </div>
@@ -1913,17 +1914,43 @@ li[data-target].is-highlight {
     });
 
     /* 状态-03：重新绑定 */
+    var s3Rebound = false;
+    function notice3Update(tone, icon, html) {
+      var el = document.getElementById('notice3');
+      if (!el) return;
+      el.className = 'mp-banner ' + tone;
+      el.innerHTML = '<i data-lucide="' + icon + '"></i><span>' + html + '</span>';
+      if (window.lucide) lucide.createIcons();
+    }
     var btnKeep3 = document.getElementById('btnKeep3');
     if (btnKeep3) btnKeep3.addEventListener('click', function () {
       var phone = btnKeep3.closest('.phone-frame');
       document.getElementById('popup3').style.display = 'none';
+      notice3Update('warn', 'alert-triangle', '保持原绑定：本单订单仍将同步至原账号 A；当前公域账号 B 与绑定 A 不一致');
       showToast(phone, '保持原绑定：本单仍同步至账号 A');
     });
     var btnRebind3 = document.getElementById('btnRebind3');
     if (btnRebind3) btnRebind3.addEventListener('click', function () {
       var phone = btnRebind3.closest('.phone-frame');
       document.getElementById('popup3').style.display = 'none';
+      s3Rebound = true;
+      var badge = document.getElementById('sync3badge');
+      var link = document.getElementById('sync3link');
+      var meta = document.getElementById('sync3meta');
+      var card = document.getElementById('rebindCard3');
+      if (badge) { badge.className = 'badge badge-success'; badge.textContent = '已授权同步'; }
+      if (link) link.textContent = '公域账号 B ↔ 会员 138****8888';
+      if (meta) meta.textContent = '已授权 · 检测一致，正常结算';
+      if (card) card.style.display = 'none';
+      notice3Update('success', 'circle-check', '已更新绑定为公域账号 B：本单订单将同步至账号 B，公域优惠可用');
       showToast(phone, '已重新绑定为公域账号 B，订单同步开启');
+    });
+    var submit3 = document.getElementById('submit3');
+    if (submit3) submit3.addEventListener('click', function () {
+      var phone = submit3.closest('.phone-frame');
+      showToast(phone, s3Rebound
+        ? '订单已提交，支付后自动同步至公域账号 B'
+        : '订单已提交，将同步至已绑定账号 A');
     });
 
     /* 状态-05：首次授权 + 绑定 */
