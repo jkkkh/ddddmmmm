@@ -1449,7 +1449,7 @@ li[data-target].is-highlight {
                 <div class="cmp-row"><span class="cmp-label">您当前登录的公域账号</span><span class="cmp-value">B</span></div>
                 <div class="cmp-row"><span class="cmp-label">已绑定的公域账号</span><span class="cmp-value">A</span></div>
               </div>
-              <div class="mp-dialog-note">更新后，订单将同步至账号 B；保持原绑定则仍同步至账号 A。</div>
+              <div class="mp-dialog-note">当前公域账号与绑定账号不一致：确认重新绑定后，本单订单将同步至账号 B；若保持原绑定，本单<b>不同步至公域、不享受公域优惠</b>（不会同步回原账号 A）。</div>
               <div class="form-actions">
                 <button class="btn btn-secondary" id="btnKeep3" data-comp="btn-keep-s3">保持原绑定</button>
                 <button class="btn btn-primary" id="btnRebind3" data-comp="btn-rebind-s3">确认重新绑定</button>
@@ -1472,10 +1472,10 @@ li[data-target].is-highlight {
               <li><strong>用户状态</strong>：已同意授权，但检测当前公域账号 B 与已绑定账号 A 不一致（PRD 5.2 场景C / 6.2）</li>
               <li data-target="dialog-s3"><strong>重新绑定弹窗</strong>：进入本状态时自动弹出，展示当前账号 B / 已绑定账号 A 对照</li>
               <li data-target="btn-rebind-s3"><strong>「确认重新绑定」按钮</strong>：点击后绑定关系更新为 B，订单同步至 B；页面不一致提示消除，状态栏更新为「已授权同步」（公域账号 B ↔ 会员）</li>
-              <li data-target="btn-keep-s3"><strong>「保持原绑定」按钮</strong>：点击后绑定不变，本单仍同步至账号 A</li>
-              <li data-target="sync-s3"><strong>同步状态栏</strong>：未处理时弹窗关闭后常驻展示「待确认」与不一致原因；确认重新绑定后不一致提示消除，更新为「已授权同步 · 检测一致」</li>
+              <li data-target="btn-keep-s3"><strong>「保持原绑定」按钮</strong>：点击后绑定不变，本单订单<b>不同步至公域、不享受公域优惠</b>（不会同步回原账号 A）</li>
+              <li data-target="sync-s3"><strong>同步状态栏</strong>：未处理时弹窗关闭后常驻展示「待确认」与不一致原因；确认重新绑定后不一致提示消除，更新为「已授权同步 · 检测一致」；选择保持原绑定则更新为「不同步」</li>
               <li data-target="rebind-entry-s3"><strong>「重新绑定」入口</strong>：弹窗关闭后可手动再次触发（主动操作不受疲劳控制限制）；确认重新绑定后该入口移除</li>
-              <li data-target="submit-s3"><strong>「提交订单」按钮</strong>：按当前绑定关系提示同步目标——重新绑定后同步至 B，保持原绑定则同步至 A</li>
+              <li data-target="submit-s3"><strong>「提交订单」按钮</strong>：按当前绑定关系提示——重新绑定后同步至 B；未重新绑定（保持原绑定）时本单不同步至公域</li>
             </ul>
           </div>
         </div>
@@ -1526,14 +1526,14 @@ li[data-target].is-highlight {
               <span class="t-right"></span>
             </div>
             <div class="mp-content">
-              <div class="mp-banner warn" data-comp="notice-s4"><i data-lucide="alert-triangle"></i><span>您此前拒绝了重新绑定：本单订单仍将同步至<b>原绑定账号 A</b>，不享受当前公域账号 B 的优惠（已提示一次，不再重复弹窗；如需变更可前往<a href="#" class="mb-link" data-toast="已跳转会员中心（演示，可手动重新绑定）">会员中心</a>）</span></div>
+              <div class="mp-banner warn" data-comp="notice-s4"><i data-lucide="alert-triangle"></i><span>您此前拒绝了重新绑定：当前公域账号与绑定账号不一致，本单订单<b>不同步至公域、不享受公域优惠</b>（已提示一次，不再重复弹窗；如需同步可前往<a href="#" class="mb-link" data-toast="已跳转会员中心（演示，可手动重新绑定）">会员中心</a>重新绑定）</span></div>
               <div class="sync-bar" data-comp="sync-s4">
                 <span class="sb-icon"><i data-lucide="link-2"></i></span>
                 <div class="sb-main">
-                  <div class="sb-link">同步目标：原绑定账号 A</div>
-                  <div class="sb-meta">当前公域账号 B 与绑定 A 不一致（保持原绑定）</div>
+                  <div class="sb-link">同步目标：不同步（账号不一致）</div>
+                  <div class="sb-meta">本单订单不同步至公域，不享受公域优惠</div>
                 </div>
-                <span class="badge badge-default">同步至账号 A</span>
+                <span class="badge badge-default">不同步</span>
               </div>
               <div class="mp-section-title">优惠券</div>
               <div class="info-card mp-card" style="padding:12px 14px;" data-comp="coupon-s4">
@@ -1553,7 +1553,7 @@ li[data-target].is-highlight {
               </div>
             </div>
             <div class="mp-bottom-bar">
-              <button class="btn btn-primary" data-comp="submit-s4" data-toast="订单已提交，本单将同步至原绑定账号 A">提交订单</button>
+              <button class="btn btn-primary" data-comp="submit-s4" data-toast="订单已提交（本单不同步至公域，不享受公域优惠）">提交订单</button>
             </div>
           </div>
           <div class="mp-toast"></div>
@@ -1571,10 +1571,10 @@ li[data-target].is-highlight {
               <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，本状态在此呈现</li>
               <li><strong>用户状态</strong>：已授权，公域账号 B 与绑定 A 不一致，且用户此前已拒绝过重新绑定（提示过一次）</li>
               <li><strong>弹窗疲劳控制</strong>：不再自动弹出重新绑定弹窗，仅在订单确认页常驻提示（PRD 7.3 / 5.2 场景C 保持原绑定结果）</li>
-              <li data-target="notice-s4"><strong>常驻提示条</strong>：明确告知「本单仍同步至原绑定账号 A、当前账号 B 的公域优惠不可用」，并提供会员中心入口（可主动操作）</li>
-              <li data-target="sync-s4"><strong>同步状态栏</strong>：展示「同步目标：原绑定账号 A」徽标，显著提示当前同步目标（PRD 5.2 场景C）</li>
+              <li data-target="notice-s4"><strong>常驻提示条</strong>：明确告知「账号不一致时本单订单不同步至公域、不享受公域优惠（不会同步回原账号 A）」，并提供会员中心入口（可主动操作重新绑定）</li>
+              <li data-target="sync-s4"><strong>同步状态栏</strong>：展示「不同步」徽标与「账号不一致」原因（本单不同步至公域）</li>
               <li data-target="coupon-s4"><strong>公域优惠券</strong>：说明该券绑定当前账号 B、暂不可用</li>
-              <li data-target="submit-s4"><strong>「提交订单」按钮</strong>：正常提交，订单同步至账号 A，无额外弹窗</li>
+              <li data-target="submit-s4"><strong>「提交订单」按钮</strong>：正常提交（本单不同步至公域、不享受公域优惠），无额外弹窗</li>
             </ul>
           </div>
         </div>
@@ -1937,8 +1937,14 @@ li[data-target].is-highlight {
     if (btnKeep3) btnKeep3.addEventListener('click', function () {
       var phone = btnKeep3.closest('.phone-frame');
       document.getElementById('popup3').style.display = 'none';
-      notice3Update('warn', 'alert-triangle', '保持原绑定：本单订单仍将同步至原账号 A；当前公域账号 B 与绑定 A 不一致');
-      showToast(phone, '保持原绑定：本单仍同步至账号 A');
+      var badge = document.getElementById('sync3badge');
+      var link = document.getElementById('sync3link');
+      var meta = document.getElementById('sync3meta');
+      if (badge) { badge.className = 'badge badge-default'; badge.textContent = '不同步'; }
+      if (link) link.textContent = '当前账号 B ≠ 已绑定账号 A';
+      if (meta) meta.textContent = '保持原绑定 · 本单不同步至公域，不享受公域优惠';
+      notice3Update('warn', 'alert-triangle', '保持原绑定：当前公域账号与绑定账号不一致，本单订单不同步至公域、不享受公域优惠；确认重新绑定后可同步至账号 B');
+      showToast(phone, '保持原绑定：本单订单不同步至公域（不会同步回原账号 A）');
     });
     var btnRebind3 = document.getElementById('btnRebind3');
     if (btnRebind3) btnRebind3.addEventListener('click', function () {
@@ -1961,7 +1967,7 @@ li[data-target].is-highlight {
       var phone = submit3.closest('.phone-frame');
       showToast(phone, s3Rebound
         ? '订单已提交，支付后自动同步至公域账号 B'
-        : '订单已提交，将同步至已绑定账号 A');
+        : '订单已提交（当前账号与绑定不一致，本单不同步至公域）');
     });
 
     /* 状态-05：首次授权 + 绑定 */
