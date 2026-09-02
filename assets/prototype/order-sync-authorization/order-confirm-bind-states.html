@@ -1064,6 +1064,12 @@ li[data-target].is-highlight {
   }
   .mp-statusbar .sb-icons { display: flex; align-items: center; gap: 4px; }
   .mp-statusbar .sb-icons i { width: 13px; height: 13px; stroke-width: 2; }
+  .mp-context {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--info-muted); color: var(--info);
+    border-radius: 6px; padding: 8px 10px; font-size: 12px; margin-bottom: 12px;
+  }
+  .mp-context i { width: 13px; height: 13px; flex-shrink: 0; }
   .mp-page { flex: 1; min-height: 0; position: relative; display: flex; flex-direction: column; background: var(--background); }
   .mp-topbar {
     height: 44px; flex-shrink: 0;
@@ -1195,9 +1201,28 @@ li[data-target].is-highlight {
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-          <div class="mp-page">
+          <div class="mp-page" data-screen="prod">
             <div class="mp-topbar">
-              <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
+              <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">商品详情</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+              <div class="info-card mp-card">
+                <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                <div style="margin-top:6px;"><span class="mp-price">¥149</span><span style="margin-left:8px;font-size:12px;color:var(--text-3);">已售 2.3k+</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+              <button class="btn btn-primary" data-next data-comp="buy-now">立即购买</button>
+            </div>
+          </div>
+          <div class="mp-page" data-screen="order" style="display:none;">
+            <div class="mp-topbar">
+              <button class="t-back" data-back><i data-lucide="arrow-left"></i></button>
               <span class="t-title">确认订单</span>
               <span class="t-right"></span>
             </div>
@@ -1213,11 +1238,10 @@ li[data-target].is-highlight {
               <div class="mp-section-title">商品清单</div>
               <div class="info-card mp-card" data-comp="goods-s1">
                 <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
-                <div class="mp-row"><span class="r-label">帆布托特包 米白</span><span class="r-value">×1 ¥129</span></div>
               </div>
               <div class="mp-section-title">金额明细</div>
               <div class="info-card mp-card">
-                <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥278</span></div>
+                <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥149</span></div>
               </div>
             </div>
             <div class="mp-bottom-bar">
@@ -1236,6 +1260,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">状态-01：已授权已绑定 · 检测一致 · 正常结算</div>
             <ul>
+              <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，本状态在此呈现</li>
               <li><strong>用户状态</strong>：已同意授权并确认绑定关系，当前公域登录账号与绑定关系一致（PRD 6.2：已绑定/已授权/一致）</li>
               <li data-target="sync-s1"><strong>同步状态栏</strong>：展示「公域账号 B ↔ 会员 138****8888」+「已授权同步」绿色徽标，检测结果一致无异常提示</li>
               <li data-target="goods-s1"><strong>订单内容</strong>：正常展示商品清单与金额，公域优惠券可用（本图未选券）</li>
@@ -1264,9 +1289,28 @@ li[data-target].is-highlight {
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-          <div class="mp-page">
+          <div class="mp-page" data-screen="prod">
             <div class="mp-topbar">
-              <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
+              <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">商品详情</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+              <div class="info-card mp-card">
+                <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                <div style="margin-top:6px;"><span class="mp-price">¥149</span><span style="margin-left:8px;font-size:12px;color:var(--text-3);">已售 2.3k+</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+              <button class="btn btn-primary" data-next data-comp="buy-now">立即购买</button>
+            </div>
+          </div>
+          <div class="mp-page" data-screen="order" style="display:none;">
+            <div class="mp-topbar">
+              <button class="t-back" data-back><i data-lucide="arrow-left"></i></button>
               <span class="t-title">确认订单</span>
               <span class="t-right"></span>
             </div>
@@ -1313,6 +1357,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">状态-02：曾拒绝授权/绑定 · 不弹窗 + 提示</div>
             <ul>
+              <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，本状态在此呈现</li>
               <li><strong>用户状态</strong>：此前选择「暂不 / 暂不绑定」，处于弹窗疲劳控制期（PRD 7.3：7 天内不再主动弹出）</li>
               <li data-target="notice-s2"><strong>常驻提示条</strong>：不弹窗，改为在订单确认页顶部提示「无法使用公域优惠券、订单不会同步至公域」，并提供「如何开启？」说明入口</li>
               <li data-target="sync-s2"><strong>同步状态栏</strong>：展示「未开启」徽标与常驻状态（PRD 5.3 兜底位置）</li>
@@ -1342,9 +1387,28 @@ li[data-target].is-highlight {
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-          <div class="mp-page">
+          <div class="mp-page" data-screen="prod">
             <div class="mp-topbar">
-              <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
+              <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">商品详情</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+              <div class="info-card mp-card">
+                <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                <div style="margin-top:6px;"><span class="mp-price">¥149</span><span style="margin-left:8px;font-size:12px;color:var(--text-3);">已售 2.3k+</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+              <button class="btn btn-primary" data-next data-next-popup="popup3" data-comp="buy-now">立即购买</button>
+            </div>
+          </div>
+          <div class="mp-page" data-screen="order" style="display:none;">
+            <div class="mp-topbar">
+              <button class="t-back" data-back><i data-lucide="arrow-left"></i></button>
               <span class="t-title">确认订单</span>
               <span class="t-right"></span>
             </div>
@@ -1376,8 +1440,8 @@ li[data-target].is-highlight {
             </div>
           </div>
 
-          <!-- 重新绑定弹窗（进入本状态时自动弹出） -->
-          <div class="mp-overlay" id="popup3">
+          <!-- 重新绑定弹窗（点击「立即购买」进入订单页后自动弹出） -->
+          <div class="mp-overlay" id="popup3" style="display:none;">
             <div class="form-dialog" data-comp="dialog-s3">
               <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
               <div class="form-dialog-title">检测到当前公域账号与已绑定账号不一致</div>
@@ -1404,6 +1468,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">状态-03：已授权 · 公域账号不一致 · 弹出重新绑定</div>
             <ul>
+              <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，进入本状态后自动弹出重新绑定弹窗</li>
               <li><strong>用户状态</strong>：已同意授权，但检测当前公域账号 B 与已绑定账号 A 不一致（PRD 5.2 场景C / 6.2）</li>
               <li data-target="dialog-s3"><strong>重新绑定弹窗</strong>：进入本状态时自动弹出，展示当前账号 B / 已绑定账号 A 对照</li>
               <li data-target="btn-rebind-s3"><strong>「确认重新绑定」按钮</strong>：点击后绑定关系更新为 B，订单同步至 B，状态栏变为「已开启」</li>
@@ -1434,9 +1499,28 @@ li[data-target].is-highlight {
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-          <div class="mp-page">
+          <div class="mp-page" data-screen="prod">
             <div class="mp-topbar">
-              <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
+              <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">商品详情</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+              <div class="info-card mp-card">
+                <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                <div style="margin-top:6px;"><span class="mp-price">¥149</span><span style="margin-left:8px;font-size:12px;color:var(--text-3);">已售 2.3k+</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+              <button class="btn btn-primary" data-next data-comp="buy-now">立即购买</button>
+            </div>
+          </div>
+          <div class="mp-page" data-screen="order" style="display:none;">
+            <div class="mp-topbar">
+              <button class="t-back" data-back><i data-lucide="arrow-left"></i></button>
               <span class="t-title">确认订单</span>
               <span class="t-right"></span>
             </div>
@@ -1483,6 +1567,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">状态-04：不一致且曾拒绝重绑 · 不弹窗 + 提示</div>
             <ul>
+              <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，本状态在此呈现</li>
               <li><strong>用户状态</strong>：已授权，公域账号 B 与绑定 A 不一致，且用户此前已拒绝过重新绑定（提示过一次）</li>
               <li><strong>弹窗疲劳控制</strong>：不再自动弹出重新绑定弹窗，仅在订单确认页常驻提示（PRD 7.3 / 5.2 场景C 保持原绑定结果）</li>
               <li data-target="notice-s4"><strong>常驻提示条</strong>：明确告知「本单仍同步至原绑定账号 A、当前账号 B 的公域优惠不可用」，并提供会员中心入口（可主动操作）</li>
@@ -1513,9 +1598,28 @@ li[data-target].is-highlight {
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-          <div class="mp-page">
+          <div class="mp-page" data-screen="prod">
             <div class="mp-topbar">
-              <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
+              <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">商品详情</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+              <div class="info-card mp-card">
+                <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                <div style="margin-top:6px;"><span class="mp-price">¥149</span><span style="margin-left:8px;font-size:12px;color:var(--text-3);">已售 2.3k+</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+              <button class="btn btn-primary" data-next data-comp="buy-now">立即购买</button>
+            </div>
+          </div>
+          <div class="mp-page" data-screen="order" style="display:none;">
+            <div class="mp-topbar">
+              <button class="t-back" data-back><i data-lucide="arrow-left"></i></button>
               <span class="t-title">确认订单</span>
               <span class="t-right"></span>
             </div>
@@ -1589,6 +1693,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">状态-05：首次授权 + 确认绑定 · 正常结算</div>
             <ul>
+              <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，本状态在此呈现</li>
               <li><strong>用户状态</strong>：首次结算，从未授权也未绑定（PRD 6.2：未绑定/未授权）</li>
               <li data-target="entry-s5"><strong>授权入口卡</strong>：在订单确认页主动展示「授权并绑定」入口（首次不自动弹窗，由用户点击触发）</li>
               <li data-target="sync-s5"><strong>同步状态栏</strong>：绑定前展示「待绑定 / 未开启」</li>
@@ -1618,9 +1723,28 @@ li[data-target].is-highlight {
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-          <div class="mp-page">
+          <div class="mp-page" data-screen="prod">
             <div class="mp-topbar">
-              <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
+              <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+              <span class="t-title">商品详情</span>
+              <span class="t-right"></span>
+            </div>
+            <div class="mp-content">
+              <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+              <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+              <div class="info-card mp-card">
+                <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                <div style="margin-top:6px;"><span class="mp-price">¥149</span><span style="margin-left:8px;font-size:12px;color:var(--text-3);">已售 2.3k+</span></div>
+              </div>
+            </div>
+            <div class="mp-bottom-bar">
+              <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+              <button class="btn btn-primary" data-next data-comp="buy-now">立即购买</button>
+            </div>
+          </div>
+          <div class="mp-page" data-screen="order" style="display:none;">
+            <div class="mp-topbar">
+              <button class="t-back" data-back><i data-lucide="arrow-left"></i></button>
               <span class="t-title">确认订单</span>
               <span class="t-right"></span>
             </div>
@@ -1695,6 +1819,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">状态-06：首次授权 · 公域账号已被他人绑定</div>
             <ul>
+              <li><strong>前置链路</strong>：公域直播间 → 商品详情页（点击「立即购买」）→ 弹出订单确认页，本状态在此呈现</li>
               <li><strong>用户状态</strong>：首次同意授权，系统检测到当前公域账号 B 已与另一个私域会员号（M202608010099）绑定</li>
               <li data-target="entry-s6"><strong>授权入口卡</strong>：与状态-05 相同，点击触发两步弹窗</li>
               <li data-target="dialog-s6"><strong>冲突弹层</strong>：同意授权后第二步不进入绑定确认，而是展示冲突：该公域账号已被其他会员绑定（一对一绑定约束，PRD 7.5）</li>
@@ -1759,6 +1884,31 @@ li[data-target].is-highlight {
       el.addEventListener('click', function () {
         var overlay = el.closest('.mp-overlay');
         if (overlay) overlay.style.display = 'none';
+      });
+    });
+    /* 前置链路：商品详情「立即购买」→ 订单确认页（状态在此呈现）；返回可回商品详情 */
+    function showPhonePage(phone, which) {
+      phone.querySelectorAll('.mp-page').forEach(function (p) {
+        var show = p.dataset.screen === which;
+        p.style.display = show ? 'flex' : 'none';
+      });
+    }
+    document.querySelectorAll('[data-next]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        var phone = el.closest('.phone-frame');
+        showPhonePage(phone, 'order');
+        var pop = el.getAttribute('data-next-popup');
+        if (pop) {
+          var o = document.getElementById(pop);
+          if (o) o.style.display = 'flex';
+        }
+      });
+    });
+    document.querySelectorAll('[data-back]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        showPhonePage(el.closest('.phone-frame'), 'prod');
       });
     });
 
