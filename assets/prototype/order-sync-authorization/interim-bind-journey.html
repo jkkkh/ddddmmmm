@@ -1696,8 +1696,6 @@ li[data-target].is-highlight {
                     <div style="font-size:12px;color:var(--text-3);">私域会员号：M202608010001</div>
                   </div>
                 </div>
-                <div class="mp-context" data-comp="cur-wx"><i data-lucide="smartphone"></i>当前微信登录账号：视频号直播 · 公域账号 C（本次登录，未在授权记录中）</div>
-
                 <div class="mp-section-title">公域授权记录</div>
                 <div data-comp="records-wx">
 
@@ -1721,21 +1719,21 @@ li[data-target].is-highlight {
                     <div style="margin-top:8px;text-align:right;"><button class="btn btn-danger btn-sm" data-unbind="A" data-comp="unbind-wx">解除绑定</button></div>
                   </div>
 
-                  <!-- 立即绑定当前微信后置顶（公域账号 C） -->
-                  <div class="info-card mp-card" style="padding:12px 14px;display:none;" id="wxrowC">
+                  <!-- 立即绑定当前微信后新增的记录（本页不展示/检测公域账号状态） -->
+                  <div class="info-card mp-card" style="padding:12px 14px;display:none;" id="wxrowWX">
                     <div style="display:flex;align-items:center;justify-content:space-between;">
-                      <span style="font-size:13px;font-weight:600;">公域账号 C</span>
-                      <span class="badge badge-success" id="wxbadgeC">已授权</span>
+                      <span style="font-size:13px;font-weight:600;">当前微信登录账号</span>
+                      <span class="badge badge-success" id="wxbadgeWX">已授权</span>
                     </div>
-                    <div style="font-size:11px;color:var(--text-3);margin-top:6px;">来源：视频号直播（微信） · 授权时间 2026-09-07</div>
-                    <div style="margin-top:8px;text-align:right;"><button class="btn btn-danger btn-sm" data-unbind="C" data-comp="unbind-wx">解除绑定</button></div>
+                    <div style="font-size:11px;color:var(--text-3);margin-top:6px;">绑定时间 2026-09-07 · 用于订单同步与公域优惠券归属</div>
+                    <div style="margin-top:8px;text-align:right;"><button class="btn btn-danger btn-sm" data-unbind="WX" data-label="当前微信登录账号" data-comp="unbind-wx">解除绑定</button></div>
                   </div>
                 </div>
 
                 <div class="mp-section-title">操作</div>
                 <div class="info-card mp-card" id="wxBindCard" style="padding:12px 14px;" data-comp="bind-now-wx">
                   <div style="font-size:13px;font-weight:600;margin-bottom:4px;">绑定当前微信登录账号</div>
-                  <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;">将本次登录的公域账号 C 授权并加入记录（流程同初次授权）</div>
+                  <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;">将当前微信登录账号加入公域授权记录（本页不展示/检测公域账号状态）</div>
                   <button class="btn btn-primary" id="wxBindNow" style="width:100%;">立即绑定</button>
                 </div>
                 <div class="mp-dialog-sub">解除绑定后，对应公域账号从本页移除、不再展示；如需重新使用可再次「立即绑定」（PRD 7.6）</div>
@@ -1745,14 +1743,10 @@ li[data-target].is-highlight {
 
           <!-- 立即绑定：当前微信登录账号确认 -->
           <div class="mp-overlay" id="pBindWx" style="display:none;">
-            <div class="form-dialog" data-comp="dialog-bind-wx">
-              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
-              <div class="form-dialog-title">绑定当前微信登录账号</div>
-              <div class="mp-compare" data-comp="compare-wx">
-                <div class="cmp-row"><span class="cmp-label">当前微信登录账号</span><span class="cmp-value">C</span></div>
-                <div class="cmp-row"><span class="cmp-label">来源</span><span class="cmp-value">视频号直播 · 微信授权</span></div>
-              </div>
-              <div class="mp-dialog-note">确认后将公域账号 C 加入公域授权记录（状态：已授权），用于订单同步与公域优惠券归属；可在本页随时解除绑定。</div>
+              <div class="form-dialog" data-comp="dialog-bind-wx">
+                <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+                <div class="form-dialog-title">绑定当前微信登录账号</div>
+                <div class="mp-dialog-note">确认后将以当前微信登录账号创建公域授权记录（状态：已授权），用于订单同步与公域优惠券归属；可在本页随时解除绑定。授权管理页不展示/检测公域账号登录状态。</div>
               <div class="form-actions">
                 <button class="btn btn-secondary" data-close>取消</button>
                 <button class="btn btn-primary" id="wxDoBind" data-comp="do-bind-wx">立即绑定</button>
@@ -1784,12 +1778,11 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">旅程-05：公域授权管理</div>
             <ul>
-              <li><strong>方案要点</strong>：会员管理入口为「公域授权管理」，展示当前已授权的公域账号（状态均为已授权），每条可单独解除绑定（解除后不再展示），并提供「立即绑定」绑定当前微信登录账号</li>
+              <li><strong>方案要点</strong>：会员管理入口为「公域授权管理」，展示当前已授权的公域账号（状态均为已授权），每条可单独解除绑定（解除后不再展示），并提供「立即绑定」绑定当前微信登录账号；本页不提示账号未授权、不展示/检测当前登录公域状态</li>
               <li data-target="member-wx"><strong>会员信息</strong>：展示会员头像与会员号</li>
-              <li data-target="cur-wx"><strong>当前微信登录账号</strong>：展示本次登录的公域账号 C（未在授权记录中，可立即绑定）</li>
               <li data-target="records-wx"><strong>公域授权记录</strong>：展示当前已授权的公域账号（B / A，状态均为已授权）；已解除的账号不再展示</li>
               <li data-target="unbind-wx"><strong>「解除绑定」按钮</strong>：每条已授权记录提供独立解除按钮，确认后该账号从列表移除、不再展示</li>
-              <li data-target="bind-now-wx"><strong>「立即绑定」按钮</strong>：绑定当前微信登录账号（公域账号 C），确认后置顶为「已授权」</li>
+              <li data-target="bind-now-wx"><strong>「立即绑定」按钮</strong>：绑定当前微信登录账号，确认后新增「已授权」记录（不展示公域检测状态）</li>
               <li data-target="do-unbind-wx"><strong>「确认解除」</strong>：按对应账号执行解除并提示后果（PRD 5.5 / 7.6）</li>
             </ul>
           </div>
@@ -1959,18 +1952,20 @@ li[data-target].is-highlight {
     if (wxDoBind) wxDoBind.addEventListener('click', function () {
       var phone = wxDoBind.closest('.phone-frame');
       document.getElementById('pBindWx').style.display = 'none';
-      var cur = document.getElementById('wxrowC');
+      var cur = document.getElementById('wxrowWX');
       var card = document.getElementById('wxBindCard');
       if (cur) cur.style.display = 'block';
       if (card) card.style.display = 'none';
-      showToast(phone, '已绑定当前微信登录账号：公域账号 C 状态为已授权');
+      showToast(phone, '已绑定当前微信登录账号并加入公域授权记录（状态：已授权）');
     });
     var unbindTarget = null;
+    var unbindLabel = '';
     document.querySelectorAll('[data-unbind]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         unbindTarget = btn.getAttribute('data-unbind');
+        unbindLabel = btn.getAttribute('data-label') || ('公域账号 ' + unbindTarget);
         var note = document.getElementById('unbindNote');
-        if (note) note.innerHTML = '确认解除公域账号 ' + unbindTarget + ' 的授权？解除后该账号将从本页移除、不再展示，新订单不再同步至公域，公域券可能不可用；历史已同步订单不受影响。';
+        if (note) note.innerHTML = '确认解除「' + unbindLabel + '」的授权？解除后该记录将从本页移除、不再展示，新订单不再同步至公域，公域券可能不可用；历史已同步订单不受影响。';
         document.getElementById('pUnbindWx').style.display = 'flex';
       });
     });
@@ -1981,7 +1976,7 @@ li[data-target].is-highlight {
       if (unbindTarget) {
         var row = document.getElementById('wxrow' + unbindTarget);
         if (row) row.style.display = 'none';
-        showToast(phone, '已解除公域账号 ' + unbindTarget + ' 的授权，该账号已从列表移除');
+        showToast(phone, '已解除「' + unbindLabel + '」的授权，该记录已从列表移除');
       }
       unbindTarget = null;
     });
