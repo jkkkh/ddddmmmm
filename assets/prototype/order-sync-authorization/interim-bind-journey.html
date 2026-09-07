@@ -1082,7 +1082,7 @@ li[data-target].is-highlight {
   .fs-chip .fs-star { width: 11px; height: 11px; }
   .fs-chip.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
   .fs-chip.pop { background: var(--warning-muted); color: var(--warning); border-color: var(--warning); font-weight: 600; }
-  .fs-chip.done { background: var(--success-muted); color: var(--success); border-color: var(--success-border); }
+  .fs-chip.pop.active { outline: 1px solid var(--warning); outline-offset: 1px; }
 
   .phone-viewport { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
   .fs-screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
@@ -1186,23 +1186,25 @@ li[data-target].is-highlight {
 
 <nav class="proto-nav">
   <a href="order-sync-prototype.html" class="proto-back"><i data-lucide="arrow-left"></i>返回主原型</a>
-  <span class="proto-title">用户绑定授权 · 临时方案旅程：登录页协议授权（写明用途）→ 订单页公域账号绑定 → 会员中心解绑（点击手机内按钮走查）</span>
+  <span class="proto-title">用户绑定授权临时方案 · 用户旅程（登录协议 → 购买 → 订单绑定/校验 → 会员解绑）</span>
 </nav>
 
 <div class="proto-layout">
 
   <nav class="toc-sidebar">
-    <div class="toc-title">临时方案旅程</div>
-    <a class="toc-item" href="#section-01-journey"><span class="toc-dot"></span>临时方案-01 用户旅程</a>
-    <a class="toc-item" href="#section-02-mismatch"><span class="toc-dot"></span>临时方案-02 不一致分支</a>
-    <a class="toc-item" href="#section-03-member"><span class="toc-dot"></span>临时方案-03 会员中心解绑</a>
+    <div class="toc-title">用户旅程</div>
+    <a class="toc-item" href="#section-01-first"><span class="toc-dot"></span>旅程-01 初次授权绑定</a>
+    <a class="toc-item" href="#section-02-authorized"><span class="toc-dot"></span>旅程-02 已完成授权 · 一致</a>
+    <a class="toc-item" href="#section-03-mismatch"><span class="toc-dot"></span>旅程-03 已完成授权 · 不一致</a>
+    <a class="toc-item" href="#section-04-conflict"><span class="toc-dot"></span>旅程-04 公域号已被他人绑定</a>
+    <a class="toc-item" href="#section-05-member"><span class="toc-dot"></span>旅程-05 会员解绑页面</a>
   </nav>
 
   <div class="sections-col">
 
-<!-- ============ 临时方案-01：主旅程（登录授权 → 订单绑定 → 结算） ============ -->
-<div id="section-01-journey" class="proto-stack">
-  <div class="section-label">临时方案-01 用户旅程 · 登录页协议授权 → 订单页公域账号绑定 → 结算</div>
+<!-- ============ 旅程-01：初次授权绑定 ============ -->
+<div id="section-01-first" class="proto-stack">
+  <div class="section-label">旅程-01 初次授权绑定 · 登录协议 → 商品详情 → 临时订单绑定确认</div>
   <div class="proto-with-prd">
 
     <div class="macos-window">
@@ -1210,30 +1212,30 @@ li[data-target].is-highlight {
         <div class="macos-dot red"></div>
         <div class="macos-dot yellow"></div>
         <div class="macos-dot green"></div>
-        <div class="macos-title">临时方案 — 主旅程</div>
+        <div class="macos-title">旅程-01 — 初次授权绑定</div>
       </div>
       <div class="macos-body mp-stage">
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-          <div class="flow-steps" data-comp="steps-j1">
-            <span class="fs-chip active" data-step="0">会员登录 · 授权</span>
+          <div class="flow-steps">
+            <span class="fs-chip active" data-step="0">登录 · 授权</span>
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
-            <span class="fs-chip pop" data-step="1"><i data-lucide="star" class="fs-star"></i>订单绑定</span>
+            <span class="fs-chip" data-step="1">商品详情</span>
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
-            <span class="fs-chip" data-step="2">提交订单</span>
+            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>临时订单 · 绑定</span>
           </div>
           <div class="phone-viewport">
 
-            <!-- 屏幕 1：会员登录页（授权协议写在登录页，写明用途） -->
-            <div id="j1-login" class="fs-screen active" data-step="0">
+            <!-- 登录页：协议附件 + 勾选同意 -->
+            <div id="c1-login" class="fs-screen active" data-step="0">
               <div class="mp-topbar">
                 <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
                 <span class="t-title">会员登录</span>
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="mp-context" data-comp="ctx-j1"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B · 未登录</div>
+                <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B · 未登录</div>
                 <div style="font-size:22px;font-weight:700;margin:6px 0 16px;">欢迎回来</div>
                 <div class="form-group">
                   <label class="form-label">手机号</label>
@@ -1246,45 +1248,64 @@ li[data-target].is-highlight {
                     <button class="login-code-btn" data-toast="验证码已发送（演示）">获取验证码</button>
                   </div>
                 </div>
-                <button class="btn btn-secondary" style="width:100%;" data-toast="已发起微信一键登录（演示）">微信一键登录</button>
-
-                <!-- 授权协议（登录页 · 勾选即同意授权，写明用途） -->
-                <div class="info-card mp-card" style="margin-top:16px;background:var(--muted);" data-comp="proto-j1">
-                  <label class="mp-check"><input type="checkbox" id="agreeJ1" /><span><strong>我已阅读并同意《订单同步授权协议》</strong></span></label>
-                  <div class="mp-dialog-sub" style="margin:-6px 0 8px 26px;">未勾选无法完成登录（授权用途见下，可点击查看协议全文）</div>
+                <div class="info-card mp-card" style="background:var(--muted);" data-comp="proto-c1">
+                  <label class="mp-check"><input type="checkbox" id="c1agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong></span></label>
+                  <div class="mp-dialog-sub" style="margin:-6px 0 8px 26px;">未勾选无法登录（协议内容附件见下）</div>
                   <div style="border-top:1px solid var(--border);padding-top:10px;">
-                    <div style="font-size:12px;font-weight:600;margin-bottom:6px;">授权用途（协议内写明）</div>
-                    <div class="purpose-list" data-comp="purpose-j1">
-                      <div class="pl-row"><i data-lucide="check"></i><span>将本账号产生的交易订单信息同步至公域账号（用于统一售后与会员权益）</span></div>
-                      <div class="pl-row"><i data-lucide="check"></i><span>公域优惠券的领取、发放与核销关联至公域账号</span></div>
-                      <div class="pl-row"><i data-lucide="check"></i><span>授权仅用于上述目的，可随时在会员中心撤回或解绑</span></div>
+                    <div style="font-size:12px;font-weight:600;margin-bottom:6px;">授权协议附件 · 授权用途</div>
+                    <div class="purpose-list">
+                      <div class="pl-row"><i data-lucide="check"></i><span>交易订单信息同步至公域账号（售后与会员权益统一管理）</span></div>
+                      <div class="pl-row"><i data-lucide="check"></i><span>公域优惠券领取、发放与核销关联至公域账号</span></div>
+                      <div class="pl-row"><i data-lucide="check"></i><span>授权仅用于上述用途，可随时在会员中心撤回/解绑</span></div>
                     </div>
                     <div style="margin-top:6px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》全文（演示）">查看协议全文 ›</a></div>
                   </div>
                 </div>
               </div>
               <div class="mp-bottom-bar">
-                <button class="btn btn-primary" id="btnJ1login" disabled data-comp="btn-login-j1">登录并同意授权</button>
+                <button class="btn btn-primary" id="c1login" disabled>登录并同意授权</button>
               </div>
             </div>
 
-            <!-- 屏幕 2：订单确认页（自动弹出公域账号绑定确认） -->
-            <div id="j1-order" class="fs-screen" data-step="1">
+            <!-- 商品详情页 -->
+            <div id="c1-prod" class="fs-screen" data-step="1">
               <div class="mp-topbar">
-                <button class="t-back" data-screen-back="j1-login"><i data-lucide="arrow-left"></i></button>
+                <button class="t-back" data-screen-back="c1-login"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">商品详情</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-context"><i data-lucide="user-check"></i>会员 138****8888 已登录 · 来自 视频号直播间 · 公域账号 B</div>
+                <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+                <div class="info-card mp-card">
+                  <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                  <div style="margin-top:6px;"><span class="mp-price">¥149</span><span style="margin-left:8px;font-size:12px;color:var(--text-3);">已售 2.3k+</span></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+                <button class="btn btn-primary" id="c1buy" data-comp="buy-c1">立即购买</button>
+              </div>
+            </div>
+
+            <!-- 订单确认页（临时订单已生成，自动弹出绑定确认） -->
+            <div id="c1-order" class="fs-screen" data-step="2">
+              <div class="mp-topbar">
+                <button class="t-back" data-screen-back="c1-prod"><i data-lucide="arrow-left"></i></button>
                 <span class="t-title">确认订单</span>
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="sync-bar" data-comp="sync-j1">
+                <div class="mp-banner success" id="c1ok" style="display:none;" data-comp="ok-c1"><i data-lucide="circle-check"></i><span>临时订单已生成 · 已同意绑定公域账号 B，订单将同步至公域</span></div>
+                <div class="mp-banner warn" id="c1no" style="display:none;" data-comp="no-c1"><i data-lucide="alert-triangle"></i><span>订单已生成，但<b>未同意绑定</b>：本单订单<b>不传回公域</b>（不同步、不享受公域优惠）</span></div>
+                <div class="sync-bar" data-comp="sync-c1">
                   <span class="sb-icon"><i data-lucide="link-2"></i></span>
                   <div class="sb-main">
-                    <div class="sb-link" id="j1link">待确认公域账号绑定</div>
-                    <div class="sb-meta" id="j1meta">协议授权已在登录页完成 · 绑定需在订单页确认</div>
+                    <div class="sb-link" id="c1link">待确认公域账号绑定</div>
+                    <div class="sb-meta" id="c1meta">临时订单已生成 · 需确认公域账号绑定</div>
                   </div>
-                  <span class="badge badge-warn" id="j1badge">待绑定</span>
+                  <span class="badge badge-warn" id="c1badge">待绑定</span>
                 </div>
-                <div class="mp-banner warn" id="j1skip" style="display:none;" data-comp="skip-j1"><i data-lucide="alert-triangle"></i><span>未确认绑定：本单订单<b>不同步至公域、不享受公域优惠</b>；可点击下方「去绑定」重新确认</span></div>
                 <div class="mp-section-title">商品清单</div>
                 <div class="info-card mp-card">
                   <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
@@ -1293,30 +1314,27 @@ li[data-target].is-highlight {
                 <div class="info-card mp-card">
                   <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥149</span></div>
                 </div>
-                <div id="j1retry" style="display:none;">
-                  <button class="btn btn-primary" style="width:100%;" data-open="popupJ1">去绑定</button>
-                </div>
               </div>
               <div class="mp-bottom-bar">
-                <button class="btn btn-primary" id="j1submit" data-comp="submit-j1">提交订单</button>
+                <button class="btn btn-primary" id="c1submit" data-comp="submit-c1">确认生成订单</button>
               </div>
             </div>
           </div>
 
-          <!-- 订单页 · 公域账号绑定确认弹窗（流程与之前一致，此处仅绑定、授权已在登录页完成） -->
-          <div class="mp-overlay" id="popupJ1" style="display:none;">
-            <div class="form-dialog" data-comp="dialog-j1">
+          <!-- 公域账号绑定确认弹窗 -->
+          <div class="mp-overlay" id="popC1" style="display:none;">
+            <div class="form-dialog" data-comp="dialog-c1">
               <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
               <div class="form-dialog-title">确认绑定公域账号</div>
-              <div class="mp-dialog-note">授权已随登录完成（授权用途见《订单同步授权协议》）。现检测到您当前使用的公域账号：</div>
-              <div class="mp-compare" data-comp="compare-j1">
+              <div class="mp-dialog-note">临时订单已生成。检测到您当前使用的公域账号：</div>
+              <div class="mp-compare" data-comp="compare-c1">
                 <div class="cmp-row"><span class="cmp-label">检测到的公域账号</span><span class="cmp-value">B</span></div>
                 <div class="cmp-row"><span class="cmp-label">来源</span><span class="cmp-value">视频号直播间 · 微信授权</span></div>
               </div>
-              <div class="mp-dialog-sub" style="margin-bottom:10px;">确认后用于订单同步与优惠券归属；如账号不符可稍后在订单页重新绑定。</div>
+              <div class="mp-dialog-sub" style="margin-bottom:10px;">授权已在登录页完成（用途见协议）；此处仅确认公域账号绑定关系，用于订单同步与优惠券归属。</div>
               <div class="form-actions">
-                <button class="btn btn-secondary" data-skip-bind-j1>暂不绑定</button>
-                <button class="btn btn-primary" id="btnBindJ1" data-comp="btn-bind-j1">确认绑定</button>
+                <button class="btn btn-secondary" id="c1skip" data-comp="skip-c1">暂不绑定</button>
+                <button class="btn btn-primary" id="c1bind" data-comp="bind-c1">同意绑定</button>
               </div>
             </div>
           </div>
@@ -1330,17 +1348,14 @@ li[data-target].is-highlight {
         <div class="prd-panel__title">功能概览</div>
         <div class="prd-panel__body">
           <div class="prd-section">
-            <div class="prd-section__title">临时方案-01：用户旅程（登录授权 → 订单绑定 → 结算）</div>
+            <div class="prd-section__title">旅程-01：初次授权绑定</div>
             <ul>
-              <li><strong>方案要点</strong>：授权协议勾选从购买弹窗前移到<b>会员登录页</b>，协议内写明授权用途；订单页仅承担「公域账号绑定」确认；解绑保留在会员中心</li>
-              <li data-target="ctx-j1"><strong>会员登录页</strong>：展示公域来源（公域账号 B）与登录表单（手机号/验证码/微信一键登录）</li>
-              <li data-target="proto-j1"><strong>授权协议勾选</strong>：登录页展示《订单同步授权协议》勾选，<b>未勾选不可登录</b>（临时方案新增位置）</li>
-              <li data-target="purpose-j1"><strong>授权用途说明</strong>：协议内写明用途——订单同步、公域优惠券发放与核销、售后与会员权益，并可随时撤回/解绑</li>
-              <li data-target="btn-login-j1"><strong>「登录并同意授权」按钮</strong>：勾选协议后可用；登录即完成协议授权，进入订单页</li>
-              <li data-target="dialog-j1"><strong>订单页绑定弹窗（自动弹出）</strong>：进入订单确认页自动弹出「确认绑定公域账号」，检测当前公域账号 B 征求用户同意（流程与之前一致，此处不重复授权）</li>
-              <li data-target="compare-j1"><strong>账号检测结果</strong>：展示检测到的公域账号 B 与来源</li>
-              <li data-target="btn-bind-j1"><strong>「确认绑定」按钮</strong>：点击后绑定建立，状态栏更新为「已授权同步」，可正常提交订单</li>
-              <li data-target="skip-j1"><strong>「暂不绑定」</strong>：本单订单不同步至公域、不享受公域优惠，可随时「去绑定」补确认</li>
+              <li><strong>链路</strong>：会员登录页（协议内容附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成临时订单并弹出公域账号绑定确认</li>
+              <li data-target="proto-c1"><strong>登录页协议附件</strong>：展示《订单同步授权协议》勾选与授权用途附件，未勾选不可登录</li>
+              <li data-target="buy-c1"><strong>「立即购买」按钮</strong>：点击后生成临时订单并自动弹出「确认绑定公域账号」</li>
+              <li data-target="dialog-c1"><strong>绑定确认弹窗</strong>：展示检测到的公域账号 B，征求是否同意绑定（流程与之前一致）</li>
+              <li data-target="bind-c1"><strong>「同意绑定」</strong>：绑定建立，确认生成订单并同步至公域账号 B（提交无额外提示）</li>
+              <li data-target="skip-c1"><strong>「暂不绑定」</strong>：仍生成订单，但页面提示「本单不传回公域」（不同步、不享受公域优惠）</li>
             </ul>
           </div>
         </div>
@@ -1349,9 +1364,9 @@ li[data-target].is-highlight {
   </div>
 </div>
 
-<!-- ============ 临时方案-02：不一致分支（订单页重绑 / 不同步） ============ -->
-<div id="section-02-mismatch" class="proto-stack">
-  <div class="section-label">临时方案-02 不一致分支 · 登录已完成授权，订单页检测不一致 → 重绑或不同步</div>
+<!-- ============ 旅程-02：已完成授权 · 一致（购买零弹窗零处理） ============ -->
+<div id="section-02-authorized" class="proto-stack">
+  <div class="section-label">旅程-02 已完成授权 · 一致 · 购买流程零弹出零处理</div>
   <div class="proto-with-prd">
 
     <div class="macos-window">
@@ -1359,42 +1374,74 @@ li[data-target].is-highlight {
         <div class="macos-dot red"></div>
         <div class="macos-dot yellow"></div>
         <div class="macos-dot green"></div>
-        <div class="macos-title">临时方案 — 不一致分支</div>
+        <div class="macos-title">旅程-02 — 已完成授权 · 一致</div>
       </div>
       <div class="macos-body mp-stage">
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-          <div class="flow-steps" data-comp="steps-j2">
-            <span class="fs-chip done" data-step="0">登录 · 授权</span>
+          <div class="flow-steps">
+            <span class="fs-chip active" data-step="0">登录 · 授权</span>
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
-            <span class="fs-chip pop active" data-step="1"><i data-lucide="star" class="fs-star"></i>订单绑定（不一致）</span>
+            <span class="fs-chip" data-step="1">商品详情</span>
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
-            <span class="fs-chip" data-step="2">提交订单</span>
+            <span class="fs-chip" data-step="2">生成订单（无弹窗）</span>
           </div>
           <div class="phone-viewport">
-
-            <!-- 订单确认页（自动弹出不一致重绑确认） -->
-            <div id="j2-order" class="fs-screen active" data-step="1">
+            <div id="c2-login" class="fs-screen active" data-step="0">
               <div class="mp-topbar">
-                <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
+                <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">会员登录</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
+                <div style="font-size:22px;font-weight:700;margin:6px 0 16px;">欢迎回来</div>
+                <div class="info-card mp-card" style="background:var(--muted);" data-comp="proto-c2">
+                  <label class="mp-check"><input type="checkbox" id="c2agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong>（已授权用户，协议附件仍随登录展示）</span></label>
+                  <div class="mp-dialog-sub" style="margin:-6px 0 8px 26px;">未勾选无法登录；授权用途见协议附件（订单同步 / 公域优惠券 / 售后会员权益）</div>
+                  <div style="margin-top:4px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》全文（演示）">查看协议全文 ›</a></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-primary" id="c2login" disabled>登录并同意授权</button>
+              </div>
+            </div>
+
+            <div id="c2-prod" class="fs-screen" data-step="1">
+              <div class="mp-topbar">
+                <button class="t-back" data-screen-back="c2-login"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">商品详情</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-context"><i data-lucide="user-check"></i>会员 138****8888 已登录 · 公域账号 B · 已授权已绑定（一致）</div>
+                <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+                <div class="info-card mp-card">
+                  <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                  <div style="margin-top:6px;"><span class="mp-price">¥149</span></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+                <button class="btn btn-primary" id="c2buy" data-comp="buy-c2">立即购买</button>
+              </div>
+            </div>
+
+            <div id="c2-order" class="fs-screen" data-step="2">
+              <div class="mp-topbar">
+                <button class="t-back" data-screen-back="c2-prod"><i data-lucide="arrow-left"></i></button>
                 <span class="t-title">确认订单</span>
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="mp-context" data-comp="ctx-j2"><i data-lucide="shield-check"></i>已完成：会员登录页协议授权（授权用途见《订单同步授权协议》）· 当前公域账号 B</div>
-                <div class="mp-banner warn" id="nJ2" data-comp="notice-j2"><i data-lucide="alert-triangle"></i><span>当前公域账号与已绑定账号不一致，请先确认绑定关系</span></div>
-                <div class="sync-bar" data-comp="sync-j2">
-                  <span class="sb-icon"><i data-lucide="link-2"></i></span>
+                <div class="sync-bar" data-comp="sync-c2">
+                  <span class="sb-icon"><i data-lucide="shield-check"></i></span>
                   <div class="sb-main">
-                    <div class="sb-link" id="j2link">已绑定 公域账号 A ↔ 会员 138****8888</div>
-                    <div class="sb-meta" id="j2meta">当前公域账号 B · 不一致</div>
+                    <div class="sb-link">公域账号 B ↔ 会员 138****8888</div>
+                    <div class="sb-meta">已授权 · 检测一致 · 本单不弹出、不做额外处理</div>
                   </div>
-                  <span class="badge badge-warn" id="j2badge">待确认</span>
-                </div>
-                <div class="info-card mp-card" style="padding:12px 14px;display:flex;align-items:center;gap:8px;" id="retryJ2">
-                  <button class="btn btn-primary" style="flex:1;" data-open="popupJ2">重新绑定</button>
-                  <a href="#" class="mb-link" data-toast="已打开《订单同步授权协议》（演示）">查看授权协议</a>
+                  <span class="badge badge-success">已授权同步</span>
                 </div>
                 <div class="mp-section-title">商品清单</div>
                 <div class="info-card mp-card">
@@ -1406,24 +1453,7 @@ li[data-target].is-highlight {
                 </div>
               </div>
               <div class="mp-bottom-bar">
-                <button class="btn btn-primary" id="submitJ2" data-comp="submit-j2">提交订单</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 不一致 · 重新绑定确认弹窗（自动弹出） -->
-          <div class="mp-overlay" id="popupJ2" style="display:none;">
-            <div class="form-dialog" data-comp="dialog-j2">
-              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
-              <div class="form-dialog-title">检测到当前公域账号与已绑定账号不一致</div>
-              <div class="mp-compare" data-comp="compare-j2">
-                <div class="cmp-row"><span class="cmp-label">您当前登录的公域账号</span><span class="cmp-value">B</span></div>
-                <div class="cmp-row"><span class="cmp-label">已绑定的公域账号</span><span class="cmp-value">A</span></div>
-              </div>
-              <div class="mp-dialog-note">确认重新绑定后，本单订单将同步至账号 B；若保持原绑定，本单<b>不同步至公域、不享受公域优惠</b>（不会同步回原账号 A）。</div>
-              <div class="form-actions">
-                <button class="btn btn-secondary" id="btnKeepJ2" data-comp="keep-j2">保持原绑定</button>
-                <button class="btn btn-primary" id="btnRebindJ2" data-comp="rebind-j2">确认重新绑定</button>
+                <button class="btn btn-primary" id="c2submit" data-comp="submit-c2">确认生成订单</button>
               </div>
             </div>
           </div>
@@ -1437,15 +1467,13 @@ li[data-target].is-highlight {
         <div class="prd-panel__title">功能概览</div>
         <div class="prd-panel__body">
           <div class="prd-section">
-            <div class="prd-section__title">临时方案-02：不一致分支</div>
+            <div class="prd-section__title">旅程-02：已完成授权 · 一致（零弹出零处理）</div>
             <ul>
-              <li><strong>方案要点</strong>：授权已随登录完成；订单页检测到当前公域账号 B 与已绑定账号 A 不一致时，按原流程弹出绑定确认（场景C 逻辑，PRD 5.2）</li>
-              <li data-target="ctx-j2"><strong>前置说明</strong>：提示登录页协议授权已完成，仅绑定关系待确认</li>
-              <li data-target="dialog-j2"><strong>重新绑定弹窗（自动弹出）</strong>：展示当前账号 B / 已绑定账号 A 对照</li>
-              <li data-target="rebind-j2"><strong>「确认重新绑定」按钮</strong>：绑定更新为 B，订单同步至 B，不一致提示消除</li>
-              <li data-target="keep-j2"><strong>「保持原绑定」按钮</strong>：绑定不变；本单订单<b>不同步至公域、不享受公域优惠</b>（不回原账号 A），状态栏更新为「不同步」</li>
-              <li data-target="sync-j2"><strong>同步状态栏</strong>：随选择更新——重绑后「已授权同步 · 检测一致」；保持原绑定「不同步」</li>
-              <li data-target="submit-j2"><strong>「提交订单」按钮</strong>：按绑定状态提示——重绑后同步至 B；未重绑则本单不同步</li>
+              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 完成后续购买流程</li>
+              <li data-target="proto-c2"><strong>登录页协议附件</strong>：已完成授权的用户登录时同样展示协议与用途附件并需勾选</li>
+              <li data-target="buy-c2"><strong>「立即购买」按钮</strong>：点击后直接生成订单，<b>不做任何弹出与处理</b>（已授权、已绑定、账号一致）</li>
+              <li data-target="sync-c2"><strong>订单确认页</strong>：展示「已授权同步」常驻状态，无弹窗、无额外确认</li>
+              <li data-target="submit-c2"><strong>「确认生成订单」按钮</strong>：正常生成订单并同步至公域账号 B</li>
             </ul>
           </div>
         </div>
@@ -1454,9 +1482,9 @@ li[data-target].is-highlight {
   </div>
 </div>
 
-<!-- ============ 临时方案-03：会员中心 · 授权关系管理与解绑 ============ -->
-<div id="section-03-member" class="proto-stack">
-  <div class="section-label">临时方案-03 会员中心 · 查看与解绑原有授权关系</div>
+<!-- ============ 旅程-03：已完成授权 · 不一致（询问是否更换绑定） ============ -->
+<div id="section-03-mismatch" class="proto-stack">
+  <div class="section-label">旅程-03 已完成授权 · 检测不一致 · 询问是否更换绑定关系</div>
   <div class="proto-with-prd">
 
     <div class="macos-window">
@@ -1464,65 +1492,350 @@ li[data-target].is-highlight {
         <div class="macos-dot red"></div>
         <div class="macos-dot yellow"></div>
         <div class="macos-dot green"></div>
-        <div class="macos-title">临时方案 — 会员中心授权管理</div>
+        <div class="macos-title">旅程-03 — 不一致 · 询问更换绑定</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="flow-steps">
+            <span class="fs-chip active" data-step="0">登录 · 授权</span>
+            <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
+            <span class="fs-chip" data-step="1">商品详情</span>
+            <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
+            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>临时订单 · 更换绑定</span>
+          </div>
+          <div class="phone-viewport">
+            <div id="c3-login" class="fs-screen active" data-step="0">
+              <div class="mp-topbar">
+                <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">会员登录</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 本次公域账号 B</div>
+                <div style="font-size:22px;font-weight:700;margin:6px 0 16px;">欢迎回来</div>
+                <div class="info-card mp-card" style="background:var(--muted);" data-comp="proto-c3">
+                  <label class="mp-check"><input type="checkbox" id="c3agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong>（授权用途见协议附件）</span></label>
+                  <div style="margin:4px 0 0 26px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》全文（演示）">查看协议全文 ›</a></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-primary" id="c3login" disabled>登录并同意授权</button>
+              </div>
+            </div>
+
+            <div id="c3-prod" class="fs-screen" data-step="1">
+              <div class="mp-topbar">
+                <button class="t-back" data-screen-back="c3-login"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">商品详情</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-context"><i data-lucide="user-check"></i>会员 138****8888 已登录 · 本次公域账号 B · 已绑定账号 A</div>
+                <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+                <div class="info-card mp-card">
+                  <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                  <div style="margin-top:6px;"><span class="mp-price">¥149</span></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+                <button class="btn btn-primary" id="c3buy" data-comp="buy-c3">立即购买</button>
+              </div>
+            </div>
+
+            <div id="c3-order" class="fs-screen" data-step="2">
+              <div class="mp-topbar">
+                <button class="t-back" data-screen-back="c3-prod"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">确认订单</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-banner success" id="c3ok" style="display:none;" data-comp="ok-c3"><i data-lucide="circle-check"></i><span>临时订单已生成 · 已更换绑定为公域账号 B，订单将同步至 B</span></div>
+                <div class="mp-banner warn" id="c3no" style="display:none;" data-comp="no-c3"><i data-lucide="alert-triangle"></i><span>订单已生成，但<b>未同意更换绑定</b>：本单订单<b>不传回公域</b>（不同步、不享受公域优惠，不会同步回原账号 A）</span></div>
+                <div class="sync-bar" data-comp="sync-c3">
+                  <span class="sb-icon"><i data-lucide="link-2"></i></span>
+                  <div class="sb-main">
+                    <div class="sb-link" id="c3link">已绑定 公域账号 A ↔ 会员 138****8888</div>
+                    <div class="sb-meta" id="c3meta">本次公域账号 B · 不一致 · 临时订单已生成</div>
+                  </div>
+                  <span class="badge badge-warn" id="c3badge">待确认</span>
+                </div>
+                <div class="mp-section-title">商品清单</div>
+                <div class="info-card mp-card">
+                  <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
+                </div>
+                <div class="mp-section-title">金额明细</div>
+                <div class="info-card mp-card">
+                  <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥149</span></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-primary" id="c3submit" data-comp="submit-c3">确认生成订单</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 询问是否更换绑定关系弹窗 -->
+          <div class="mp-overlay" id="popC3" style="display:none;">
+            <div class="form-dialog" data-comp="dialog-c3">
+              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">检测到公域账号与已绑定账号不一致</div>
+              <div class="mp-compare" data-comp="compare-c3">
+                <div class="cmp-row"><span class="cmp-label">本次登录的公域账号</span><span class="cmp-value">B</span></div>
+                <div class="cmp-row"><span class="cmp-label">已绑定的公域账号</span><span class="cmp-value">A</span></div>
+              </div>
+              <div class="mp-dialog-note">临时订单已生成。是否将绑定关系更换为本次账号 B？<br />同意更换 → 本单订单同步至 B；不同意 → 订单仍生成，但本单不传回公域（不同步、不享公域优惠）。</div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" id="c3keep" data-comp="keep-c3">不同意 · 保持原绑定</button>
+                <button class="btn btn-primary" id="c3rebind" data-comp="rebind-c3">同意更换</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">旅程-03：已完成授权 · 不一致（询问更换绑定）</div>
+            <ul>
+              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成临时订单并弹出「询问是否更换绑定关系」</li>
+              <li data-target="proto-c3"><strong>登录页协议附件</strong>：已完成授权但本次公域号不同的用户，登录时同样勾选协议</li>
+              <li data-target="dialog-c3"><strong>更换绑定询问弹窗</strong>：展示本次公域账号 B 与已绑定账号 A，询问是否更换绑定关系</li>
+              <li data-target="rebind-c3"><strong>「同意更换」</strong>：绑定更新为 B，订单同步至 B</li>
+              <li data-target="keep-c3"><strong>「不同意 · 保持原绑定」</strong>：订单仍生成，但提示本单不传回公域（不同步、不享公域优惠、不回原账号 A）</li>
+              <li data-target="submit-c3"><strong>「确认生成订单」按钮</strong>：按用户选择输出对应提示</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 旅程-04：已完成授权但公域号已被其他会员绑定 ============ -->
+<div id="section-04-conflict" class="proto-stack">
+  <div class="section-label">旅程-04 已完成授权 · 公域号已被其他会员账号绑定 · 切换账号或原会员处解绑</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">旅程-04 — 公域号已被他人绑定</div>
+      </div>
+      <div class="macos-body mp-stage">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+          <div class="flow-steps">
+            <span class="fs-chip active" data-step="0">登录 · 授权</span>
+            <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
+            <span class="fs-chip" data-step="1">商品详情</span>
+            <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
+            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>临时订单 · 账号冲突</span>
+          </div>
+          <div class="phone-viewport">
+            <div id="c4-login" class="fs-screen active" data-step="0">
+              <div class="mp-topbar">
+                <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">会员登录</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 本次公域账号 B</div>
+                <div style="font-size:22px;font-weight:700;margin:6px 0 16px;">欢迎回来</div>
+                <div class="info-card mp-card" style="background:var(--muted);" data-comp="proto-c4">
+                  <label class="mp-check"><input type="checkbox" id="c4agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong>（授权用途见协议附件）</span></label>
+                  <div style="margin:4px 0 0 26px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》全文（演示）">查看协议全文 ›</a></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-primary" id="c4login" disabled>登录并同意授权</button>
+              </div>
+            </div>
+
+            <div id="c4-prod" class="fs-screen" data-step="1">
+              <div class="mp-topbar">
+                <button class="t-back" data-screen-back="c4-login"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">商品详情</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-context"><i data-lucide="user-check"></i>会员 138****8888 已登录 · 本次公域账号 B · 与会员号 A 的绑定不一致</div>
+                <div class="detail-screenshot" style="height:200px;margin-bottom:12px;">商品主图 375×200</div>
+                <div class="info-card mp-card">
+                  <div style="font-size:16px;font-weight:600;">纯棉短袖 T 恤 燕麦色</div>
+                  <div style="margin-top:6px;"><span class="mp-price">¥149</span></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-secondary" data-toast="已加入购物车（演示）">加入购物车</button>
+                <button class="btn btn-primary" id="c4buy" data-comp="buy-c4">立即购买</button>
+              </div>
+            </div>
+
+            <div id="c4-order" class="fs-screen" data-step="2">
+              <div class="mp-topbar">
+                <button class="t-back" data-screen-back="c4-prod"><i data-lucide="arrow-left"></i></button>
+                <span class="t-title">确认订单</span>
+                <span class="t-right"></span>
+              </div>
+              <div class="mp-content">
+                <div class="mp-banner error" id="c4no" style="display:none;" data-comp="no-c4"><i data-lucide="circle-alert"></i><span>临时订单已生成，但公域账号 B 已被其他会员账号绑定：本单<b>不同步至公域</b>；可<b>切换会员账号登录</b>，或<b>至原会员账号处解绑</b>后重试（见旅程-05）</span></div>
+                <div class="sync-bar" data-comp="sync-c4">
+                  <span class="sb-icon"><i data-lucide="alert-triangle"></i></span>
+                  <div class="sb-main">
+                    <div class="sb-link" id="c4link">公域账号 B 已被其他会员绑定</div>
+                    <div class="sb-meta" id="c4meta">临时订单已生成 · 无法建立当前绑定关系</div>
+                  </div>
+                  <span class="badge badge-error" id="c4badge">不可绑定</span>
+                </div>
+                <div class="mp-section-title">商品清单</div>
+                <div class="info-card mp-card">
+                  <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
+                </div>
+                <div class="mp-section-title">金额明细</div>
+                <div class="info-card mp-card">
+                  <div class="mp-row"><span class="r-label">合计</span><span class="r-value" style="color:var(--danger);">¥149</span></div>
+                </div>
+              </div>
+              <div class="mp-bottom-bar">
+                <button class="btn btn-primary" id="c4submit" data-comp="submit-c4">确认生成订单</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 账号冲突提示弹窗 -->
+          <div class="mp-overlay" id="popC4" style="display:none;">
+            <div class="form-dialog" data-comp="dialog-c4">
+              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">该公域账号已被其他会员账号绑定</div>
+              <div class="mp-compare" data-comp="compare-c4">
+                <div class="cmp-row"><span class="cmp-label">检测到的公域账号</span><span class="cmp-value">B</span></div>
+                <div class="cmp-row"><span class="cmp-label">已绑定会员号</span><span class="cmp-value">M202608010099</span></div>
+              </div>
+              <div class="mp-dialog-note">当前公域账号 B 已授权绑定其他会员账号，当前登录会员无法直接绑定。请选择：</div>
+              <div class="purpose-list" style="margin-bottom:12px;">
+                <div class="pl-row"><i data-lucide="user-switch"></i><span><b>切换会员账号登录</b>——使用与该公域账号绑定的会员账号</span></div>
+                <div class="pl-row"><i data-lucide="unlink"></i><span><b>至原会员账号处解绑</b>——解绑后回到当前账号重试（见旅程-05）</span></div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" id="c4ok" data-comp="ok-c4">我知道了</button>
+                <button class="btn btn-primary" id="c4switch" data-comp="switch-c4">切换会员账号登录</button>
+              </div>
+            </div>
+          </div>
+          <div class="mp-toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">旅程-04：公域号已被其他会员绑定</div>
+            <ul>
+              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成临时订单并弹出账号冲突提示</li>
+              <li data-target="dialog-c4"><strong>冲突提示弹窗</strong>：检测到本次公域账号 B 已授权绑定其他会员号（M202608010099），提示<b>切换会员账号登录</b>或<b>至原会员账号处解绑</b>（见旅程-05）</li>
+              <li data-target="switch-c4"><strong>「切换会员账号登录」</strong>：退出当前登录并引导切换账号重试</li>
+              <li data-target="ok-c4"><strong>「我知道了」</strong>：关闭弹窗，订单页展示本单不同步至公域的提示</li>
+              <li data-target="no-c4"><strong>订单页提示</strong>：本单不同步至公域、不享受公域优惠，可切换账号或解绑后重试</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 旅程-05：会员解绑页面（公域授权关系模块） ============ -->
+<div id="section-05-member" class="proto-stack">
+  <div class="section-label">旅程-05 会员管理 · 公域授权关系模块 · 查看与解绑</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">旅程-05 — 会员解绑页面</div>
       </div>
       <div class="macos-body mp-stage">
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
           <div class="phone-viewport">
-            <div id="j3-manage" class="fs-screen active" data-step="0">
+            <div id="m5-manage" class="fs-screen active" data-step="0">
               <div class="mp-topbar">
                 <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
-                <span class="t-title">会员中心 · 授权管理</span>
+                <span class="t-title">会员中心</span>
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="info-card mp-card" style="display:flex;align-items:center;gap:10px;" data-comp="member-j3">
+                <div class="info-card mp-card" style="display:flex;align-items:center;gap:10px;" data-comp="member-m5">
                   <span class="win-avatar" style="width:40px;height:40px;font-size:16px;">会</span>
                   <div>
                     <div style="font-weight:600;">会员 138****8888</div>
                     <div style="font-size:12px;color:var(--text-3);">私域会员号：M202608010001</div>
                   </div>
                 </div>
-                <div class="sync-bar" data-comp="bindcard-j3">
-                  <span class="sb-icon"><i data-lucide="link-2"></i></span>
-                  <div class="sb-main">
-                    <div class="sb-link" id="j3link">当前绑定：公域账号 B</div>
-                    <div class="sb-meta" id="j3meta">授权协议 v2.0 · 2026-09-07 同意 · 用途：订单同步 / 公域优惠券 / 售后会员权益</div>
-                  </div>
-                  <span class="badge badge-success" id="j3badge">已授权</span>
-                </div>
-                <div class="mp-section-title">管理操作</div>
-                <div class="info-card mp-card" style="padding:4px 14px;" data-comp="menu-j3">
-                  <div class="mp-menu-item" style="display:flex;align-items:center;justify-content:space-between;padding:14px 2px;border-bottom:1px solid var(--border);cursor:pointer;">
-                    <span style="display:flex;align-items:center;gap:10px;font-size:14px;"><i data-lucide="file-text" style="width:16px;height:16px;color:var(--text-2);"></i>查看授权协议</span>
-                    <span style="display:flex;align-items:center;gap:6px;color:var(--text-3);font-size:12px;">v2.0<i data-lucide="chevron-right" style="width:14px;height:14px;"></i></span>
-                  </div>
-                  <div class="mp-menu-item" id="rowRebindJ3" style="display:flex;align-items:center;justify-content:space-between;padding:14px 2px;border-bottom:1px solid var(--border);cursor:pointer;" data-toast="已前往重新绑定流程（演示，见临时方案-02）">
-                    <span style="display:flex;align-items:center;gap:10px;font-size:14px;"><i data-lucide="refresh-cw" style="width:16px;height:16px;color:var(--text-2);"></i>重新绑定</span>
-                    <span style="color:var(--text-3);font-size:12px;"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i></span>
-                  </div>
-                  <div class="mp-menu-item" id="rowUnbindJ3" style="display:flex;align-items:center;justify-content:space-between;padding:14px 2px;cursor:pointer;">
-                    <span style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--destructive);"><i data-lucide="unlink" style="width:16px;height:16px;"></i>解绑公域账号</span>
-                    <span style="color:var(--destructive);font-size:12px;">需二次确认<i data-lucide="chevron-right" style="width:14px;height:14px;"></i></span>
+
+                <!-- 公域授权关系模块（新增） -->
+                <div class="mp-section-title">授权与绑定</div>
+                <div class="info-card mp-card" style="padding:0;overflow:hidden;" data-comp="module-m5">
+                  <div id="m5card" style="display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;">
+                    <span class="sb-icon" style="width:34px;height:34px;border-radius:999px;background:var(--info-muted);color:var(--info);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="link-2" style="width:16px;height:16px;"></i></span>
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-size:13px;font-weight:600;">公域授权关系</div>
+                      <div style="font-size:11px;color:var(--text-3);margin-top:2px;" id="m5sub">当前公域账号：B · 已授权（协议 v2.0）</div>
+                    </div>
+                    <span class="badge badge-success" id="m5badge">已授权</span>
+                    <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i>
                   </div>
                 </div>
-                <div class="mp-banner success" id="j3unbound" style="display:none;" data-comp="unbound-j3"><i data-lucide="circle-check"></i><span>已解绑：公域账号 B 与会员号绑定关系已解除。解绑后新订单不同步、公域优惠券可能不可用；如需重新使用，重新登录授权并在订单页确认绑定即可</span></div>
-                <div class="mp-dialog-sub">解绑仅解除公域账号与会员号的绑定关系，授权协议同意记录保留可查（PRD 5.5 / 7.6）</div>
+                <div class="mp-banner success" id="m5done" style="display:none;" data-comp="done-m5"><i data-lucide="circle-check"></i><span>已解绑：公域账号 B 与会员号绑定关系已解除。新订单不再同步，公域券可能不可用；如需重新使用，重新登录授权并在订单页确认绑定即可</span></div>
+                <div class="mp-dialog-sub">点击「公域授权关系」可查看当前绑定公域账号并提供解绑选项（PRD 5.5）</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 公域授权关系详情 -->
+          <div class="mp-overlay" id="pDetail" style="display:none;">
+            <div class="form-dialog" data-comp="detail-m5">
+              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+              <div class="form-dialog-title">公域授权关系</div>
+              <div class="mp-compare" data-comp="cmp-m5">
+                <div class="cmp-row"><span class="cmp-label">当前公域账号</span><span class="cmp-value">B</span></div>
+                <div class="cmp-row"><span class="cmp-label">授权状态</span><span class="cmp-value">已授权 · 协议 v2.0</span></div>
+                <div class="cmp-row"><span class="cmp-label">授权时间</span><span class="cmp-value">2026-09-07</span></div>
+              </div>
+              <div class="mp-dialog-sub" style="margin-bottom:12px;">授权用途：订单同步至公域 / 公域优惠券发放与核销 / 售后与会员权益。</div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-close>关闭</button>
+                <button class="btn btn-danger" id="m5step" data-comp="unbind-entry-m5">解绑授权</button>
               </div>
             </div>
           </div>
 
           <!-- 解绑二次确认 -->
-          <div class="mp-overlay" id="popupJ3" style="display:none;">
-            <div class="form-dialog" data-comp="dialog-j3">
+          <div class="mp-overlay" id="pUnbind" style="display:none;">
+            <div class="form-dialog" data-comp="confirm-m5">
               <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
               <div class="form-dialog-title" style="color:var(--destructive);">确认解绑？</div>
               <div class="mp-dialog-note">解绑后，公域账号 B 与会员号 138****8888 的绑定关系将被解除：新订单不再同步至公域，已领取未使用的公域优惠券可能无法使用；历史已同步订单与已使用券不受影响。</div>
               <div class="form-actions">
                 <button class="btn btn-secondary" data-close>取消</button>
-                <button class="btn btn-danger" id="btnUnbindJ3" data-comp="unbind-j3">确认解绑</button>
+                <button class="btn btn-danger" id="m5do" data-comp="unbind-do-m5">确认解绑</button>
               </div>
             </div>
           </div>
@@ -1536,15 +1849,14 @@ li[data-target].is-highlight {
         <div class="prd-panel__title">功能概览</div>
         <div class="prd-panel__body">
           <div class="prd-section">
-            <div class="prd-section__title">临时方案-03：会员中心 · 解绑授权关系</div>
+            <div class="prd-section__title">旅程-05：会员解绑页面</div>
             <ul>
-              <li><strong>方案要点</strong>：用户可随时进入会员中心查看授权关系，并对原有授权关系执行解绑（PRD 5.5 / 7.6）</li>
-              <li data-target="member-j3"><strong>会员信息</strong>：展示会员头像与会员号</li>
-              <li data-target="bindcard-j3"><strong>授权关系卡</strong>：展示当前绑定公域账号 B、授权协议 v2.0 与授权用途摘要，标记「已授权」</li>
-              <li data-target="menu-j3"><strong>管理菜单</strong>：查看授权协议 / 重新绑定 / 解绑公域账号（需二次确认，危险色标识）</li>
-              <li data-target="dialog-j3"><strong>解绑二次确认</strong>：说明解绑后果——订单不再同步、公域券可能不可用、历史数据不受影响</li>
-              <li data-target="unbind-j3"><strong>「确认解绑」按钮</strong>：解绑成功后状态更新并提示影响与恢复路径</li>
-              <li><strong>恢复路径</strong>：重新使用需重新登录授权（登录页协议）并在订单页确认公域账号绑定（PRD 7.6）</li>
+              <li><strong>方案要点</strong>：会员管理页新增「公域授权关系」模块，点击后显示当前公域账号并提供解绑选项</li>
+              <li data-target="module-m5"><strong>「公域授权关系」模块</strong>：展示当前绑定公域账号 B 与授权状态，点击进入详情</li>
+              <li data-target="detail-m5"><strong>授权关系详情</strong>：展示当前公域账号 B、授权状态/协议版本/授权时间与用途摘要</li>
+              <li data-target="unbind-entry-m5"><strong>「解绑授权」按钮</strong>：进入解绑二次确认</li>
+              <li data-target="confirm-m5"><strong>解绑确认弹窗</strong>：说明解绑后果（订单不再同步、公域券可能不可用、历史数据不受影响）</li>
+              <li data-target="unbind-do-m5"><strong>「确认解绑」</strong>：解绑成功，模块状态更新为「已解绑」并提示恢复路径</li>
             </ul>
           </div>
         </div>
@@ -1582,6 +1894,14 @@ li[data-target].is-highlight {
     };
     chk.addEventListener('change', sync);
   }
+  function stateBar(badgeId, linkId, metaId, tone, badgeText, linkText, metaText) {
+    var b = document.getElementById(badgeId);
+    var l = document.getElementById(linkId);
+    var m = document.getElementById(metaId);
+    if (b) { b.className = 'badge ' + tone; b.textContent = badgeText; }
+    if (l) l.textContent = linkText;
+    if (m) m.textContent = metaText;
+  }
 
   (function init() {
     if (window.lucide) lucide.createIcons();
@@ -1591,13 +1911,6 @@ li[data-target].is-highlight {
         e.preventDefault();
         var phone = el.closest('.phone-frame');
         if (phone) showToast(phone, el.getAttribute('data-toast'));
-      });
-    });
-    document.querySelectorAll('[data-open]').forEach(function (el) {
-      el.addEventListener('click', function (e) {
-        e.preventDefault();
-        var o = document.getElementById(el.getAttribute('data-open'));
-        if (o) o.style.display = 'flex';
       });
     });
     document.querySelectorAll('[data-close]').forEach(function (el) {
@@ -1613,123 +1926,151 @@ li[data-target].is-highlight {
       });
     });
 
-    /* 主旅程：登录（协议授权）→ 订单绑定 → 结算 */
-    gate('agreeJ1', 'btnJ1login');
-    var j1Bound = false;
-    var btnJ1login = document.getElementById('btnJ1login');
-    if (btnJ1login) btnJ1login.addEventListener('click', function () {
-      var phone = btnJ1login.closest('.phone-frame');
-      showScreen(phone, 'j1-order');
-      var p = document.getElementById('popupJ1');
-      p.style.display = 'flex';
-      showToast(phone, '登录成功，授权已随登录完成，正在检测公域账号…');
+    /* 旅程-01 初次授权绑定 */
+    gate('c1agree', 'c1login');
+    var c1bound = false;
+    var c1login = document.getElementById('c1login');
+    if (c1login) c1login.addEventListener('click', function () {
+      showScreen(c1login.closest('.phone-frame'), 'c1-prod');
     });
-    var btnBindJ1 = document.getElementById('btnBindJ1');
-    if (btnBindJ1) btnBindJ1.addEventListener('click', function () {
-      var phone = btnBindJ1.closest('.phone-frame');
-      document.getElementById('popupJ1').style.display = 'none';
-      j1Bound = true;
-      var badge = document.getElementById('j1badge');
-      var link = document.getElementById('j1link');
-      var meta = document.getElementById('j1meta');
-      var skip = document.getElementById('j1skip');
-      var retry = document.getElementById('j1retry');
-      if (badge) { badge.className = 'badge badge-success'; badge.textContent = '已授权同步'; }
-      if (link) link.textContent = '公域账号 B ↔ 会员 138****8888';
-      if (meta) meta.textContent = '已绑定 · 检测一致，正常结算';
-      if (skip) skip.style.display = 'none';
-      if (retry) retry.style.display = 'none';
-      var order = document.getElementById('j1-order');
-      if (order) { order.dataset.step = '2'; showScreen(phone, 'j1-order'); }
-      showToast(phone, '绑定成功，订单同步已开启');
+    var c1buy = document.getElementById('c1buy');
+    if (c1buy) c1buy.addEventListener('click', function () {
+      var phone = c1buy.closest('.phone-frame');
+      showScreen(phone, 'c1-order');
+      document.getElementById('popC1').style.display = 'flex';
     });
-    document.querySelectorAll('[data-skip-bind-j1]').forEach(function (el) {
-      el.addEventListener('click', function () {
-        var phone = el.closest('.phone-frame');
-        document.getElementById('popupJ1').style.display = 'none';
-        var skip = document.getElementById('j1skip');
-        var retry = document.getElementById('j1retry');
-        if (skip) skip.style.display = 'flex';
-        if (retry) retry.style.display = 'block';
-        showToast(phone, '已暂不绑定：本单订单不同步至公域、不享受公域优惠');
-      });
+    var c1bind = document.getElementById('c1bind');
+    if (c1bind) c1bind.addEventListener('click', function () {
+      var phone = c1bind.closest('.phone-frame');
+      document.getElementById('popC1').style.display = 'none';
+      c1bound = true;
+      stateBar('c1badge', 'c1link', 'c1meta', 'badge-success', '已授权同步', '公域账号 B ↔ 会员 138****8888', '已绑定 · 检测一致，订单将同步至公域');
+      document.getElementById('c1ok').style.display = 'flex';
+      document.getElementById('c1no').style.display = 'none';
+      showToast(phone, '已同意绑定：订单已生成并同步至公域账号 B');
     });
-    var j1submit = document.getElementById('j1submit');
-    if (j1submit) j1submit.addEventListener('click', function () {
-      var phone = j1submit.closest('.phone-frame');
-      showToast(phone, j1Bound
-        ? '订单已提交，支付后自动同步至公域账号 B'
-        : '订单已提交（未确认绑定，本单不同步至公域）');
+    var c1skip = document.getElementById('c1skip');
+    if (c1skip) c1skip.addEventListener('click', function () {
+      var phone = c1skip.closest('.phone-frame');
+      document.getElementById('popC1').style.display = 'none';
+      stateBar('c1badge', 'c1link', 'c1meta', 'badge-default', '不同步', '未绑定公域账号', '订单已生成 · 本单不传回公域');
+      document.getElementById('c1no').style.display = 'flex';
+      document.getElementById('c1ok').style.display = 'none';
+      showToast(phone, '订单已生成，本单不传回公域（未同意绑定）');
+    });
+    var c1submit = document.getElementById('c1submit');
+    if (c1submit) c1submit.addEventListener('click', function () {
+      var phone = c1submit.closest('.phone-frame');
+      showToast(phone, c1bound ? '订单已生成并同步至公域账号 B' : '订单已生成（未确认绑定：本单不传回公域）');
     });
 
-    /* 不一致分支 */
-    var j2Rebound = false;
-    function j2Notice(tone, html) {
-      var n = document.getElementById('nJ2');
-      if (!n) return;
-      n.className = 'mp-banner ' + tone;
-      n.innerHTML = '<i data-lucide="' + (tone === 'success' ? 'circle-check' : 'alert-triangle') + '"></i><span>' + html + '</span>';
-      if (window.lucide) lucide.createIcons();
-    }
-    var btnKeepJ2 = document.getElementById('btnKeepJ2');
-    if (btnKeepJ2) btnKeepJ2.addEventListener('click', function () {
-      var phone = btnKeepJ2.closest('.phone-frame');
-      document.getElementById('popupJ2').style.display = 'none';
-      var badge = document.getElementById('j2badge');
-      var link = document.getElementById('j2link');
-      var meta = document.getElementById('j2meta');
-      if (badge) { badge.className = 'badge badge-default'; badge.textContent = '不同步'; }
-      if (link) link.textContent = '当前账号 B ≠ 已绑定账号 A';
-      if (meta) meta.textContent = '保持原绑定 · 本单不同步至公域，不享受公域优惠';
-      j2Notice('warn', '保持原绑定：本单订单不同步至公域、不享受公域优惠（不会同步回原账号 A）；确认重新绑定后可同步至账号 B');
-      showToast(phone, '保持原绑定：本单订单不同步至公域（不会同步回原账号 A）');
+    /* 旅程-02 已完成授权 · 一致（零弹窗） */
+    gate('c2agree', 'c2login');
+    var c2login = document.getElementById('c2login');
+    if (c2login) c2login.addEventListener('click', function () {
+      showScreen(c2login.closest('.phone-frame'), 'c2-prod');
     });
-    var btnRebindJ2 = document.getElementById('btnRebindJ2');
-    if (btnRebindJ2) btnRebindJ2.addEventListener('click', function () {
-      var phone = btnRebindJ2.closest('.phone-frame');
-      document.getElementById('popupJ2').style.display = 'none';
-      j2Rebound = true;
-      var badge = document.getElementById('j2badge');
-      var link = document.getElementById('j2link');
-      var meta = document.getElementById('j2meta');
-      var retry = document.getElementById('retryJ2');
-      if (badge) { badge.className = 'badge badge-success'; badge.textContent = '已授权同步'; }
-      if (link) link.textContent = '公域账号 B ↔ 会员 138****8888';
-      if (meta) meta.textContent = '已重新绑定 · 检测一致，正常结算';
-      if (retry) retry.style.display = 'none';
-      j2Notice('success', '已更新绑定为公域账号 B：本单订单将同步至账号 B，公域优惠可用');
-      showToast(phone, '已重新绑定为公域账号 B，订单同步开启');
+    var c2buy = document.getElementById('c2buy');
+    if (c2buy) c2buy.addEventListener('click', function () {
+      showScreen(c2buy.closest('.phone-frame'), 'c2-order');
     });
-    var submitJ2 = document.getElementById('submitJ2');
-    if (submitJ2) submitJ2.addEventListener('click', function () {
-      var phone = submitJ2.closest('.phone-frame');
-      showToast(phone, j2Rebound
-        ? '订单已提交，支付后自动同步至公域账号 B'
-        : '订单已提交（账号不一致，本单不同步至公域）');
+    var c2submit = document.getElementById('c2submit');
+    if (c2submit) c2submit.addEventListener('click', function () {
+      showToast(c2submit.closest('.phone-frame'), '订单已生成并同步至公域账号 B（全程无弹出、无处理）');
     });
 
-    /* 会员中心 · 解绑 */
-    var rowUnbind = document.getElementById('rowUnbindJ3');
-    if (rowUnbind) rowUnbind.addEventListener('click', function () {
-      document.getElementById('popupJ3').style.display = 'flex';
+    /* 旅程-03 不一致 · 询问更换绑定 */
+    gate('c3agree', 'c3login');
+    var c3rebound = false;
+    var c3login = document.getElementById('c3login');
+    if (c3login) c3login.addEventListener('click', function () {
+      showScreen(c3login.closest('.phone-frame'), 'c3-prod');
     });
-    var btnUnbindJ3 = document.getElementById('btnUnbindJ3');
-    if (btnUnbindJ3) btnUnbindJ3.addEventListener('click', function () {
-      var phone = btnUnbindJ3.closest('.phone-frame');
-      document.getElementById('popupJ3').style.display = 'none';
-      var badge = document.getElementById('j3badge');
-      var link = document.getElementById('j3link');
-      var meta = document.getElementById('j3meta');
-      var bound = document.getElementById('j3unbound');
-      var row = document.getElementById('rowUnbindJ3');
-      var row2 = document.getElementById('rowRebindJ3');
+    var c3buy = document.getElementById('c3buy');
+    if (c3buy) c3buy.addEventListener('click', function () {
+      var phone = c3buy.closest('.phone-frame');
+      showScreen(phone, 'c3-order');
+      document.getElementById('popC3').style.display = 'flex';
+    });
+    var c3rebind = document.getElementById('c3rebind');
+    if (c3rebind) c3rebind.addEventListener('click', function () {
+      var phone = c3rebind.closest('.phone-frame');
+      document.getElementById('popC3').style.display = 'none';
+      c3rebound = true;
+      stateBar('c3badge', 'c3link', 'c3meta', 'badge-success', '已授权同步', '公域账号 B ↔ 会员 138****8888', '已更换绑定 · 订单将同步至 B');
+      document.getElementById('c3ok').style.display = 'flex';
+      document.getElementById('c3no').style.display = 'none';
+      showToast(phone, '已同意更换绑定：订单将同步至公域账号 B');
+    });
+    var c3keep = document.getElementById('c3keep');
+    if (c3keep) c3keep.addEventListener('click', function () {
+      var phone = c3keep.closest('.phone-frame');
+      document.getElementById('popC3').style.display = 'none';
+      stateBar('c3badge', 'c3link', 'c3meta', 'badge-default', '不同步', '本次账号 B ≠ 已绑定账号 A', '保持原绑定 · 本单不传回公域');
+      document.getElementById('c3no').style.display = 'flex';
+      document.getElementById('c3ok').style.display = 'none';
+      showToast(phone, '订单已生成，本单不传回公域（不同意更换绑定）');
+    });
+    var c3submit = document.getElementById('c3submit');
+    if (c3submit) c3submit.addEventListener('click', function () {
+      var phone = c3submit.closest('.phone-frame');
+      showToast(phone, c3rebound ? '订单已生成并同步至公域账号 B' : '订单已生成（未更换绑定：本单不传回公域）');
+    });
+
+    /* 旅程-04 公域号已被其他会员绑定 */
+    gate('c4agree', 'c4login');
+    var c4login = document.getElementById('c4login');
+    if (c4login) c4login.addEventListener('click', function () {
+      showScreen(c4login.closest('.phone-frame'), 'c4-prod');
+    });
+    var c4buy = document.getElementById('c4buy');
+    if (c4buy) c4buy.addEventListener('click', function () {
+      var phone = c4buy.closest('.phone-frame');
+      showScreen(phone, 'c4-order');
+      document.getElementById('popC4').style.display = 'flex';
+    });
+    var c4switch = document.getElementById('c4switch');
+    if (c4switch) c4switch.addEventListener('click', function () {
+      var phone = c4switch.closest('.phone-frame');
+      document.getElementById('popC4').style.display = 'none';
+      showScreen(phone, 'c4-login');
+      showToast(phone, '已退出当前登录，请切换为绑定该公域账号的会员账号登录（演示）');
+    });
+    var c4ok = document.getElementById('c4ok');
+    if (c4ok) c4ok.addEventListener('click', function () {
+      var phone = c4ok.closest('.phone-frame');
+      document.getElementById('popC4').style.display = 'none';
+      document.getElementById('c4no').style.display = 'flex';
+      showToast(phone, '本单不同步至公域；可切换会员账号或至原会员账号处解绑后重试');
+    });
+    var c4submit = document.getElementById('c4submit');
+    if (c4submit) c4submit.addEventListener('click', function () {
+      showToast(c4submit.closest('.phone-frame'), '订单已生成（公域账号不可绑定：本单不同步至公域）');
+    });
+
+    /* 旅程-05 会员中心 · 公域授权关系解绑 */
+    var m5card = document.getElementById('m5card');
+    if (m5card) m5card.addEventListener('click', function () {
+      if (m5card.style.pointerEvents === 'none') return;
+      document.getElementById('pDetail').style.display = 'flex';
+    });
+    var m5step = document.getElementById('m5step');
+    if (m5step) m5step.addEventListener('click', function () {
+      document.getElementById('pDetail').style.display = 'none';
+      document.getElementById('pUnbind').style.display = 'flex';
+    });
+    var m5do = document.getElementById('m5do');
+    if (m5do) m5do.addEventListener('click', function () {
+      var phone = m5do.closest('.phone-frame');
+      document.getElementById('pUnbind').style.display = 'none';
+      var sub = document.getElementById('m5sub');
+      var badge = document.getElementById('m5badge');
+      var done = document.getElementById('m5done');
+      if (sub) sub.textContent = '当前绑定：未绑定（已解绑）';
       if (badge) { badge.className = 'badge badge-default'; badge.textContent = '已解绑'; }
-      if (link) link.textContent = '当前绑定：未绑定';
-      if (meta) meta.textContent = '授权协议同意记录保留可查 · 新订单不再同步';
-      if (bound) bound.style.display = 'flex';
-      if (row) row.style.pointerEvents = 'none';
-      if (row) row.style.opacity = '0.5';
-      if (row2) row2.style.display = 'none';
+      if (done) done.style.display = 'flex';
+      m5card.style.pointerEvents = 'none';
+      m5card.style.opacity = '0.6';
       showToast(phone, '已解绑：公域账号 B 与会员号绑定关系已解除');
     });
   })();
