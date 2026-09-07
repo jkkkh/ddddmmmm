@@ -1204,7 +1204,7 @@ li[data-target].is-highlight {
 
 <!-- ============ 旅程-01：初次授权绑定 ============ -->
 <div id="section-01-first" class="proto-stack">
-  <div class="section-label">旅程-01 初次授权绑定 · 登录协议 → 商品详情 → 临时订单绑定确认</div>
+  <div class="section-label">旅程-01 初次授权绑定 · 登录协议 → 商品详情 → 订单绑定确认</div>
   <div class="proto-with-prd">
 
     <div class="macos-window">
@@ -1223,7 +1223,7 @@ li[data-target].is-highlight {
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
             <span class="fs-chip" data-step="1">商品详情</span>
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
-            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>临时订单 · 绑定</span>
+            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>订单 · 绑定</span>
           </div>
           <div class="phone-viewport">
 
@@ -1288,7 +1288,7 @@ li[data-target].is-highlight {
               </div>
             </div>
 
-            <!-- 订单确认页（临时订单已生成，自动弹出绑定确认） -->
+            <!-- 订单确认页（标准下单页：不展示授权/同步状态；弹出绑定确认征求同意） -->
             <div id="c1-order" class="fs-screen" data-step="2">
               <div class="mp-topbar">
                 <button class="t-back" data-screen-back="c1-prod"><i data-lucide="arrow-left"></i></button>
@@ -1296,16 +1296,7 @@ li[data-target].is-highlight {
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="mp-banner success" id="c1ok" style="display:none;" data-comp="ok-c1"><i data-lucide="circle-check"></i><span>临时订单已生成 · 已同意绑定公域账号 B，订单将同步至公域</span></div>
-                <div class="mp-banner warn" id="c1no" style="display:none;" data-comp="no-c1"><i data-lucide="alert-triangle"></i><span>订单已生成，但<b>未同意绑定</b>：本单订单<b>不传回公域</b>（不同步、不享受公域优惠）</span></div>
-                <div class="sync-bar" data-comp="sync-c1">
-                  <span class="sb-icon"><i data-lucide="link-2"></i></span>
-                  <div class="sb-main">
-                    <div class="sb-link" id="c1link">待确认公域账号绑定</div>
-                    <div class="sb-meta" id="c1meta">临时订单已生成 · 需确认公域账号绑定</div>
-                  </div>
-                  <span class="badge badge-warn" id="c1badge">待绑定</span>
-                </div>
+                <div class="mp-banner warn" id="c1no" style="display:none;" data-comp="no-c1"><i data-lucide="alert-triangle"></i><span>本单订单<b>不传回公域</b>（不同步、不享受公域优惠）</span></div>
                 <div class="mp-section-title">商品清单</div>
                 <div class="info-card mp-card">
                   <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
@@ -1326,7 +1317,7 @@ li[data-target].is-highlight {
             <div class="form-dialog" data-comp="dialog-c1">
               <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
               <div class="form-dialog-title">确认绑定公域账号</div>
-              <div class="mp-dialog-note">临时订单已生成。检测到您当前使用的公域账号：</div>
+              <div class="mp-dialog-note">检测到您当前使用的公域账号：</div>
               <div class="mp-compare" data-comp="compare-c1">
                 <div class="cmp-row"><span class="cmp-label">检测到的公域账号</span><span class="cmp-value">B</span></div>
                 <div class="cmp-row"><span class="cmp-label">来源</span><span class="cmp-value">视频号直播间 · 微信授权</span></div>
@@ -1350,9 +1341,9 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">旅程-01：初次授权绑定</div>
             <ul>
-              <li><strong>链路</strong>：会员登录页（协议内容附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成临时订单并弹出公域账号绑定确认</li>
+              <li><strong>链路</strong>：会员登录页（协议内容附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成订单并弹出公域账号绑定确认</li>
               <li data-target="proto-c1"><strong>登录页协议附件</strong>：展示《订单同步授权协议》勾选与授权用途附件，未勾选不可登录</li>
-              <li data-target="buy-c1"><strong>「立即购买」按钮</strong>：点击后生成临时订单并自动弹出「确认绑定公域账号」</li>
+              <li data-target="buy-c1"><strong>「立即购买」按钮</strong>：点击后进入订单页并自动弹出「确认绑定公域账号」</li>
               <li data-target="dialog-c1"><strong>绑定确认弹窗</strong>：展示检测到的公域账号 B，征求是否同意绑定（流程与之前一致）</li>
               <li data-target="bind-c1"><strong>「同意绑定」</strong>：绑定建立，确认生成订单并同步至公域账号 B（提交无额外提示）</li>
               <li data-target="skip-c1"><strong>「暂不绑定」</strong>：仍生成订单，但页面提示「本单不传回公域」（不同步、不享受公域优惠）</li>
@@ -1435,14 +1426,7 @@ li[data-target].is-highlight {
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="sync-bar" data-comp="sync-c2">
-                  <span class="sb-icon"><i data-lucide="shield-check"></i></span>
-                  <div class="sb-main">
-                    <div class="sb-link">公域账号 B ↔ 会员 138****8888</div>
-                    <div class="sb-meta">已授权 · 检测一致 · 本单不弹出、不做额外处理</div>
-                  </div>
-                  <span class="badge badge-success">已授权同步</span>
-                </div>
+                <!-- 订单页为标准下单页：不展示授权/同步状态 -->
                 <div class="mp-section-title">商品清单</div>
                 <div class="info-card mp-card">
                   <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
@@ -1472,7 +1456,7 @@ li[data-target].is-highlight {
               <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 完成后续购买流程</li>
               <li data-target="proto-c2"><strong>登录页协议附件</strong>：已完成授权的用户登录时同样展示协议与用途附件并需勾选</li>
               <li data-target="buy-c2"><strong>「立即购买」按钮</strong>：点击后直接生成订单，<b>不做任何弹出与处理</b>（已授权、已绑定、账号一致）</li>
-              <li data-target="sync-c2"><strong>订单确认页</strong>：展示「已授权同步」常驻状态，无弹窗、无额外确认</li>
+              <li><strong>订单确认页</strong>：标准下单页，不展示授权/同步状态；本链路全程无弹窗、无额外处理</li>
               <li data-target="submit-c2"><strong>「确认生成订单」按钮</strong>：正常生成订单并同步至公域账号 B</li>
             </ul>
           </div>
@@ -1503,7 +1487,7 @@ li[data-target].is-highlight {
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
             <span class="fs-chip" data-step="1">商品详情</span>
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
-            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>临时订单 · 更换绑定</span>
+            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>订单 · 更换绑定</span>
           </div>
           <div class="phone-viewport">
             <div id="c3-login" class="fs-screen active" data-step="0">
@@ -1552,16 +1536,8 @@ li[data-target].is-highlight {
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="mp-banner success" id="c3ok" style="display:none;" data-comp="ok-c3"><i data-lucide="circle-check"></i><span>临时订单已生成 · 已更换绑定为公域账号 B，订单将同步至 B</span></div>
-                <div class="mp-banner warn" id="c3no" style="display:none;" data-comp="no-c3"><i data-lucide="alert-triangle"></i><span>订单已生成，但<b>未同意更换绑定</b>：本单订单<b>不传回公域</b>（不同步、不享受公域优惠，不会同步回原账号 A）</span></div>
-                <div class="sync-bar" data-comp="sync-c3">
-                  <span class="sb-icon"><i data-lucide="link-2"></i></span>
-                  <div class="sb-main">
-                    <div class="sb-link" id="c3link">已绑定 公域账号 A ↔ 会员 138****8888</div>
-                    <div class="sb-meta" id="c3meta">本次公域账号 B · 不一致 · 临时订单已生成</div>
-                  </div>
-                  <span class="badge badge-warn" id="c3badge">待确认</span>
-                </div>
+                <!-- 订单页为标准下单页：不展示授权/同步状态 -->
+                <div class="mp-banner warn" id="c3no" style="display:none;" data-comp="no-c3"><i data-lucide="alert-triangle"></i><span>本单订单<b>不传回公域</b>（不同步、不享受公域优惠，不回原账号 A）</span></div>
                 <div class="mp-section-title">商品清单</div>
                 <div class="info-card mp-card">
                   <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
@@ -1586,7 +1562,7 @@ li[data-target].is-highlight {
                 <div class="cmp-row"><span class="cmp-label">本次登录的公域账号</span><span class="cmp-value">B</span></div>
                 <div class="cmp-row"><span class="cmp-label">已绑定的公域账号</span><span class="cmp-value">A</span></div>
               </div>
-              <div class="mp-dialog-note">临时订单已生成。是否将绑定关系更换为本次账号 B？<br />同意更换 → 本单订单同步至 B；不同意 → 订单仍生成，但本单不传回公域（不同步、不享公域优惠）。</div>
+              <div class="mp-dialog-note">是否将绑定关系更换为本次账号 B？<br />同意更换 → 本单订单同步至 B；不同意 → 订单仍生成，但本单不传回公域（不同步、不享公域优惠）。</div>
               <div class="form-actions">
                 <button class="btn btn-secondary" id="c3keep" data-comp="keep-c3">不同意 · 保持原绑定</button>
                 <button class="btn btn-primary" id="c3rebind" data-comp="rebind-c3">同意更换</button>
@@ -1605,7 +1581,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">旅程-03：已完成授权 · 不一致（询问更换绑定）</div>
             <ul>
-              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成临时订单并弹出「询问是否更换绑定关系」</li>
+              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成订单并弹出「询问是否更换绑定关系」</li>
               <li data-target="proto-c3"><strong>登录页协议附件</strong>：已完成授权但本次公域号不同的用户，登录时同样勾选协议</li>
               <li data-target="dialog-c3"><strong>更换绑定询问弹窗</strong>：展示本次公域账号 B 与已绑定账号 A，询问是否更换绑定关系</li>
               <li data-target="rebind-c3"><strong>「同意更换」</strong>：绑定更新为 B，订单同步至 B</li>
@@ -1640,7 +1616,7 @@ li[data-target].is-highlight {
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
             <span class="fs-chip" data-step="1">商品详情</span>
             <span class="fs-arrow"><i data-lucide="chevron-right"></i></span>
-            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>临时订单 · 账号冲突</span>
+            <span class="fs-chip pop" data-step="2"><i data-lucide="star" class="fs-star"></i>订单 · 账号冲突</span>
           </div>
           <div class="phone-viewport">
             <div id="c4-login" class="fs-screen active" data-step="0">
@@ -1689,15 +1665,8 @@ li[data-target].is-highlight {
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="mp-banner error" id="c4no" style="display:none;" data-comp="no-c4"><i data-lucide="circle-alert"></i><span>临时订单已生成，但公域账号 B 已被其他会员账号绑定：本单<b>不同步至公域</b>；可<b>切换会员账号登录</b>，或<b>至原会员账号处解绑</b>后重试（见旅程-05）</span></div>
-                <div class="sync-bar" data-comp="sync-c4">
-                  <span class="sb-icon"><i data-lucide="alert-triangle"></i></span>
-                  <div class="sb-main">
-                    <div class="sb-link" id="c4link">公域账号 B 已被其他会员绑定</div>
-                    <div class="sb-meta" id="c4meta">临时订单已生成 · 无法建立当前绑定关系</div>
-                  </div>
-                  <span class="badge badge-error" id="c4badge">不可绑定</span>
-                </div>
+                <!-- 订单页为标准下单页：不展示授权/同步状态 -->
+                <div class="mp-banner error" id="c4no" style="display:none;" data-comp="no-c4"><i data-lucide="circle-alert"></i><span>公域账号 B 已被其他会员账号绑定：本单订单<b>不同步至公域</b>；可<b>切换会员账号登录</b>，或<b>至原会员账号处解绑</b>后重试（见旅程-05）</span></div>
                 <div class="mp-section-title">商品清单</div>
                 <div class="info-card mp-card">
                   <div class="mp-row"><span class="r-label">纯棉短袖 T 恤 燕麦色</span><span class="r-value">×1 ¥149</span></div>
@@ -1745,7 +1714,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">旅程-04：公域号已被其他会员绑定</div>
             <ul>
-              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成临时订单并弹出账号冲突提示</li>
+              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成订单并弹出账号冲突提示</li>
               <li data-target="dialog-c4"><strong>冲突提示弹窗</strong>：检测到本次公域账号 B 已授权绑定其他会员号（M202608010099），提示<b>切换会员账号登录</b>或<b>至原会员账号处解绑</b>（见旅程-05）</li>
               <li data-target="switch-c4"><strong>「切换会员账号登录」</strong>：退出当前登录并引导切换账号重试</li>
               <li data-target="ok-c4"><strong>「我知道了」</strong>：关闭弹窗，订单页展示本单不同步至公域的提示</li>
@@ -1944,8 +1913,6 @@ li[data-target].is-highlight {
       var phone = c1bind.closest('.phone-frame');
       document.getElementById('popC1').style.display = 'none';
       c1bound = true;
-      stateBar('c1badge', 'c1link', 'c1meta', 'badge-success', '已授权同步', '公域账号 B ↔ 会员 138****8888', '已绑定 · 检测一致，订单将同步至公域');
-      document.getElementById('c1ok').style.display = 'flex';
       document.getElementById('c1no').style.display = 'none';
       showToast(phone, '已同意绑定：订单已生成并同步至公域账号 B');
     });
@@ -1953,9 +1920,7 @@ li[data-target].is-highlight {
     if (c1skip) c1skip.addEventListener('click', function () {
       var phone = c1skip.closest('.phone-frame');
       document.getElementById('popC1').style.display = 'none';
-      stateBar('c1badge', 'c1link', 'c1meta', 'badge-default', '不同步', '未绑定公域账号', '订单已生成 · 本单不传回公域');
       document.getElementById('c1no').style.display = 'flex';
-      document.getElementById('c1ok').style.display = 'none';
       showToast(phone, '订单已生成，本单不传回公域（未同意绑定）');
     });
     var c1submit = document.getElementById('c1submit');
@@ -1997,8 +1962,6 @@ li[data-target].is-highlight {
       var phone = c3rebind.closest('.phone-frame');
       document.getElementById('popC3').style.display = 'none';
       c3rebound = true;
-      stateBar('c3badge', 'c3link', 'c3meta', 'badge-success', '已授权同步', '公域账号 B ↔ 会员 138****8888', '已更换绑定 · 订单将同步至 B');
-      document.getElementById('c3ok').style.display = 'flex';
       document.getElementById('c3no').style.display = 'none';
       showToast(phone, '已同意更换绑定：订单将同步至公域账号 B');
     });
@@ -2006,9 +1969,7 @@ li[data-target].is-highlight {
     if (c3keep) c3keep.addEventListener('click', function () {
       var phone = c3keep.closest('.phone-frame');
       document.getElementById('popC3').style.display = 'none';
-      stateBar('c3badge', 'c3link', 'c3meta', 'badge-default', '不同步', '本次账号 B ≠ 已绑定账号 A', '保持原绑定 · 本单不传回公域');
       document.getElementById('c3no').style.display = 'flex';
-      document.getElementById('c3ok').style.display = 'none';
       showToast(phone, '订单已生成，本单不传回公域（不同意更换绑定）');
     });
     var c3submit = document.getElementById('c3submit');
