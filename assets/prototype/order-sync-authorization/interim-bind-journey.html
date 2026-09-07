@@ -1227,7 +1227,7 @@ li[data-target].is-highlight {
           </div>
           <div class="phone-viewport">
 
-            <!-- 登录页：协议附件 + 勾选同意 -->
+            <!-- 登录页：手机号/验证码 + 协议勾选与查看详情 -->
             <div id="c1-login" class="fs-screen active" data-step="0">
               <div class="mp-topbar">
                 <button class="t-back" data-toast="已返回公域直播间（演示）"><i data-lucide="arrow-left"></i></button>
@@ -1250,16 +1250,8 @@ li[data-target].is-highlight {
                 </div>
                 <div class="info-card mp-card" style="background:var(--muted);" data-comp="proto-c1">
                   <label class="mp-check"><input type="checkbox" id="c1agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong></span></label>
-                  <div class="mp-dialog-sub" style="margin:-6px 0 8px 26px;">未勾选无法登录（协议内容附件见下）</div>
-                  <div style="border-top:1px solid var(--border);padding-top:10px;">
-                    <div style="font-size:12px;font-weight:600;margin-bottom:6px;">授权协议附件 · 授权用途</div>
-                    <div class="purpose-list">
-                      <div class="pl-row"><i data-lucide="check"></i><span>交易订单信息同步至公域账号（售后与会员权益统一管理）</span></div>
-                      <div class="pl-row"><i data-lucide="check"></i><span>公域优惠券领取、发放与核销关联至公域账号</span></div>
-                      <div class="pl-row"><i data-lucide="check"></i><span>授权仅用于上述用途，可随时在会员中心撤回/解绑</span></div>
-                    </div>
-                    <div style="margin-top:6px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》全文（演示）">查看协议全文 ›</a></div>
-                  </div>
+                  <div class="mp-dialog-sub" style="margin:-6px 0 4px 26px;">未勾选无法登录</div>
+                  <div style="margin:2px 0 0 26px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》详情（含授权用途，演示）">查看详情 ›</a></div>
                 </div>
               </div>
               <div class="mp-bottom-bar">
@@ -1341,8 +1333,8 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">旅程-01：初次授权绑定</div>
             <ul>
-              <li><strong>链路</strong>：会员登录页（协议内容附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成订单并弹出公域账号绑定确认</li>
-              <li data-target="proto-c1"><strong>登录页协议附件</strong>：展示《订单同步授权协议》勾选与授权用途附件，未勾选不可登录</li>
+              <li><strong>链路</strong>：会员登录页（手机号/验证码登录 + 协议勾选与「查看详情」）→ 商品详情 → 立即购买 → 生成订单并弹出公域账号绑定确认</li>
+              <li data-target="proto-c1"><strong>登录页协议勾选</strong>：展示《订单同步授权协议》勾选与「查看详情」入口（不内嵌协议完整内容），未勾选不可登录；授权用途在协议详情中写明</li>
               <li data-target="buy-c1"><strong>「立即购买」按钮</strong>：点击后进入订单页并自动弹出「确认绑定公域账号」</li>
               <li data-target="dialog-c1"><strong>绑定确认弹窗</strong>：展示检测到的公域账号 B，征求是否同意绑定（流程与之前一致）</li>
               <li data-target="bind-c1"><strong>「同意绑定」</strong>：绑定建立，确认生成订单并同步至公域账号 B（提交无额外提示）</li>
@@ -1388,10 +1380,21 @@ li[data-target].is-highlight {
               <div class="mp-content">
                 <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 公域账号 B</div>
                 <div style="font-size:22px;font-weight:700;margin:6px 0 16px;">欢迎回来</div>
+                <div class="form-group">
+                  <label class="form-label">手机号</label>
+                  <input class="form-input" placeholder="请输入手机号" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">验证码</label>
+                  <div class="login-code-row">
+                    <input class="form-input" placeholder="请输入验证码" />
+                    <button class="login-code-btn" data-toast="验证码已发送（演示）">获取验证码</button>
+                  </div>
+                </div>
                 <div class="info-card mp-card" style="background:var(--muted);" data-comp="proto-c2">
-                  <label class="mp-check"><input type="checkbox" id="c2agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong>（已授权用户，协议附件仍随登录展示）</span></label>
-                  <div class="mp-dialog-sub" style="margin:-6px 0 8px 26px;">未勾选无法登录；授权用途见协议附件（订单同步 / 公域优惠券 / 售后会员权益）</div>
-                  <div style="margin-top:4px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》全文（演示）">查看协议全文 ›</a></div>
+                  <label class="mp-check"><input type="checkbox" id="c2agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong>（已授权用户每次登录同样勾选）</span></label>
+                  <div class="mp-dialog-sub" style="margin:-6px 0 4px 26px;">未勾选无法登录</div>
+                  <div style="margin:2px 0 0 26px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》详情（含授权用途，演示）">查看详情 ›</a></div>
                 </div>
               </div>
               <div class="mp-bottom-bar">
@@ -1453,8 +1456,8 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">旅程-02：已完成授权 · 一致（零弹出零处理）</div>
             <ul>
-              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 完成后续购买流程</li>
-              <li data-target="proto-c2"><strong>登录页协议附件</strong>：已完成授权的用户登录时同样展示协议与用途附件并需勾选</li>
+              <li><strong>链路</strong>：会员登录页（手机号/验证码登录 + 协议勾选与「查看详情」）→ 商品详情 → 完成后续购买流程</li>
+              <li data-target="proto-c2"><strong>登录页协议勾选</strong>：已完成授权的用户登录时同样需勾选协议（不展示协议完整内容，可查看详情）</li>
               <li data-target="buy-c2"><strong>「立即购买」按钮</strong>：点击后直接生成订单，<b>不做任何弹出与处理</b>（已授权、已绑定、账号一致）</li>
               <li><strong>订单确认页</strong>：标准下单页，不展示授权/同步状态；本链路全程无弹窗、无额外处理</li>
               <li data-target="submit-c2"><strong>「确认生成订单」按钮</strong>：正常生成订单并同步至公域账号 B</li>
@@ -1499,9 +1502,21 @@ li[data-target].is-highlight {
               <div class="mp-content">
                 <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 本次公域账号 B</div>
                 <div style="font-size:22px;font-weight:700;margin:6px 0 16px;">欢迎回来</div>
+                <div class="form-group">
+                  <label class="form-label">手机号</label>
+                  <input class="form-input" placeholder="请输入手机号" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">验证码</label>
+                  <div class="login-code-row">
+                    <input class="form-input" placeholder="请输入验证码" />
+                    <button class="login-code-btn" data-toast="验证码已发送（演示）">获取验证码</button>
+                  </div>
+                </div>
                 <div class="info-card mp-card" style="background:var(--muted);" data-comp="proto-c3">
-                  <label class="mp-check"><input type="checkbox" id="c3agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong>（授权用途见协议附件）</span></label>
-                  <div style="margin:4px 0 0 26px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》全文（演示）">查看协议全文 ›</a></div>
+                  <label class="mp-check"><input type="checkbox" id="c3agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong></span></label>
+                  <div class="mp-dialog-sub" style="margin:-6px 0 4px 26px;">未勾选无法登录</div>
+                  <div style="margin:2px 0 0 26px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》详情（含授权用途，演示）">查看详情 ›</a></div>
                 </div>
               </div>
               <div class="mp-bottom-bar">
@@ -1581,8 +1596,8 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">旅程-03：已完成授权 · 不一致（询问更换绑定）</div>
             <ul>
-              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成订单并弹出「询问是否更换绑定关系」</li>
-              <li data-target="proto-c3"><strong>登录页协议附件</strong>：已完成授权但本次公域号不同的用户，登录时同样勾选协议</li>
+              <li><strong>链路</strong>：会员登录页（手机号/验证码登录 + 协议勾选与「查看详情」）→ 商品详情 → 立即购买 → 生成订单并弹出「询问是否更换绑定关系」</li>
+              <li data-target="proto-c3"><strong>登录页协议勾选</strong>：已完成授权但本次公域号不同的用户，登录时同样勾选协议并可查看详情</li>
               <li data-target="dialog-c3"><strong>更换绑定询问弹窗</strong>：展示本次公域账号 B 与已绑定账号 A，询问是否更换绑定关系</li>
               <li data-target="rebind-c3"><strong>「同意更换」</strong>：绑定更新为 B，订单同步至 B</li>
               <li data-target="keep-c3"><strong>「不同意 · 保持原绑定」</strong>：订单仍生成，但提示本单不传回公域（不同步、不享公域优惠、不回原账号 A）</li>
@@ -1628,9 +1643,21 @@ li[data-target].is-highlight {
               <div class="mp-content">
                 <div class="mp-context"><i data-lucide="smartphone"></i>来自 视频号直播间 · 本次公域账号 B</div>
                 <div style="font-size:22px;font-weight:700;margin:6px 0 16px;">欢迎回来</div>
+                <div class="form-group">
+                  <label class="form-label">手机号</label>
+                  <input class="form-input" placeholder="请输入手机号" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">验证码</label>
+                  <div class="login-code-row">
+                    <input class="form-input" placeholder="请输入验证码" />
+                    <button class="login-code-btn" data-toast="验证码已发送（演示）">获取验证码</button>
+                  </div>
+                </div>
                 <div class="info-card mp-card" style="background:var(--muted);" data-comp="proto-c4">
-                  <label class="mp-check"><input type="checkbox" id="c4agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong>（授权用途见协议附件）</span></label>
-                  <div style="margin:4px 0 0 26px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》全文（演示）">查看协议全文 ›</a></div>
+                  <label class="mp-check"><input type="checkbox" id="c4agree" /><span><strong>我已阅读并同意《订单同步授权协议》</strong></span></label>
+                  <div class="mp-dialog-sub" style="margin:-6px 0 4px 26px;">未勾选无法登录</div>
+                  <div style="margin:2px 0 0 26px;"><a href="#" style="color:var(--primary);font-size:12px;text-decoration:none;" data-toast="已打开《订单同步授权协议》详情（含授权用途，演示）">查看详情 ›</a></div>
                 </div>
               </div>
               <div class="mp-bottom-bar">
@@ -1714,7 +1741,7 @@ li[data-target].is-highlight {
           <div class="prd-section">
             <div class="prd-section__title">旅程-04：公域号已被其他会员绑定</div>
             <ul>
-              <li><strong>链路</strong>：会员登录页（协议附件，勾选同意）→ 登录 → 商品详情 → 立即购买 → 生成订单并弹出账号冲突提示</li>
+              <li><strong>链路</strong>：会员登录页（手机号/验证码登录 + 协议勾选与「查看详情」）→ 商品详情 → 立即购买 → 生成订单并弹出账号冲突提示</li>
               <li data-target="dialog-c4"><strong>冲突提示弹窗</strong>：检测到本次公域账号 B 已授权绑定其他会员号（M202608010099），提示<b>切换会员账号登录</b>或<b>至原会员账号处解绑</b>（见旅程-05）</li>
               <li data-target="switch-c4"><strong>「切换会员账号登录」</strong>：退出当前登录并引导切换账号重试</li>
               <li data-target="ok-c4"><strong>「我知道了」</strong>：关闭弹窗，订单页展示本单不同步至公域的提示</li>
