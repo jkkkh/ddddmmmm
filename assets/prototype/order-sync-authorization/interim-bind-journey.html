@@ -1196,7 +1196,7 @@ li[data-target].is-highlight {
     <a class="toc-item" href="#section-01-first"><span class="toc-dot"></span>旅程-01 初次授权</a>
     <a class="toc-item" href="#section-02-authorized"><span class="toc-dot"></span>旅程-02 已完成授权 · 一致</a>
     <a class="toc-item" href="#section-03-mismatch"><span class="toc-dot"></span>旅程-03 已授权 · 不一致 · 重新授权当前账号</a>
-    <a class="toc-item" href="#section-05-member"><span class="toc-dot"></span>旅程-05 会员解绑页面</a>
+    <a class="toc-item" href="#section-05-member"><span class="toc-dot"></span>旅程-05 微信授权管理</a>
   </nav>
 
   <div class="sections-col">
@@ -1665,9 +1665,9 @@ li[data-target].is-highlight {
   </div>
 </div>
 
-<!-- ============ 旅程-05：会员解绑页面（公域授权关系模块） ============ -->
+<!-- ============ 旅程-05：微信授权管理（历史授权记录 + 立即绑定当前微信） ============ -->
 <div id="section-05-member" class="proto-stack">
-  <div class="section-label">旅程-05 会员管理 · 公域授权关系模块 · 查看与解绑</div>
+  <div class="section-label">旅程-05 微信授权管理 · 历史授权记录 + 立即绑定当前微信登录账号</div>
   <div class="proto-with-prd">
 
     <div class="macos-window">
@@ -1675,74 +1675,94 @@ li[data-target].is-highlight {
         <div class="macos-dot red"></div>
         <div class="macos-dot yellow"></div>
         <div class="macos-dot green"></div>
-        <div class="macos-title">旅程-05 — 会员解绑页面</div>
+        <div class="macos-title">旅程-05 — 微信授权管理</div>
       </div>
       <div class="macos-body mp-stage">
         <div class="phone-frame">
           <div class="phone-notch"></div>
           <div class="mp-statusbar"><span>12:30</span><span class="sb-icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
           <div class="phone-viewport">
-            <div id="m5-manage" class="fs-screen active" data-step="0">
+            <div id="wx-manage" class="fs-screen active" data-step="0">
               <div class="mp-topbar">
                 <button class="t-back" data-toast="已返回上一页（演示）"><i data-lucide="arrow-left"></i></button>
-                <span class="t-title">会员中心</span>
+                <span class="t-title">微信授权管理</span>
                 <span class="t-right"></span>
               </div>
               <div class="mp-content">
-                <div class="info-card mp-card" style="display:flex;align-items:center;gap:10px;" data-comp="member-m5">
+                <div class="info-card mp-card" style="display:flex;align-items:center;gap:10px;" data-comp="member-wx">
                   <span class="win-avatar" style="width:40px;height:40px;font-size:16px;">会</span>
                   <div>
                     <div style="font-weight:600;">会员 138****8888</div>
                     <div style="font-size:12px;color:var(--text-3);">私域会员号：M202608010001</div>
                   </div>
                 </div>
+                <div class="mp-context" data-comp="cur-wx"><i data-lucide="smartphone"></i>当前微信登录账号：视频号直播 · 公域账号 C（本次登录，未在授权记录中）</div>
 
-                <!-- 公域授权关系模块（新增） -->
-                <div class="mp-section-title">授权与授权</div>
-                <div class="info-card mp-card" style="padding:0;overflow:hidden;" data-comp="module-m5">
-                  <div id="m5card" style="display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;">
-                    <span class="sb-icon" style="width:34px;height:34px;border-radius:999px;background:var(--info-muted);color:var(--info);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="link-2" style="width:16px;height:16px;"></i></span>
-                    <div style="flex:1;min-width:0;">
-                      <div style="font-size:13px;font-weight:600;">公域授权关系</div>
-                      <div style="font-size:11px;color:var(--text-3);margin-top:2px;" id="m5sub">当前公域账号：B · 已授权（协议 v2.0）</div>
+                <div class="mp-section-title">历史授权记录</div>
+                <div data-comp="hist-wx">
+                  <div class="info-card mp-card" style="padding:12px 14px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                      <span style="font-size:13px;font-weight:600;">公域账号 B</span>
+                      <span class="badge badge-default">已解除</span>
                     </div>
-                    <span class="badge badge-success" id="m5badge">已授权</span>
-                    <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--text-3);"></i>
+                    <div style="font-size:11px;color:var(--text-3);margin-top:6px;">来源：视频号直播 · 授权 2026-09-01 · 解除 2026-09-05</div>
+                  </div>
+                  <div class="info-card mp-card" style="padding:12px 14px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                      <span style="font-size:13px;font-weight:600;">公域账号 A</span>
+                      <span class="badge badge-default">已解除</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--text-3);margin-top:6px;">来源：视频号直播 · 授权 2026-06-01 · 解除 2026-08-20</div>
                   </div>
                 </div>
-                <div class="mp-banner success" id="m5done" style="display:none;" data-comp="done-m5"><i data-lucide="circle-check"></i><span>已解绑：公域账号 B 与会员号授权关系已解除。新订单不再同步，公域券可能不可用；如需重新使用，重新登录授权并在订单页确认授权即可</span></div>
-                <div class="mp-dialog-sub">点击「公域授权关系」可查看当前授权公域账号并提供解绑选项（PRD 5.5）</div>
+
+                <!-- 绑定当前微信后置顶的当前授权记录 -->
+                <div class="info-card mp-card" id="wxcur" style="padding:12px 14px;display:none;" data-comp="cur-record-wx">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:13px;font-weight:600;">公域账号 C</span>
+                    <span class="badge badge-success" id="wxCurBadge">当前授权</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text-3);margin-top:6px;">来源：视频号直播（微信） · 授权时间 2026-09-07</div>
+                  <div style="margin-top:8px;text-align:right;"><a href="#" id="wxUnbindLink" style="color:var(--destructive);font-size:12px;text-decoration:none;" data-comp="unbind-wx">解除授权 ›</a></div>
+                </div>
+
+                <div class="mp-section-title">操作</div>
+                <div class="info-card mp-card" id="wxBindCard" style="padding:12px 14px;" data-comp="bind-now-wx">
+                  <div style="font-size:13px;font-weight:600;margin-bottom:4px;">绑定当前微信登录账号</div>
+                  <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;">将本次登录的公域账号 C 授权用于订单同步与公域优惠券归属（流程同初次授权）</div>
+                  <button class="btn btn-primary" id="wxBindNow" style="width:100%;">立即绑定</button>
+                </div>
+                <div class="mp-dialog-sub">授权记录均保留可查；解除后新订单不再同步，可随时重新绑定（PRD 7.6）</div>
               </div>
             </div>
           </div>
 
-          <!-- 公域授权关系详情 -->
-          <div class="mp-overlay" id="pDetail" style="display:none;">
-            <div class="form-dialog" data-comp="detail-m5">
+          <!-- 立即绑定：当前微信登录账号确认 -->
+          <div class="mp-overlay" id="pBindWx" style="display:none;">
+            <div class="form-dialog" data-comp="dialog-bind-wx">
               <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
-              <div class="form-dialog-title">公域授权关系</div>
-              <div class="mp-compare" data-comp="cmp-m5">
-                <div class="cmp-row"><span class="cmp-label">当前公域账号</span><span class="cmp-value">B</span></div>
-                <div class="cmp-row"><span class="cmp-label">授权状态</span><span class="cmp-value">已授权 · 协议 v2.0</span></div>
-                <div class="cmp-row"><span class="cmp-label">授权时间</span><span class="cmp-value">2026-09-07</span></div>
+              <div class="form-dialog-title">绑定当前微信登录账号</div>
+              <div class="mp-compare" data-comp="compare-wx">
+                <div class="cmp-row"><span class="cmp-label">当前微信登录账号</span><span class="cmp-value">C</span></div>
+                <div class="cmp-row"><span class="cmp-label">来源</span><span class="cmp-value">视频号直播 · 微信授权</span></div>
               </div>
-              <div class="mp-dialog-sub" style="margin-bottom:12px;">授权用途：订单同步至公域 / 公域优惠券发放与核销 / 售后与会员权益。</div>
-              <div class="form-actions">
-                <button class="btn btn-secondary" data-close>关闭</button>
-                <button class="btn btn-danger" id="m5step" data-comp="unbind-entry-m5">解绑授权</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 解绑二次确认 -->
-          <div class="mp-overlay" id="pUnbind" style="display:none;">
-            <div class="form-dialog" data-comp="confirm-m5">
-              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
-              <div class="form-dialog-title" style="color:var(--destructive);">确认解绑？</div>
-              <div class="mp-dialog-note">解绑后，公域账号 B 与会员号 138****8888 的授权关系将被解除：新订单不再同步至公域，已领取未使用的公域优惠券可能无法使用；历史已同步订单与已使用券不受影响。</div>
+              <div class="mp-dialog-note">确认后将公域账号 C 授权，用于订单同步与公域优惠券归属；可在本页随时解除，历史授权记录保留可查。</div>
               <div class="form-actions">
                 <button class="btn btn-secondary" data-close>取消</button>
-                <button class="btn btn-danger" id="m5do" data-comp="unbind-do-m5">确认解绑</button>
+                <button class="btn btn-primary" id="wxDoBind" data-comp="do-bind-wx">立即绑定</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 解除当前授权确认 -->
+          <div class="mp-overlay" id="pUnbindWx" style="display:none;">
+            <div class="form-dialog" data-comp="dialog-unbind-wx">
+              <button class="modal-close-x" data-close><i data-lucide="x"></i></button>
+              <div class="form-dialog-title" style="color:var(--destructive);">解除当前授权？</div>
+              <div class="mp-dialog-note">解除后，公域账号 C 移入历史授权记录，新订单不再同步至公域，公域券可能不可用；历史已同步订单不受影响。</div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" data-close>取消</button>
+                <button class="btn btn-danger" id="wxDoUnbind" data-comp="do-unbind-wx">确认解除</button>
               </div>
             </div>
           </div>
@@ -1756,14 +1776,16 @@ li[data-target].is-highlight {
         <div class="prd-panel__title">功能概览</div>
         <div class="prd-panel__body">
           <div class="prd-section">
-            <div class="prd-section__title">旅程-05：会员解绑页面</div>
+            <div class="prd-section__title">旅程-05：微信授权管理</div>
             <ul>
-              <li><strong>方案要点</strong>：会员管理页新增「公域授权关系」模块，点击后显示当前公域账号并提供解绑选项</li>
-              <li data-target="module-m5"><strong>「公域授权关系」模块</strong>：展示当前授权公域账号 B 与授权状态，点击进入详情</li>
-              <li data-target="detail-m5"><strong>授权关系详情</strong>：展示当前公域账号 B、授权状态/协议版本/授权时间与用途摘要</li>
-              <li data-target="unbind-entry-m5"><strong>「解绑授权」按钮</strong>：进入解绑二次确认</li>
-              <li data-target="confirm-m5"><strong>解绑确认弹窗</strong>：说明解绑后果（订单不再同步、公域券可能不可用、历史数据不受影响）</li>
-              <li data-target="unbind-do-m5"><strong>「确认解绑」</strong>：解绑成功，模块状态更新为「已解绑」并提示恢复路径</li>
+              <li><strong>方案要点</strong>：会员管理入口更名为「微信授权管理」，展示历史上所有授权记录，并提供「立即绑定」绑定当前微信登录账号</li>
+              <li data-target="member-wx"><strong>会员信息</strong>：展示会员头像与会员号</li>
+              <li data-target="cur-wx"><strong>当前微信登录账号</strong>：展示本次登录的公域账号 C（未在授权记录中）</li>
+              <li data-target="hist-wx"><strong>历史授权记录</strong>：展示历史上所有授权关系（公域账号、来源、授权/解除时间与状态）</li>
+              <li data-target="bind-now-wx"><strong>「立即绑定」按钮</strong>：点击后确认绑定当前微信登录账号（公域账号 C），流程同初次授权</li>
+              <li data-target="dialog-bind-wx"><strong>绑定确认弹窗</strong>：展示检测到的当前微信登录账号 C，征求是否绑定</li>
+              <li data-target="do-bind-wx"><strong>「立即绑定」确认</strong>：C 置顶为「当前授权」，可查看与解除</li>
+              <li data-target="unbind-wx"><strong>「解除授权」</strong>：解除后 C 移入历史记录并提示后果（PRD 5.5 / 7.6）</li>
             </ul>
           </div>
         </div>
@@ -1923,30 +1945,38 @@ li[data-target].is-highlight {
       showToast(phone, c3rebound ? '订单已生成并同步至公域账号 B' : '订单已生成（未重新授权：本单不传回公域）');
     });
 
-    /* 旅程-05 会员中心 · 公域授权关系解绑 */
-    var m5card = document.getElementById('m5card');
-    if (m5card) m5card.addEventListener('click', function () {
-      if (m5card.style.pointerEvents === 'none') return;
-      document.getElementById('pDetail').style.display = 'flex';
+    /* 旅程-05 微信授权管理：立即绑定当前微信 + 解除 */
+    var wxBindNow = document.getElementById('wxBindNow');
+    if (wxBindNow) wxBindNow.addEventListener('click', function () {
+      document.getElementById('pBindWx').style.display = 'flex';
     });
-    var m5step = document.getElementById('m5step');
-    if (m5step) m5step.addEventListener('click', function () {
-      document.getElementById('pDetail').style.display = 'none';
-      document.getElementById('pUnbind').style.display = 'flex';
+    var wxDoBind = document.getElementById('wxDoBind');
+    if (wxDoBind) wxDoBind.addEventListener('click', function () {
+      var phone = wxDoBind.closest('.phone-frame');
+      document.getElementById('pBindWx').style.display = 'none';
+      var cur = document.getElementById('wxcur');
+      var card = document.getElementById('wxBindCard');
+      if (cur) cur.style.display = 'block';
+      if (card) card.style.display = 'none';
+      showToast(phone, '已绑定当前微信登录账号：公域账号 C 为当前授权');
     });
-    var m5do = document.getElementById('m5do');
-    if (m5do) m5do.addEventListener('click', function () {
-      var phone = m5do.closest('.phone-frame');
-      document.getElementById('pUnbind').style.display = 'none';
-      var sub = document.getElementById('m5sub');
-      var badge = document.getElementById('m5badge');
-      var done = document.getElementById('m5done');
-      if (sub) sub.textContent = '当前授权：未授权（已解绑）';
-      if (badge) { badge.className = 'badge badge-default'; badge.textContent = '已解绑'; }
-      if (done) done.style.display = 'flex';
-      m5card.style.pointerEvents = 'none';
-      m5card.style.opacity = '0.6';
-      showToast(phone, '已解绑：公域账号 B 与会员号授权关系已解除');
+    var wxUnbindLink = document.getElementById('wxUnbindLink');
+    if (wxUnbindLink) wxUnbindLink.addEventListener('click', function () {
+      document.getElementById('pUnbindWx').style.display = 'flex';
+    });
+    var wxDoUnbind = document.getElementById('wxDoUnbind');
+    if (wxDoUnbind) wxDoUnbind.addEventListener('click', function () {
+      var phone = wxDoUnbind.closest('.phone-frame');
+      document.getElementById('pUnbindWx').style.display = 'none';
+      var badge = document.getElementById('wxCurBadge');
+      var cur = document.getElementById('wxcur');
+      var link = document.getElementById('wxUnbindLink');
+      var card = document.getElementById('wxBindCard');
+      if (badge) { badge.className = 'badge badge-default'; badge.textContent = '已解除'; }
+      if (link) link.style.display = 'none';
+      if (cur) { var sub = cur.querySelector('.mp-dialog-sub, div[style*="font-size:11px"]'); }
+      if (card) card.style.display = 'block';
+      showToast(phone, '已解除公域账号 C 授权：记录保留在历史授权中');
     });
   })();
 </script>
