@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>配置中心 · 原型</title>
+
+<!-- @proto-gen:theme:start -->
+<style>
+/*
+ * proto-gen 默认主题：violet
+ * tweakcn: https://tweakcn.com/themes/cmpm3t0xk000104jq47h88i1g
+ *
+ * 切换主题：./assets/extract-theme.sh <new-tweakcn-url-or-id>
+ * 切换后须手工补：sidebar 子 token、状态色派生（tweakcn 不给）
+ */
+
+/* === 字体 CDN（与 --font-sans / --font-mono 配套） === */
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  /* === 19 个 shadcn 核心 token（OKLCH，来源 tweakcn） === */
+  --background: oklch(1.0000 0 0);
+  --foreground: oklch(0.2722 0.0494 286.0078);
+  --card: oklch(0.9885 0.0054 274.9676);
+  --card-foreground: oklch(0.2722 0.0494 286.0078);
+  --popover: oklch(1.0000 0 0);
+  --popover-foreground: oklch(0.2722 0.0494 286.0078);
+  --primary: oklch(0.5554 0.2460 273.0245);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.2722 0.0494 286.0078);
+  --secondary-foreground: oklch(1.0000 0 0);
+  --muted: oklch(0.9769 0.0109 274.8971);
+  --muted-foreground: oklch(0.2722 0.0494 286.0078);  /* 规范=foreground 同值，次级文字靠 opacity/font-size 区分 */
+  --accent: oklch(0.9221 0.0381 280.7675);
+  --accent-foreground: oklch(0.4805 0.2921 264.2112);
+  --destructive: oklch(0.6526 0.2348 32.3008);
+  --destructive-foreground: oklch(1.0000 0 0);
+  --border: oklch(0.9224 0.0184 258.3541);
+  --input: oklch(0.9809 0.0025 228.7836);
+  --ring: oklch(0.6081 0.2114 266.2130);
+  --radius: 1.3rem;
+
+  /* === Sidebar 子 token（HSL，tweakcn 不给，须从项目 src/index.css 抽） === */
+  --sidebar: hsl(228 100% 98.04%);
+  --sidebar-foreground: hsl(244.44 27.84% 19.02%);
+  --sidebar-primary: hsl(237.30 100% 65.10%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(234.19 100% 93.92%);
+  --sidebar-accent-foreground: hsl(228.85 99.22% 50%);
+  --sidebar-border: hsl(216 43.48% 90.98%);
+  --sidebar-ring: hsl(225 100% 63.92%);
+
+  /* === 状态色派生（HSL，tweakcn 不给，按项目主题文件真值） === */
+  --success: hsl(158.11 64.37% 40.98%);
+  --success-foreground: hsl(0 0% 100%);
+  --success-muted: hsl(151.76 81% 95.88%);
+  --success-border: hsl(156.22 71.65% 66.86%);
+
+  --warning: hsl(32.13 94.62% 43.73%);
+  --warning-foreground: hsl(0 0% 100%);
+  --warning-muted: hsl(36.52 92% 95.10%);
+  --warning-border: hsl(48 96.49% 76.67%);
+
+  /* info 系列 = primary 系列（shadcn 惯例：--info: var(--primary)）*/
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --info-muted: hsl(234.19 100% 96.47%);
+  --info-border: hsl(234.19 100% 88%);
+
+  /* === 字体 === */
+  --font-sans: 'Google Sans Flex', ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+  /* === proto-gen 兼容别名（旧 shared.css 用过的 token 软迁移，逐步淘汰） === */
+  --bg: var(--background);
+  --surface: var(--card);
+  --text: var(--foreground);
+  --text-2: color-mix(in oklch, var(--muted-foreground) 65%, transparent);
+  --text-3: color-mix(in oklch, var(--muted-foreground) 45%, transparent);
+  --border-2: color-mix(in oklch, var(--border) 70%, var(--foreground));
+  --primary-hover: color-mix(in oklch, var(--primary) 88%, black);
+  --primary-light: color-mix(in oklch, var(--primary) 10%, transparent);
+  --error: var(--destructive);
+
+  /* radius 阶梯（shadcn 标准 cascade + proto-gen 扩展，详见 references/default-theme.md 圆角速查）
+     当 --radius = 1.3rem (20.8px) 时实际像素：
+       chip  ≈  5px  — menu/dropdown 内 option、嵌套小子项
+       sm    ≈ 17px  — 输入框小元素备选（少用）
+       btn   ≈ 19px  — button / input / select
+       lg    ≈ 21px  — 通用容器（= --radius 本身）
+       card  ≈ 25px  — 大型卡片（Card / Dialog 整块）
+       full  = 9999  — pill / 头像 / badge 胶囊
+     装饰例外（不走阶梯）：scrollbar / kbd / 品牌图标 tile / 小 icon button ≤6px */
+  --radius-chip: calc(var(--radius) - 16px);    /* menu option / 嵌套小子项 */
+  --radius-sm:   calc(var(--radius) - 4px);     /* 小元素备选 */
+  --radius-btn:  calc(var(--radius) - 2px);     /* button / input */
+  --radius-panel: calc(var(--radius) - 4px);    /* 小面板（= sm） */
+  --radius-card: calc(var(--radius) + 4px);     /* 卡片 / 大容器 */
+  --radius-full: 9999px;
+}
+</style>
+<!-- @proto-gen:theme:end -->
+<!-- @proto-gen:shared:start -->
+<style>
+/*
+ * proto-gen shared.css —— 组件类骨架
+ * 所有颜色 / 字体 / 圆角 token 来自 theme.css（必须先于 shared.css 引入）
+ *
+ * 旧 v1 版本保留为 shared.legacy.css 作对照（脚手架，不入 git）
+ *
+ * 写法约定：
+ *   ✅ 颜色：var(--token)；半透明用 color-mix(in oklch, var(--token) N%, transparent)
+ *   ✅ 字体：var(--font-sans) / var(--font-mono)（取消旧 --font-display / --font-body 二分）
+ *   ✅ 圆角：var(--radius-chip|btn|panel|card|full)（阶梯，跟随主题 --radius）
+ *   ❌ 禁用：写死 hex / 写死 px 圆角 / 半透明色用 rgba(R,G,B,A)
+ *   例外：macOS traffic light（#ff5f57/#febc2e/#28c840）属平台装饰；纯黑阴影 rgba(0,0,0,X)
+ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans); font-size: 13px; color: var(--foreground);
+  background: oklch(0.92 0.005 280);                  /* macOS 桌面浅灰，原型悬浮其上 */
+  line-height: 1.5; -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 32px 24px;
+  box-sizing: border-box;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+
+.page-header { text-align: center; margin-bottom: 40px; }
+.page-header h1 { font-family: var(--font-sans); font-size: 32px; font-weight: 700; color: var(--foreground); letter-spacing: -0.03em; }
+.page-header p { font-size: 14px; color: var(--text-2); margin-top: 4px; }
+.page-stack { display: flex; flex-direction: column; align-items: center; gap: 48px; }   /* 旧布局：纯纵向堆叠，无 TOC */
+.section-label { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: color-mix(in oklch, var(--foreground) 75%, transparent); letter-spacing: 0.01em; padding: 0 4px; }
+
+/* 三栏布局骨架：TOC | 原型纵列 | 每个原型内右侧 PRD */
+.proto-layout {
+  display: flex; flex-direction: row;
+  align-items: flex-start; gap: 24px;
+  max-width: 100%;
+}
+.sections-col {
+  display: flex; flex-direction: column;
+  gap: 48px; min-width: 0;
+}
+.proto-stack {
+  display: flex; flex-direction: column;
+  gap: 12px; flex-shrink: 0;
+}
+
+/* macOS window：默认 1460×910（对齐常见 PC 桌面应用窗口尺寸，参 references/shadcn-tweakcn-theme.md） */
+.macos-window {
+  width: 1460px; max-width: 100%;
+  height: 910px;
+  background: var(--background);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.15),
+    0 8px 20px rgba(0,0,0,0.10),
+    0 0 0 1px rgba(0,0,0,0.06);
+}
+.macos-titlebar { background: var(--muted); height: 36px; flex-shrink: 0; display: flex; align-items: center; padding: 0 14px; gap: 10px; border-bottom: 1px solid var(--border); }
+.macos-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+/* traffic light：平台装饰，保留固定色 */
+.macos-dot.red { background: #ff5f57; } .macos-dot.yellow { background: #febc2e; } .macos-dot.green { background: #28c840; }
+.macos-title { flex: 1; text-align: center; font-size: 12px; font-weight: 500; color: var(--text-2); margin-right: 40px; }
+.macos-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 212px 1fr; grid-template-rows: 36px 1fr; position: relative; }
+
+/* Sidebar */
+.app-sidebar {
+  width: 212px; flex-shrink: 0; background: var(--sidebar); border-right: 1px solid var(--sidebar-border);
+  display: flex; flex-direction: column; padding: 16px 0; font-size: 12px;
+  grid-column: 1; grid-row: 1 / 3;
+}
+.sidebar-section { padding: 0 14px; margin-bottom: 8px; }
+.sidebar-section-header {
+  font-family: var(--font-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+  color: var(--text-3); padding: 8px 8px 6px; text-transform: uppercase;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius-btn);
+  color: var(--sidebar-foreground); cursor: pointer; transition: all 0.12s;
+}
+.sidebar-item:hover { background: color-mix(in oklch, var(--sidebar-accent) 60%, transparent); color: var(--sidebar-foreground); }
+.sidebar-item.active {
+  background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 600;
+}
+.sidebar-item .si-badge {
+  margin-left: auto; font-family: var(--font-mono); font-size: 9px;
+  border-radius: var(--radius-full);
+  padding: 0px 5px; min-width: 15px; text-align: center; line-height: 16px;
+}
+.sidebar-divider { height: 1px; background: var(--sidebar-border); margin: 8px 16px; }
+.sidebar-apps { flex: 1; overflow-y: auto; min-height: 0; }
+
+/* Main content */
+.app-main { flex: 1; padding: 24px 28px; overflow-y: auto; grid-column: 2; grid-row: 2; min-height: 0; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; border-radius: var(--radius-btn); cursor: pointer; transition: all 0.15s; border: none; white-space: nowrap; }
+.btn-primary { background: var(--primary); color: var(--primary-foreground); padding: 8px 18px; }
+.btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px color-mix(in oklch, var(--primary) 35%, transparent); transform: translateY(-1px); }
+.btn-primary[disabled], .btn-primary.is-disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary { background: transparent; color: var(--foreground); border: 1px solid var(--border); padding: 7px 18px; }
+.btn-secondary:hover { border-color: var(--border-2); background: var(--muted); }
+.btn-ghost { background: transparent; color: var(--text-2); padding: 6px 12px; }
+.btn-ghost:hover { background: var(--muted); color: var(--foreground); }
+.btn-sm { font-size: 11px; padding: 5px 10px; }
+.btn-lg { font-size: 14px; padding: 10px 24px; }
+.btn-danger { color: var(--destructive); border: 1px solid var(--destructive); background: transparent; padding: 7px 18px; }
+.btn-danger:hover { background: var(--destructive); color: var(--destructive-foreground); }
+
+/* Input */
+.input { font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; }
+.input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); }
+.input::placeholder { color: var(--text-3); }
+.input-mono { font-family: var(--font-mono); font-size: 11px; }
+
+/* Tabs */
+.inline-tabs { display: flex; gap: 2px; margin-bottom: 16px; }
+.inline-tab { padding: 6px 14px; font-size: 12px; font-weight: 500; background: transparent; border: none; color: var(--text-2); cursor: pointer; border-radius: var(--radius-btn); }
+.inline-tab.active { background: var(--primary-light); color: var(--primary); }
+
+/* Cards */
+.info-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px 18px; }
+.info-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 10px; }
+.info-row:last-child { border-bottom: none; }
+.info-label { font-size: 12px; color: var(--text-2); flex-shrink: 0; }
+.info-value { font-size: 12px; font-weight: 500; color: var(--foreground); text-align: right; }
+
+/* Badge — shadcn 公式：font-weight: 600，纯文字 + 颜色背景 */
+.badge { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); border: 1px solid; letter-spacing: 0; line-height: 1; height: 22px; box-sizing: border-box; }
+.badge-success { background: var(--success-muted); color: var(--success); border-color: var(--success-border); }
+.badge-warn { background: var(--warning-muted); color: var(--warning); border-color: var(--warning-border); }
+.badge-error { background: color-mix(in oklch, var(--destructive) 12%, transparent); color: var(--destructive); border-color: color-mix(in oklch, var(--destructive) 30%, transparent); }
+.badge-info { background: var(--info-muted); color: var(--info); border-color: var(--info-border); }
+.badge-default { background: color-mix(in oklch, var(--muted) 60%, transparent); color: var(--text-2); border-color: var(--border); }
+
+.section-title { font-family: var(--font-sans); font-size: 16px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 2px; }
+.section-desc { font-size: 12px; color: var(--text-2); margin-bottom: 14px; }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+/* Toggle */
+.toggle-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: var(--border-2); border-radius: var(--radius-full); cursor: pointer; transition: background 0.2s; }
+.toggle-slider::before { content: ""; position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; background: var(--background); border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.toggle-switch input:checked + .toggle-slider { background: var(--primary); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+.toggle-switch input[disabled] + .toggle-slider, .toggle-switch.is-disabled .toggle-slider { opacity: 0.5; cursor: not-allowed; }
+
+/* Progress */
+.progress-bar { height: 6px; background: var(--muted); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; }
+.progress-fill.indigo { background: var(--primary); }
+.progress-fill.amber { background: var(--warning); }
+
+.pulse-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px color-mix(in oklch, var(--success) 50%, transparent); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 4px color-mix(in oklch, var(--success) 40%, transparent)} 50%{box-shadow:0 0 12px color-mix(in oklch, var(--success) 70%, transparent)} }
+@keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
+.spin { animation: spin 1s linear infinite; }
+@keyframes breathe { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+.bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 100px; padding-top: 8px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar-fill { width: 100%; background: var(--primary); border-radius: 2px 2px 0 0; min-height: 3px; }
+.bar-label { font-size: 9px; color: var(--text-3); font-family: var(--font-mono); }
+
+.dist-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.dist-name { font-size: 11px; color: var(--text-2); width: 70px; flex-shrink: 0; text-align: right; }
+.dist-bar-wrap { flex: 1; height: 7px; background: var(--muted); border-radius: 4px; overflow: hidden; }
+.dist-bar-fill { height: 100%; border-radius: 4px; }
+.dist-val { font-size: 11px; font-weight: 500; width: 40px; text-align: right; font-family: var(--font-mono); }
+.dist-name img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; margin-right: 4px; vertical-align: -2px; }
+.dist-name .ch-fallback { display: inline-flex; align-items: center; justify-content: center; width: 12px; height: 12px; border-radius: 2px; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); color: var(--primary-foreground); font-size: 8px; font-weight: 700; margin-right: 4px; vertical-align: -2px; }
+
+/* 用量看板 — 金刚区 4 卡 */
+.kpi-cards .info-card { padding: 14px 12px; text-align: center; }
+.kpi-label { font-size: 10px; color: var(--text-2); letter-spacing: 0.04em; }
+.kpi-value { font-family: var(--font-sans); font-size: 18px; font-weight: 700; line-height: 1.2; margin-top: 2px; }
+.kpi-trend { font-size: 10px; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px; }
+.kpi-trend i { width: 10px; height: 10px; }
+.kpi-trend.up { color: var(--success); }
+.kpi-trend.down { color: var(--destructive); }
+.kpi-trend.flat { color: var(--text-3); }
+.kpi-sub { font-size: 9px; color: var(--text-3); margin-top: 4px; letter-spacing: 0.02em; font-family: var(--font-mono); }
+.kpi-card-quota .progress-bar { height: 4px; margin-top: 6px; }
+.kpi-card-quota .kpi-balance { font-size: 10px; color: var(--text-2); margin-top: 4px; }
+.kpi-card-quota .kpi-balance .bal-val { color: var(--warning); font-weight: 600; }
+
+/* 用量看板 — 分布卡固定高度 + 块内滚动 */
+.dist-list { height: 110px; overflow-y: auto; padding-right: 4px; }
+.dist-list::-webkit-scrollbar { width: 4px; }
+.dist-list::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+.dist-list::-webkit-scrollbar-track { background: transparent; }
+
+/* 用量看板 — 顶部工具条 */
+.usage-toolbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+.usage-toolbar .toolbar-left { display: flex; flex-direction: column; gap: 2px; }
+.usage-toolbar .toolbar-right { display: flex; align-items: center; gap: 8px; }
+
+/* 用量看板 — Agent 筛选 + 导出下拉 */
+.agent-filter, .export-dropdown { position: relative; }
+.agent-filter-btn, .export-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; font-size: 12px;
+  background: var(--background); border: 1px solid var(--border);
+  border-radius: var(--radius-btn); cursor: pointer; color: var(--foreground);
+  font-family: var(--font-sans);
+}
+.agent-filter-btn:hover, .export-btn:hover { background: var(--muted); }
+.agent-filter-btn .chev, .export-btn .chev { transition: transform 0.15s; width: 12px; height: 12px; color: var(--text-3); }
+.agent-filter.open .agent-filter-btn .chev,
+.export-dropdown.open .export-btn .chev { transform: rotate(180deg); }
+.agent-filter-menu, .export-menu {
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: 10;
+  background: var(--background); border: 1px solid var(--border);
+  border-radius: var(--radius-card); padding: 4px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1); min-width: 160px;
+  display: none;
+}
+.agent-filter.open .agent-filter-menu,
+.export-dropdown.open .export-menu { display: block; }
+.agent-filter-item, .export-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; font-size: 12px; cursor: pointer; border-radius: 4px;
+  color: var(--foreground);
+}
+.agent-filter-item:hover, .export-item:hover { background: var(--muted); }
+.agent-filter-item.active { color: var(--primary); font-weight: 600; }
+.agent-filter-item .check { width: 12px; height: 12px; opacity: 0; margin-left: auto; }
+.agent-filter-item.active .check { opacity: 1; }
+.agent-filter-item .afi-icon, .export-item .ei-icon { width: 12px; height: 12px; flex-shrink: 0; }
+.agent-filter-item i.afi-icon, .export-item i.ei-icon { color: var(--text-2); }
+.agent-filter-item img.afi-icon { border-radius: 2px; object-fit: contain; }
+.agent-filter-item .ag-fallback, .usage-detail-table .td-agent .ag-fallback {
+  width: 12px; height: 12px; border-radius: 2px;
+  background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white));
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--primary-foreground); font-size: 8px; font-weight: 700; flex-shrink: 0;
+}
+.export-item .fmt { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); margin-left: auto; }
+
+/* 用量看板 — 调用明细列表 */
+.dist-card-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 12px; margin-bottom: 6px; }
+.dist-card-header .view-all { font-size: 11px; color: var(--primary); cursor: pointer; font-weight: 500; }
+.usage-detail-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+.usage-detail-table thead th {
+  text-align: left; font-weight: 600; color: var(--text-2);
+  padding: 6px 8px; border-bottom: 1px solid var(--border);
+  font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.usage-detail-table tbody td {
+  padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle;
+}
+.usage-detail-table tbody tr:last-child td { border-bottom: none; }
+.usage-detail-table .td-agent { display: flex; align-items: center; gap: 6px; }
+.usage-detail-table .td-agent i { width: 12px; height: 12px; color: var(--text-2); }
+.usage-detail-table .td-agent img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; flex-shrink: 0; }
+.usage-detail-table .td-channel { display: flex; align-items: center; gap: 6px; }
+.usage-detail-table .td-channel img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; }
+.usage-detail-table .td-channel .ch-fallback {
+  width: 12px; height: 12px; border-radius: 2px;
+  background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white));
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--primary-foreground); font-size: 8px; font-weight: 700;
+}
+.usage-detail-table .td-model { font-family: var(--font-mono); font-size: 10px; color: var(--text-2); }
+.usage-detail-table .td-num { font-family: var(--font-mono); text-align: right; }
+.usage-detail-table .td-ts { color: var(--text-3); font-family: var(--font-mono); font-size: 10px; }
+
+.pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.price-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px; text-align: center; position: relative; }
+.price-card.featured { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.price-card .pc-tag { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--primary-foreground); font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-full); }
+.price-card .pc-name { font-family: var(--font-sans); font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.price-card .pc-price { font-family: var(--font-sans); font-size: 28px; font-weight: 700; }
+.price-card .pc-unit { font-size: 11px; color: var(--text-2); }
+.price-card .pc-desc { font-size: 11px; color: var(--text-2); margin: 10px 0; line-height: 1.5; }
+.price-card .pc-credits { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 10px; }
+
+.channel-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 14px 16px; margin-bottom: 8px; position: relative; }
+.channel-card.default { border-left: 3px solid var(--primary); }
+.channel-icon { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; object-fit: contain; }
+.channel-icon-fallback { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); display: inline-flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 10px; font-weight: 700; }
+.channel-card .channel-actions { position: absolute; top: 12px; right: 14px; display: none; gap: 4px; }
+.channel-card:hover .channel-actions,
+.channel-card.show-actions .channel-actions { display: flex; }
+.channel-action-btn { width: 26px; height: 26px; border-radius: 5px; background: transparent; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-2); position: relative; }
+.channel-action-btn:hover { background: var(--muted); color: var(--foreground); }
+.channel-action-btn .ca-tip { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: var(--foreground); color: var(--background); font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.12s; }
+.channel-action-btn:hover .ca-tip { opacity: 1; }
+.channel-action-btn.danger:hover { color: var(--destructive); }
+.channel-action-btn.is-disabled, .channel-action-btn[disabled] { color: var(--text-3); cursor: not-allowed; }
+.channel-action-btn.is-disabled:hover, .channel-action-btn[disabled]:hover { background: transparent; color: var(--text-3); }
+.model-badges { display: flex; flex-wrap: wrap; gap: 4px; max-height: 24px; overflow: hidden; transition: max-height 0.2s; }
+.model-badges.expanded { max-height: 999px; }
+.model-toggle { font-size: 11px; color: var(--primary); cursor: pointer; background: none; border: none; padding: 4px 0; margin-top: 2px; }
+
+/* 空状态占位卡片 */
+.empty-card { background: transparent; border: 1.5px dashed var(--border-2); border-radius: var(--radius-card); padding: 28px 20px; margin-bottom: 8px; text-align: center; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.empty-card:hover { border-color: var(--primary); background: var(--primary-light); }
+.empty-card__icon { width: 36px; height: 36px; margin: 0 auto 10px; border-radius: var(--radius-panel); background: var(--muted); display: flex; align-items: center; justify-content: center; color: var(--text-3); }
+.empty-card__title { font-size: 13px; font-weight: 600; color: var(--foreground); margin-bottom: 4px; }
+.empty-card__desc { font-size: 11px; color: var(--text-3); }
+
+/* Form */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
+.form-label--sm { font-size: 10px; margin-bottom: 4px; }
+.form-input { font-family: var(--font-mono); font-size: 12px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; transition: border-color 0.12s; }
+.form-input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); }
+.form-input::placeholder { color: var(--text-3); }
+.form-input[readonly] { background: var(--muted); cursor: default; }
+.form-input--sm { font-size: 11px; padding: 6px 10px; }
+.form-textarea { font-family: var(--font-mono); font-size: 12px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; resize: vertical; transition: border-color 0.12s; }
+.form-textarea:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); }
+.form-textarea::placeholder { color: var(--text-3); }
+.form-tip { font-size: 11px; color: var(--text-3); margin-top: 4px; line-height: 1.5; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-input-wrap { position: relative; }
+.form-input-wrap .form-input { padding-right: 36px; }
+.form-combobox { position: relative; display: block; width: 100%; }
+.form-combobox .form-input { padding-right: 32px; }
+.form-combobox .form-chevron { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; padding: 0; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-3); border-radius: var(--radius-chip); transition: color 0.12s, background 0.12s; }
+.form-combobox .form-chevron > svg { transition: transform 0.15s; transform-origin: center; }
+.form-combobox .form-chevron:hover { color: var(--foreground); }
+.form-combobox.open .form-chevron { color: var(--foreground); }
+.form-combobox.open .form-chevron > svg { transform: rotate(180deg); }
+.combobox-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-btn); box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 4px; max-height: 220px; overflow-y: auto; z-index: 20; display: none; }
+.form-combobox.open .combobox-menu { display: block; }
+.combobox-option { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; color: var(--popover-foreground); font-family: var(--font-sans); }
+.combobox-option:hover { background: var(--accent); color: var(--accent-foreground); }
+.combobox-option img { width: 16px; height: 16px; flex-shrink: 0; border-radius: 3px; object-fit: contain; }
+.combobox-option .co-fallback { width: 16px; height: 16px; flex-shrink: 0; border-radius: 3px; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 9px; font-weight: 600; }
+.form-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-3); padding: 4px; display: flex; align-items: center; border-radius: 3px; }
+.form-eye:hover { color: var(--foreground); }
+.form-eye .eye-off { display: none; }
+.form-eye.shown .eye-on { display: none; }
+.form-eye.shown .eye-off { display: inline-flex; }
+.form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.form-dialog-title { font-family: var(--font-sans); font-size: 15px; font-weight: 600; margin-bottom: 20px; }
+.form-dialog { background: var(--popover); color: var(--popover-foreground); border-radius: var(--radius-card); padding: 24px 28px; width: 420px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); position: relative; }
+.modal-close-x {
+  position: absolute; top: 14px; right: 14px; width: 28px; height: 28px;
+  border: none; background: transparent; cursor: pointer; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; color: var(--text-3);
+  transition: background 0.12s; padding: 0; z-index: 1;
+}
+.modal-close-x:hover { background: var(--muted); color: var(--foreground); }
+.modal-close-x svg, .modal-close-x i { width: 16px; height: 16px; stroke-width: 1.75; }
+.apply-popover { position: absolute; top: 44px; right: 14px; z-index: 5; background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 8px 4px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); min-width: 180px; }
+.apply-popover .ap-title { font-size: 10px; color: var(--text-3); padding: 4px 12px 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+.apply-popover .ap-item { display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--popover-foreground); }
+.apply-popover .ap-item:hover { background: var(--accent); color: var(--accent-foreground); }
+.apply-popover .ap-item input[type="checkbox"] { margin: 0; }
+.apply-popover .ap-footer { display: flex; gap: 6px; justify-content: flex-end; padding: 8px 8px 4px; border-top: 1px solid var(--border); margin-top: 4px; }
+
+/* Agent tabs（带品牌 logo） */
+.agent-tabs { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+.agent-tab { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 12px; font-weight: 500; background: transparent; border: 1px solid var(--border); border-radius: var(--radius-btn); color: var(--text-2); cursor: pointer; font-family: var(--font-sans); }
+.agent-tab:hover { color: var(--foreground); background: var(--muted); }
+.agent-tab--active { color: var(--primary); border-color: var(--primary); background: var(--primary-light); }
+.agent-tab img { width: 14px; height: 14px; border-radius: 2px; object-fit: contain; }
+.agent-tab__badge { font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border-radius: 3px; background: var(--muted); color: var(--text-3); }
+.agent-tab--active .agent-tab__badge { background: var(--primary-light); color: var(--primary); }
+.agent-tab__fallback { width: 14px; height: 14px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 9px; font-weight: 700; }
+.agent-pane { animation: agent-pane-in 0.18s ease; }
+@keyframes agent-pane-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+.launch-btn { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; }
+.launch-btn:hover { transform: scale(1.05); }
+
+/* QR Code */
+.qr-placeholder {
+  width: 140px; height: 140px; background: var(--muted); border-radius: var(--radius-panel);
+  margin: 0 auto 12px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--border);
+}
+.qr-placeholder .qr-icon { font-size: 40px; opacity: 0.4; }
+.qr-placeholder .qr-text { font-size: 11px; color: var(--text-3); }
+
+/* 顶栏 */
+.app-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.app-topbar .user-area { display: flex; align-items: center; gap: 10px; }
+.app-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-weight: 600; font-size: 11px; }
+
+/* mac 风格主区顶部操作栏 */
+.win-chrome-bar {
+  grid-column: 2; grid-row: 1;
+  display: flex; align-items: stretch; height: 36px;
+  background: var(--background); border-bottom: 1px solid var(--border);
+}
+.win-chrome-drag { flex: 1; }
+.win-chrome-actions {
+  display: flex; align-items: center; gap: 8px; padding: 0 12px;
+}
+.win-chrome-icon { width: 14px; height: 14px; stroke-width: 1.75; }
+.win-chrome-btn {
+  width: 28px; height: 28px; border: none; background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-btn); color: var(--text-2);
+}
+.win-chrome-btn:hover { background: var(--muted); color: var(--foreground); }
+.win-credits {
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--foreground);
+  padding: 0 6px;
+}
+.win-credits i { color: var(--primary); }
+.win-avatar-chip { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.win-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--primary); color: var(--primary-foreground);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 10px; flex-shrink: 0;
+}
+
+.nav-icon { width: 16px; height: 16px; stroke-width: 1.75; flex-shrink: 0; }
+img.nav-icon { border-radius: 3px; object-fit: contain; }
+
+.badge-free {
+  display: inline-block; font-family: var(--font-mono); font-size: 8px; font-weight: 600;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 3px; padding: 1px 4px; letter-spacing: 0.04em;
+}
+
+/* 登录浮层 */
+.login-modal {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-modal__backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+}
+.login-modal__card {
+  position: relative; background: var(--popover); border-radius: var(--radius-card);
+  padding: 28px 28px 24px; width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  color: var(--popover-foreground);
+}
+.login-modal__close {
+  position: absolute; top: 14px; right: 14px; width: 28px; height: 28px;
+  border: none; background: transparent; cursor: pointer; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; color: var(--text-3);
+  transition: background 0.12s;
+}
+.login-modal__close:hover { background: var(--muted); color: var(--foreground); }
+.login-modal__close svg { width: 16px; height: 16px; }
+.login-modal__title {
+  font-family: var(--font-sans); font-size: 18px; font-weight: 600;
+  letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.login-tabs { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+.login-tab {
+  padding: 6px 14px; font-size: 12px; font-weight: 500; background: transparent;
+  border: none; color: var(--text-2); cursor: pointer; border-radius: var(--radius-btn) var(--radius-btn) 0 0;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.12s;
+}
+.login-tab--active { color: var(--primary); border-bottom-color: var(--primary); }
+.login-pane label { display: block; font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 4px; margin-top: 10px; }
+.login-pane label:first-child { margin-top: 0; }
+.login-pane input { font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; }
+.login-pane input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); }
+.login-code-row { display: flex; gap: 8px; }
+.login-code-row input { flex: 1; }
+.login-code-btn {
+  font-family: var(--font-sans); font-size: 12px; font-weight: 500; white-space: nowrap;
+  padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border);
+  background: transparent; color: var(--foreground); cursor: pointer; transition: all 0.12s;
+}
+.login-code-btn:hover { border-color: var(--border-2); background: var(--muted); }
+.login-submit {
+  display: block; width: 100%; margin-top: 14px; padding: 10px;
+  background: var(--primary); color: var(--primary-foreground); font-family: var(--font-sans);
+  font-size: 13px; font-weight: 500; border: none; border-radius: var(--radius-btn);
+  cursor: pointer; transition: background 0.15s;
+}
+.login-submit:hover { background: var(--primary-hover); }
+.login-footer { margin-top: 12px; font-size: 11px; color: var(--text-3); display: flex; flex-direction: column; gap: 4px; }
+.login-footer a { color: var(--primary); text-decoration: none; }
+.login-qr-placeholder {
+  width: 140px; height: 140px; background: var(--muted); border-radius: var(--radius-panel);
+  margin: 20px auto 12px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); font-size: 13px; color: var(--text-3);
+}
+.login-qr-tip { text-align: center; font-size: 12px; color: var(--text-2); margin-bottom: 20px; }
+
+.login-overlay {
+  position: absolute; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-overlay__backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.25);
+}
+.login-overlay__card {
+  position: relative; background: var(--popover); border-radius: var(--radius-card);
+  padding: 28px 28px 24px; width: 340px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  color: var(--popover-foreground);
+}
+.login-overlay__subtitle {
+  font-size: 12px; color: var(--text-2); margin-top: -10px; margin-bottom: 18px;
+}
+
+.phone-input-wrap { position: relative; }
+.phone-input-wrap input { padding-left: 56px; }
+.phone-input-wrap .phone-input-prefix {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; color: var(--text-2);
+  border-right: 1px solid var(--border); padding-right: 8px;
+  pointer-events: none;
+}
+
+.win-login-btn {
+  height: 28px; padding: 0 14px;
+  border: none; background: var(--primary); color: var(--primary-foreground);
+  cursor: pointer; font-family: var(--font-sans);
+  font-size: 12px; font-weight: 500;
+  border-radius: var(--radius-btn);
+  transition: background 0.12s;
+}
+.win-login-btn:hover { background: var(--primary-hover); }
+.hero-icon { width: 28px; height: 28px; stroke-width: 1.5; }
+img.hero-icon { border-radius: 6px; object-fit: contain; }
+.info-icon { width: 14px; height: 14px; stroke-width: 1.75; vertical-align: -2px; margin-right: 4px; }
+.store-card { cursor: pointer; transition: box-shadow 0.15s, transform 0.15s; }
+.store-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+.detail-screenshot {
+  width: 100%; height: 180px; background: var(--muted); border-radius: var(--radius-panel);
+  border: 1px solid var(--border); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px; color: var(--text-3);
+}
+
+.detail-section-title {
+  font-size: 12px; font-weight: 600; color: var(--foreground); margin-bottom: 10px;
+}
+
+.search-shortcut {
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-3);
+  background: var(--muted); border-radius: 4px; padding: 2px 6px;
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* TOC 目录导航：sticky 卡片，跟随滚动；360px 宽参 ai-store 规范 */
+.toc-sidebar {
+  position: sticky; top: 32px;
+  width: 280px; flex-shrink: 0;
+  background: var(--background);
+  border-radius: var(--radius-card);
+  padding: 20px 16px;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.06),
+    0 0 0 1px rgba(0,0,0,0.04);
+  max-height: calc(100vh - 64px); overflow-y: auto;
+}
+.toc-sidebar .toc-title {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: color-mix(in oklch, var(--muted-foreground) 60%, transparent);
+  margin-bottom: 14px; padding-left: 4px;
+}
+.toc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-btn);
+  font-size: 13px; color: var(--foreground); text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.toc-item:hover { background: color-mix(in oklch, var(--muted) 60%, transparent); }
+.toc-item.active {
+  background: var(--accent); color: var(--accent-foreground);
+  font-weight: 500;
+}
+.toc-dot { width: 6px; height: 6px; border-radius: 50%; background: color-mix(in oklch, var(--primary) 55%, transparent); flex-shrink: 0; transition: background 0.15s; }
+.toc-item.active .toc-dot { background: var(--accent-foreground); }
+.toc-mirror-tag {
+  font-size: 9px; padding: 1px 5px; border-radius: 3px;
+  background: var(--muted); color: var(--text-3); flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+
+/* env issue / action chip / 抽屉 */
+.env-issue-summary {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; margin-bottom: 12px;
+  background: color-mix(in oklch, var(--warning) 8%, transparent); border: 1px solid color-mix(in oklch, var(--warning) 20%, transparent);
+  border-radius: var(--radius-btn);
+  font-size: 11px; color: var(--text-2);
+}
+.env-issue-summary .env-issue-summary__count {
+  font-weight: 600; color: var(--foreground);
+}
+.env-issue-summary .env-issue-summary__time {
+  margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--text-3);
+}
+
+.env-issue-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; margin-left: 6px;
+  background: color-mix(in oklch, var(--warning) 12%, transparent); color: var(--warning);
+  border-radius: 10px; font-size: 10px; font-weight: 500;
+  cursor: pointer; transition: all 0.12s;
+}
+.env-issue-badge:hover { background: color-mix(in oklch, var(--warning) 20%, transparent); }
+.env-issue-badge--info { background: color-mix(in oklch, var(--muted-foreground) 12%, transparent); color: var(--text-2); }
+.env-issue-badge--info:hover { background: color-mix(in oklch, var(--muted-foreground) 20%, transparent); }
+
+.env-action-chip {
+  display: inline-block; padding: 2px 6px;
+  background: var(--muted); color: var(--text-2);
+  font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+  border-radius: 3px; letter-spacing: 0.02em;
+}
+
+.env-source-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 7px;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 3px; font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+}
+.env-prereq-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 0;
+  font-family: var(--font-mono); font-size: 11px;
+}
+.env-prereq-row .env-prereq-icon { width: 12px; height: 12px; flex-shrink: 0; }
+.env-prereq-row .env-prereq-name { color: var(--foreground); }
+.env-prereq-row .env-prereq-meta { color: var(--text-3); margin-left: auto; font-size: 10px; }
+
+.win-avatar-menu {
+  position: absolute; top: 36px; right: 12px; z-index: 5;
+  background: var(--popover); border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  width: 260px; padding: 6px; font-size: 12px;
+  color: var(--popover-foreground);
+}
+.win-avatar-menu__header {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px;
+}
+.win-avatar-menu__name { font-weight: 600; font-size: 13px; color: var(--foreground); }
+.win-avatar-menu__email { font-size: 11px; color: var(--text-3); }
+.win-avatar-menu__plan {
+  padding: 8px 12px; margin-bottom: 4px;
+  background: var(--primary-light); border-radius: var(--radius-btn);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.win-avatar-menu__plan-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
+.win-avatar-menu__plan-row .plan-label { color: var(--text-2); }
+.win-avatar-menu__plan-row .plan-value { color: var(--primary); font-weight: 600; }
+.win-avatar-menu__divider { height: 1px; background: var(--border); margin: 4px -6px; }
+.win-avatar-menu__item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 4px; cursor: pointer;
+  color: var(--foreground); transition: background 0.12s;
+}
+.win-avatar-menu__item:hover { background: var(--muted); }
+.win-avatar-menu__item i.nav-icon { width: 14px; height: 14px; stroke-width: 1.75; color: var(--text-2); flex-shrink: 0; }
+.win-avatar-menu__item--danger { color: var(--destructive); }
+.win-avatar-menu__item--danger i { color: var(--destructive); }
+
+.app-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-3); margin-bottom: 10px;
+}
+.app-breadcrumb a { color: var(--text-2); text-decoration: none; cursor: pointer; }
+.app-breadcrumb a:hover { color: var(--foreground); }
+.app-breadcrumb .sep { color: var(--border-2); font-size: 10px; }
+.app-breadcrumb .current { color: var(--foreground); font-weight: 500; }
+
+.env-drawer {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 380px;
+  background: var(--background);
+  box-shadow: -8px 0 24px rgba(0,0,0,0.12);
+  z-index: 11; display: flex; flex-direction: column;
+}
+.env-drawer__header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+}
+.env-drawer__meta {
+  padding: 12px 20px; background: var(--muted); border-bottom: 1px solid var(--border);
+  font-size: 11px; color: var(--text-2); display: flex; flex-direction: column; gap: 4px;
+}
+.env-drawer__meta code {
+  font-family: var(--font-mono); font-size: 10px; color: var(--foreground);
+}
+.env-drawer__body {
+  flex: 1; overflow-y: auto; padding: 0;
+}
+.env-drawer__item {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+}
+.env-drawer__item-head {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+}
+.env-drawer__item-level {
+  margin-left: auto; font-family: var(--font-sans); font-size: 10px; font-weight: 500;
+  padding: 1px 6px; border-radius: 8px;
+}
+.env-drawer__item-level--warning { background: color-mix(in oklch, var(--warning) 15%, transparent); color: var(--warning); }
+.env-drawer__item-level--info { background: color-mix(in oklch, var(--muted-foreground) 12%, transparent); color: var(--text-2); }
+.env-drawer__item-msg { font-size: 12px; color: var(--foreground); margin-bottom: 6px; }
+.env-drawer__item-cmd {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--muted); padding: 6px 8px; border-radius: 3px;
+  color: var(--text-2); margin-bottom: 8px; overflow-x: auto;
+}
+.env-drawer__footer {
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end;
+}
+
+/* Proto navigation shell */
+.proto-nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 40px; padding: 0 20px;
+  background: color-mix(in oklch, var(--background) 92%, transparent); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.proto-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-2);
+  text-decoration: none; padding: 4px 10px; border-radius: 6px;
+  transition: background 0.15s;
+}
+.proto-back:hover { background: var(--muted); color: var(--foreground); }
+.proto-back i { width: 14px; height: 14px; stroke-width: 1.75; }
+.proto-title { font-size: 12px; color: var(--text-3); font-family: var(--font-sans); }
+
+/* 原型旁注 PRD 面板：宽 360 sticky 顶；与 macos-window (910) 同高，超长内容内部滚动 */
+.proto-with-prd {
+  display: flex; flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+}
+.proto-with-prd .macos-window { flex-shrink: 0; }
+.prd-panel-wrap {
+  width: 360px; flex-shrink: 0;
+  position: sticky; top: 32px;
+  height: 910px;
+  max-height: calc(100vh - 64px);
+  /* section-label 在 proto-with-prd 之外（proto-stack 直接子节点），PRD 与 macos-window 自然顶部对齐，无需 margin-top 下移 */
+}
+.prd-panel {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: var(--background);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.06),
+    0 0 0 1px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+.prd-panel__title {
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 700;
+  color: var(--foreground);
+  padding: 16px 22px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+  flex-shrink: 0;
+}
+.prd-panel__body {
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto;
+  padding: 16px 22px 20px;
+}
+.prd-section { margin-bottom: 18px; }
+.prd-section:last-child { margin-bottom: 0; }
+.prd-section__title {
+  font-size: 12px; font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.prd-section ul { margin: 0; padding-left: 16px; list-style: disc; }
+.prd-section li {
+  font-size: 11.5px; line-height: 1.7;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+.prd-section li:last-child { margin-bottom: 0; }
+
+/* ============ PRD ↔ 原型 双向高亮联动 ============ */
+[data-comp].is-highlight {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+  border-radius: inherit;
+  transition: outline-color .12s, box-shadow .12s;
+}
+li[data-target] { cursor: pointer; transition: background .12s; border-radius: 4px; }
+li[data-target].is-highlight {
+  background: color-mix(in oklch, var(--primary) 8%, transparent);
+  outline: 1px solid color-mix(in oklch, var(--primary) 30%, transparent);
+}
+.channel-card.is-bullet-active { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 35%, transparent); }
+.channel-card.is-bullet-active .channel-actions { display: flex; }
+</style>
+<!-- @proto-gen:shared:end -->
+<!-- @proto-gen:highlight:start -->
+<script>
+/**
+ * PRD ↔ 原型 双向高亮联动
+ *
+ * 用法：
+ *   1) 引入 shared.css（含 .is-highlight / li[data-target] / .is-bullet-active 样式）
+ *   2) 在原型组件上加 data-comp="<key>"，在 PRD bullet (<li>) 上加 data-target="<key>"
+ *   3) 多对一写法：data-target="key1,key2"（hover 该 bullet 高亮多个组件）
+ *
+ * Scope：每个 .proto-with-prd 是独立命名空间，跨 section 不传染。
+ * 视觉键：outline + var(--primary) 描边（跟随当前主题）/ 外发光，与组件自身 :hover 的 background 完全分离。
+ */
+(function() {
+  function init() {
+    document.querySelectorAll('.proto-with-prd').forEach(function(scope) {
+      function decorateCard(target, on) {
+        var card = target.closest && target.closest('.channel-card');
+        if (!card) return;
+        card.classList[on ? 'add' : 'remove']('is-bullet-active');
+      }
+
+      /* 正向：bullet → component */
+      scope.querySelectorAll('li[data-target]').forEach(function(bullet) {
+        var keys = bullet.dataset.target.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+        var targets = [];
+        keys.forEach(function(k) {
+          scope.querySelectorAll('[data-comp="' + k + '"]').forEach(function(el) { targets.push(el); });
+        });
+        if (!targets.length) return;
+        bullet.addEventListener('mouseenter', function() {
+          bullet.classList.add('is-highlight');
+          targets.forEach(function(t) { t.classList.add('is-highlight'); decorateCard(t, true); });
+        });
+        bullet.addEventListener('mouseleave', function() {
+          bullet.classList.remove('is-highlight');
+          targets.forEach(function(t) { t.classList.remove('is-highlight'); decorateCard(t, false); });
+        });
+      });
+
+      /* 反向：component → bullet（子组件 stopPropagation 避免被父组件遮盖） */
+      scope.querySelectorAll('[data-comp]').forEach(function(comp) {
+        var key = comp.dataset.comp;
+        var matched = [];
+        scope.querySelectorAll('li[data-target]').forEach(function(b) {
+          if (b.dataset.target.split(',').map(function(s) { return s.trim(); }).indexOf(key) !== -1) matched.push(b);
+        });
+        if (!matched.length) return;
+        comp.addEventListener('mouseenter', function(e) {
+          e.stopPropagation();
+          comp.classList.add('is-highlight');
+          matched.forEach(function(b) { b.classList.add('is-highlight'); });
+        });
+        comp.addEventListener('mouseleave', function(e) {
+          e.stopPropagation();
+          comp.classList.remove('is-highlight');
+          matched.forEach(function(b) { b.classList.remove('is-highlight'); });
+        });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+<!-- @proto-gen:highlight:end -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<style>
+  /* ===== 本页特有：配置项行与版本条（沉淀候选，见交付说明） ===== */
+  .app-sidebar a.sidebar-item { text-decoration: none; }
+  .cfg-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .cfg-row--sm { padding: 9px 12px; gap: 10px; }
+  .cfg-row--sm .cfg-row__title { font-size: 11.5px; }
+  .cfg-row--sm .cfg-row__desc { font-size: 10px; }
+  .cfg-row:last-child { border-bottom: none; }
+  .cfg-row__main { flex: 1; min-width: 0; }
+  .cfg-row__title { font-size: 12px; font-weight: 600; }
+  .cfg-row__desc { font-size: 10.5px; color: var(--text-3); margin-top: 3px; line-height: 1.6; }
+  .cfg-input { width: 92px; }
+  .pcard { border: 1px solid var(--border); border-radius: var(--radius-btn); background: var(--card); }
+  .pcard__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  .pcard__title { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+  .pcard__title i { width: 13px; height: 13px; color: var(--primary); }
+  .pcard__body { padding: 11px 12px; font-size: 11.5px; line-height: 1.7; color: var(--text-2); }
+  .pcard__actions { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+  .prow { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--border); }
+  .prow:last-child { border-bottom: none; }
+  .prow > span:first-child { color: var(--text-3); flex-shrink: 0; width: 96px; }
+  .prow > span:last-child { flex: 1; color: var(--foreground); }
+  .link-mini { display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 500; color: var(--primary); cursor: pointer; background: none; border: none; padding: 0; }
+  .link-mini:hover { text-decoration: underline; }
+  .link-mini i { width: 11px; height: 11px; }
+  .filter-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--text-2); border: 1px solid var(--border); border-radius: var(--radius-full); padding: 3px 10px; cursor: pointer; background: var(--background); }
+  .filter-chip.active { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+  .ver-bar { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-btn); background: var(--muted); font-size: 11px; flex-wrap: wrap; }
+  /* 信息层级：focus = 当前页主操作区；muted = 说明/门槛类信息；strip = 折叠的次要明细 */
+  .card--focus { border-color: color-mix(in oklch, var(--primary) 45%, transparent); box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary) 20%, transparent); }
+  .card--focus .pcard__head { background: var(--primary-light); }
+  .card--muted { background: var(--muted); }
+  .card--muted .pcard__body { font-size: 11px; }
+  .strip { border: 1px solid var(--border); border-radius: var(--radius-btn); background: var(--card); }
+  .strip > summary { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 11px; cursor: pointer; list-style: none; }
+  .strip > summary::-webkit-details-marker { display: none; }
+  .strip > summary i { width: 13px; height: 13px; color: var(--text-3); flex-shrink: 0; }
+  .strip[open] > summary { border-bottom: 1px solid var(--border); }
+  .strip .pcard__body { border-top: none; }
+  .group-label { display: flex; align-items: center; gap: 6px; margin: 2px 0 -2px; font-size: 11px; font-weight: 600; color: var(--text-2); }
+  .group-label i { width: 13px; height: 13px; color: var(--primary); }
+  .cfg-sub { margin: 10px 0 2px; font-size: 10px; letter-spacing: 0.04em; color: var(--text-3); }
+  .cfg-sub:first-child { margin-top: 0; }
+  .cfg-hint { display: flex; gap: 7px; margin-top: 10px; padding: 8px 10px; border-radius: var(--radius-btn); background: var(--warning-muted); border: 1px solid var(--warning-border); font-size: 10.5px; line-height: 1.65; color: var(--text-2); }
+  .cfg-hint i { width: 13px; height: 13px; color: var(--warning); flex-shrink: 0; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<nav class="proto-nav">
+  <a href="index.html" class="proto-back"><i data-lucide="arrow-left"></i>返回原型索引</a>
+  <span class="proto-title">配置中心（含 data-comp / data-target 评审脚手架，研发交付时剥离）</span>
+</nav>
+
+<div class="proto-layout">
+
+  <nav class="toc-sidebar">
+    <div class="toc-title">页面导航</div>
+    <a class="toc-item" href="#section-cfg-01"><span class="toc-dot"></span>配置-01 意图与转接策略</a>
+    <a class="toc-item" href="#section-cfg-02"><span class="toc-dot"></span>配置-02 AI 质量与灰度发布</a>
+  </nav>
+
+  <div class="sections-col">
+
+<!-- ============ Section CFG-01：意图与转接策略 ============ -->
+<div id="section-cfg-01" class="proto-stack">
+  <div class="section-label">配置-01 意图阈值、转接策略与展示规则</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">智能客服平台 — 配置中心 · 意图与转接策略</div>
+      </div>
+      <div class="macos-body">
+
+        <div class="app-sidebar">
+          <div style="padding:4px 14px 12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:22px;height:22px;border-radius:var(--radius-chip);background:var(--primary);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="headset" style="width:12px;height:12px;color:var(--primary-foreground);stroke-width:2.5;"></i>
+            </div>
+            <span style="font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:-0.02em;">智能客服平台</span>
+          </div>
+          <div class="sidebar-apps">
+            <div class="sidebar-section-header" style="padding-top:4px;">服务工作台</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="01-agent-workbench.html"><i data-lucide="headset" class="nav-icon"></i>客服工作台</a>
+              <a class="sidebar-item" href="02-iq-handoff.html"><i data-lucide="bot" class="nav-icon"></i>IQ 会话</a>
+            </div>
+            <div class="sidebar-section-header">知识运营</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="03-knowledge-center.html"><i data-lucide="book-open" class="nav-icon"></i>知识中心</a>
+              <a class="sidebar-item" href="04-knowledge-admin.html"><i data-lucide="folder-cog" class="nav-icon"></i>知识管理</a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-header">洞察与治理</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="05-monitor.html"><i data-lucide="bar-chart-3" class="nav-icon"></i>监控与优化</a>
+              <a class="sidebar-item active" href="06-config.html"><i data-lucide="settings" class="nav-icon"></i>配置中心</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="win-chrome-bar">
+          <div class="win-chrome-drag"></div>
+          <div class="win-chrome-actions">
+            <button class="win-chrome-btn" title="帮助"><i data-lucide="help-circle" class="win-chrome-icon"></i></button>
+            <div class="win-avatar-chip"><span class="win-avatar">李</span><span class="badge-free">管理员</span></div>
+          </div>
+        </div>
+
+        <div class="app-main">
+          <div class="section-title">配置中心</div>
+          <div class="section-desc">配置尽量可视化、可版本化；高权限操作需二次确认并记录审计。</div>
+
+          <div class="ver-bar" style="margin-bottom:14px;" data-comp="cfg-version">
+            <span>当前生效版本：<strong>策略组 v6</strong>（2026-10-01 生效）</span>
+            <span class="badge badge-default" style="height:18px;font-size:10px;">草稿变更 3 项未发布</span>
+            <span style="flex:1;"></span>
+            <button class="link-mini"><i data-lucide="history"></i>版本历史与回滚</button>
+            <button class="link-mini"><i data-lucide="git-compare"></i>对比草稿</button>
+          </div>
+
+          <div class="strip" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:11px;">
+              <i data-lucide="square-pen" style="width:13px;height:13px;color:var(--primary);"></i>
+              <span><strong>编辑模式</strong>：左侧为可编辑配置项，改动先进入草稿、不会立即生效；在右侧「编辑与发布」确认后才会发布。</span>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:16px;align-items:start;">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div class="pcard card--focus" data-comp="cfg-intents">
+                <div class="pcard__head">
+                  <span class="pcard__title"><i data-lucide="target"></i>配置项 · 意图与阈值</span>
+                  <span style="display:flex;align-items:center;gap:8px;">
+                    <span class="badge badge-warn" style="height:18px;font-size:10px;">已改动 1 项</span>
+                    <button class="link-mini"><i data-lucide="plus"></i>新增意图</button>
+                  </span>
+                </div>
+                <table class="usage-detail-table">
+                  <thead><tr><th>意图</th><th>风险级别</th><th>置信阈值（可编辑）</th><th>路由</th><th>启用</th><th>管理</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>退货政策</strong> <span class="td-ts">return_policy</span></td>
+                      <td><span class="badge badge-default" style="height:18px;font-size:10px;">中</span></td>
+                      <td><input class="input cfg-input" value="0.80" style="text-align:center;" /></td>
+                      <td>工作流 · 退货资格校验</td>
+                      <td><label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label></td>
+                      <td><button class="link-mini">复制</button> · <button class="link-mini">删除</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>物流查询</strong> <span class="td-ts">logistics_query</span></td>
+                      <td><span class="badge badge-default" style="height:18px;font-size:10px;">低</span></td>
+                      <td><input class="input cfg-input" value="0.75" style="text-align:center;" /></td>
+                      <td>知识检索 + 只读 API</td>
+                      <td><label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label></td>
+                      <td><button class="link-mini">复制</button> · <button class="link-mini">删除</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>会员积分</strong> <span class="td-ts">membership_points</span></td>
+                      <td><span class="badge badge-default" style="height:18px;font-size:10px;">低</span></td>
+                      <td><input class="input cfg-input" value="0.82" style="text-align:center;" /></td>
+                      <td>知识检索（当前无覆盖）</td>
+                      <td><label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label></td>
+                      <td><button class="link-mini">复制</button> · <button class="link-mini">删除</button></td>
+                    </tr>
+                    <tr style="background:var(--primary-light);">
+                      <td><strong>投诉</strong> <span class="td-ts">complaint</span> <span class="badge badge-warn" style="height:16px;font-size:9px;">已改动</span></td>
+                      <td><span class="badge badge-error" style="height:18px;font-size:10px;">高</span></td>
+                      <td><input class="input cfg-input" value="0.60" style="text-align:center;" /></td>
+                      <td>直接转人工（不生成业务答案）</td>
+                      <td><label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label></td>
+                      <td><button class="link-mini">复制</button> · <button class="link-mini">删除</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="pcard__actions">
+                  <span style="font-size:10.5px;color:var(--text-3);">置信阈值为校准后的值，不直接使用模型自报分数；改动先进入草稿，右侧可对比与发布。</span>
+                  <span style="flex:1;"></span>
+                  <button class="link-mini"><i data-lucide="rotate-ccw"></i>还原本组</button>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;align-items:start;">
+              <div class="pcard card--muted" data-comp="cfg-handoff">
+                <div class="pcard__head">
+                  <span class="pcard__title"><i data-lucide="user-round-check"></i>配置项 · 转人工触发条件</span>
+                  <span style="display:flex;align-items:center;gap:8px;">
+                    <span class="badge badge-warn" style="height:18px;font-size:10px;">已改动 1 项</span>
+                    <button class="link-mini"><i data-lucide="plus"></i>新增条件</button>
+                  </span>
+                </div>
+                <div style="padding:2px 0;">
+                  <div class="cfg-row cfg-row--sm">
+                    <div class="cfg-row__main">
+                      <div class="cfg-row__title">顾客明确要求人工</div>
+                      <div class="cfg-row__desc">命中即转接，不再追问</div>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                  </div>
+                  <div class="cfg-row cfg-row--sm">
+                    <div class="cfg-row__main">
+                      <div class="cfg-row__title">连续无法确认意图 / 未命中有效答案</div>
+                      <div class="cfg-row__desc">连续轮数达到阈值后转接，并生成缺口候选任务</div>
+                    </div>
+                    <input class="input cfg-input" value="3" style="text-align:center;" />
+                    <span style="font-size:10.5px;color:var(--text-3);">轮</span>
+                    <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                  </div>
+                  <div class="cfg-row cfg-row--sm">
+                    <div class="cfg-row__main">
+                      <div class="cfg-row__title">高风险意图（投诉 / 特殊审批 / 涉及金额）</div>
+                      <div class="cfg-row__desc">不允许 IQ 生成业务答案，直接转人工</div>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                  </div>
+                  <div class="cfg-row cfg-row--sm">
+                    <div class="cfg-row__main">
+                      <div class="cfg-row__title">知识冲突或关键事实无法核实</div>
+                      <div class="cfg-row__desc">存在两条同样生效的知识且结论不一致时</div>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                  </div>
+                  <div class="cfg-row cfg-row--sm">
+                    <div class="cfg-row__main">
+                      <div class="cfg-row__title">业务接口多次失败或超时</div>
+                      <div class="cfg-row__desc">达到失败次数后进入回退路径</div>
+                    </div>
+                    <input class="input cfg-input" value="2" style="text-align:center;" />
+                    <span style="font-size:10.5px;color:var(--text-3);">次</span>
+                    <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pcard" data-comp="cfg-display">
+                <div class="pcard__head">
+                  <span class="pcard__title"><i data-lucide="layers"></i>配置项 · 展示与生效规则</span>
+                  <span style="display:flex;align-items:center;gap:8px;">
+                    <span class="badge badge-default" style="height:18px;font-size:10px;">无改动</span>
+                    <button class="link-mini"><i data-lucide="plus"></i>新增规则</button>
+                  </span>
+                </div>
+                <div style="padding:2px 0;">
+                  <div class="cfg-row cfg-row--sm">
+                    <div class="cfg-row__main">
+                      <div class="cfg-row__title">Notice 优先级</div>
+                      <div class="cfg-row__desc">同渠道多条公告同时生效时，按优先级取前 1 条展示</div>
+                    </div>
+                    <input class="input cfg-input" value="P1" style="text-align:center;" />
+                  </div>
+                  <div class="cfg-row cfg-row--sm">
+                    <div class="cfg-row__main">
+                      <div class="cfg-row__title">知识默认有效期</div>
+                      <div class="cfg-row__desc">未填写失效时间时的默认策略，到期前 7 天提醒负责人</div>
+                    </div>
+                    <input class="input" value="长期有效" style="width:130px;text-align:center;" />
+                  </div>
+                  <div class="cfg-row cfg-row--sm">
+                    <div class="cfg-row__main">
+                      <div class="cfg-row__title">工作台默认折叠辅助面板</div>
+                      <div class="cfg-row__desc">适用于 1024–1439px 宽度，窄屏使用抽屉式面板</div>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="pcard card--focus" data-comp="cfg-publish">
+                <div class="pcard__head">
+                  <span class="pcard__title"><i data-lucide="square-pen"></i>编辑与发布</span>
+                  <span class="badge badge-warn" style="height:18px;font-size:10px;">3 项待发布</span>
+                </div>
+                <div class="pcard__body">
+                  <div class="cfg-sub">待发布变更（点击可定位到对应配置项）</div>
+                  <div class="prow"><span>转接轮数</span><span>5 → 3</span></div>
+                  <div class="prow"><span>投诉意图阈值</span><span>0.75 → 0.60</span></div>
+                  <div class="prow"><span>Notice 优先级</span><span>P2 → P1</span></div>
+                  <div class="cfg-hint" data-comp="cfg-risk">
+                    <i data-lucide="shield-alert"></i>
+                    <span><strong>影响提示</strong>：降低投诉意图阈值会让更多会话直接转人工，可能提升人工量；转接轮数 5 → 3 会提前触发转人工。建议先灰度 10%，观察转人工率、满意度与人工队列等待时间后再全量。</span>
+                  </div>
+                  <div class="cfg-sub">生效与审批</div>
+                  <div class="prow"><span>影响范围</span><span>中国站 · 全部渠道</span></div>
+                  <div class="prow"><span>灰度</span><span>10% 会话 · 观察 24 小时</span></div>
+                  <div class="prow"><span>审批人</span><span>王磊 · 售后知识域</span></div>
+                  <div class="prow"><span>回滚</span><span>可一键回滚到策略组 v6</span></div>
+                </div>
+                <div class="pcard__actions">
+                  <button class="btn btn-ghost btn-sm">放弃改动</button>
+                  <button class="btn btn-secondary btn-sm" data-toast="已保存为草稿（demo）">保存草稿</button>
+                  <button class="btn btn-primary btn-sm" data-confirm="发布前请确认：本次变更将影响全部渠道，需要二次确认并记录审计。" data-toast="已提交发布：灰度 10%，观察 24 小时（demo）">发布变更</button>
+                </div>
+              </div>
+
+              <details class="strip" data-comp="cfg-audit">
+                <summary>
+                  <i data-lucide="scroll-text"></i>
+                  <span style="font-weight:600;">操作审计</span>
+                  <span style="color:var(--text-3);">最近 3 条 · 10-01 09:12 发布策略组 v6</span>
+                  <span style="flex:1;"></span>
+                  <span class="link-mini">展开 / 收起</span>
+                </summary>
+                <div class="pcard__body">
+                  <div class="prow"><span>10-01 09:12</span><span>李思远 发布 策略组 v6</span></div>
+                  <div class="prow"><span>09-28 17:40</span><span>王磊 审批通过 转接规则变更</span></div>
+                  <div class="prow"><span>09-25 11:05</span><span>李思远 回滚 策略组 v5 → v4</span></div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">配置-01：意图阈值、转接策略与展示规则</div>
+            <ul>
+              <li data-target="cfg-version"><strong>版本条</strong>：展示当前生效版本、未发布草稿项，并提供版本历史、回滚与草稿对比入口</li>
+              <li><strong>编辑模式提示</strong>：页面顶部一行说明「左侧为可编辑配置项，改动先进入草稿、不会立即生效」，明确编辑与发布的先后关系</li>
+              <li><strong>页面层级</strong>：左侧是配置项工作区（意图与阈值为主区域，转人工触发条件与展示规则为浅底次级卡并排），右侧是「编辑与发布」管理模块；操作审计收成可展开细条，不做等权重卡片堆叠</li>
+              <li data-target="cfg-intents"><strong>配置项 · 意图与阈值</strong>：以可编辑表格呈现，置信阈值是输入框、启用是开关、每行提供复制 / 删除；卡头显示已改动项数并提供「新增意图」，卡底提供「还原本组」</li>
+              <li><strong>阈值口径</strong>：明确阈值为校准后的数值，不直接使用模型自报分数</li>
+              <li><strong>高风险意图</strong>：风险级别为高的意图不生成业务答案，直接转人工，使用警示色标注</li>
+              <li data-target="cfg-handoff"><strong>配置项 · 转人工触发条件</strong>：逐条可编辑（开关 + 数值输入 + 新增条件 + 已改动标记），顾客要求人工、连续未命中、高风险意图、知识冲突、接口失败等条件各自独立生效</li>
+              <li data-target="cfg-display"><strong>配置项 · 展示与生效规则</strong>：配置公告优先级、知识默认有效期与窄屏默认折叠辅助面板等展示行为，可新增规则</li>
+              <li data-target="cfg-publish"><strong>「编辑与发布」管理模块</strong>：把发布动作集中在这里——待发布变更清单（可定位到对应配置项）、影响提示、生效与审批信息、以及「放弃改动 / 保存草稿 / 发布变更」</li>
+              <li data-target="cfg-risk"><strong>影响提示（管理模块内的提示内容）</strong>：以警示块随变更清单一起展示，说明调参可能带来的业务影响与建议观察指标，不单独占一张卡片</li>
+              <li><strong>二次确认</strong>：高权限操作发布前弹出确认提示，并记录操作人、时间与变更内容</li>
+              <li data-target="cfg-audit"><strong>操作审计</strong>：以可展开细条展示发布、审批与回滚记录，可追溯到具体版本</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ Section CFG-02：AI 质量与灰度 ============ -->
+<div id="section-cfg-02" class="proto-stack">
+  <div class="section-label">配置-02 AI 质量策略、评测与灰度发布</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">智能客服平台 — 配置中心 · AI 质量与灰度</div>
+      </div>
+      <div class="macos-body">
+
+        <div class="app-sidebar">
+          <div style="padding:4px 14px 12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:22px;height:22px;border-radius:var(--radius-chip);background:var(--primary);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="headset" style="width:12px;height:12px;color:var(--primary-foreground);stroke-width:2.5;"></i>
+            </div>
+            <span style="font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:-0.02em;">智能客服平台</span>
+          </div>
+          <div class="sidebar-apps">
+            <div class="sidebar-section-header" style="padding-top:4px;">服务工作台</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="01-agent-workbench.html"><i data-lucide="headset" class="nav-icon"></i>客服工作台</a>
+              <a class="sidebar-item" href="02-iq-handoff.html"><i data-lucide="bot" class="nav-icon"></i>IQ 会话</a>
+            </div>
+            <div class="sidebar-section-header">知识运营</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="03-knowledge-center.html"><i data-lucide="book-open" class="nav-icon"></i>知识中心</a>
+              <a class="sidebar-item" href="04-knowledge-admin.html"><i data-lucide="folder-cog" class="nav-icon"></i>知识管理</a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-header">洞察与治理</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="05-monitor.html"><i data-lucide="bar-chart-3" class="nav-icon"></i>监控与优化</a>
+              <a class="sidebar-item active" href="06-config.html"><i data-lucide="settings" class="nav-icon"></i>配置中心</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="win-chrome-bar">
+          <div class="win-chrome-drag"></div>
+          <div class="win-chrome-actions">
+            <button class="win-chrome-btn" title="帮助"><i data-lucide="help-circle" class="win-chrome-icon"></i></button>
+            <div class="win-avatar-chip"><span class="win-avatar">李</span><span class="badge-free">管理员</span></div>
+          </div>
+        </div>
+
+        <div class="app-main">
+          <div class="section-title">AI 策略</div>
+          <div class="section-desc">业务可调整的是 <strong>Prompt 内容</strong> 与 <strong>安全 / 降级策略</strong>，并按 IQ 机器人与人工坐席助手分别配置；模型、索引与工作流版本由平台侧管理（只读）。</div>
+
+          <div class="strip" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:11px;">
+              <i data-lucide="info" style="width:13px;height:13px;color:var(--primary);"></i>
+              <span><strong>编辑模式</strong>：左侧为业务可调的 Prompt 与安全降级策略，改动进入草稿；右侧是平台侧的版本、评测与灰度发布。</span>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:16px;align-items:start;">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+
+              <div class="group-label"><i data-lucide="bot" style="width:13px;height:13px;"></i>IQ 机器人</div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;align-items:start;">
+                <div class="pcard card--focus" data-comp="ai-iq-prompt">
+                  <div class="pcard__head">
+                    <span class="pcard__title"><i data-lucide="square-pen"></i>配置项 · Prompt 内容</span>
+                    <span style="display:flex;align-items:center;gap:8px;">
+                      <span class="badge badge-warn" style="height:18px;font-size:10px;">已改动</span>
+                      <button class="link-mini"><i data-lucide="rotate-ccw"></i>还原</button>
+                    </span>
+                  </div>
+                  <div class="pcard__body">
+                    <div class="cfg-sub">话术规范（对客口径，业务可调）</div>
+                    <textarea class="form-textarea" rows="5">语气：礼貌、简短、不过度道歉；使用「您」，避免「亲」。
+必须包含：适用条件、不适用范围、下一步动作。
+禁止表达：任何未经验证的时效承诺、赔付金额、政策例外。
+证据不足时：先澄清或转人工，不给出看似确定的政策结论。</textarea>
+                    <div class="cfg-sub">可调项</div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                      <span class="filter-chip active">澄清话术</span>
+                      <span class="filter-chip active">转接话术</span>
+                      <span class="filter-chip active">禁用表达清单</span>
+                      <span class="filter-chip">多语言口径</span>
+                      <span class="filter-chip">品牌语气</span>
+                    </div>
+                  </div>
+                  <div class="pcard__actions">
+                    <button class="btn btn-secondary btn-sm" data-toast="Prompt 草稿已保存（demo）">保存为草稿</button>
+                    <button class="link-mini"><i data-lucide="git-compare"></i>对比已发布版本</button>
+                  </div>
+                </div>
+
+                <div class="pcard card--muted" data-comp="ai-iq-safety">
+                  <div class="pcard__head"><span class="pcard__title"><i data-lucide="shield-check"></i>配置项 · 安全与降级策略</span></div>
+                  <div style="padding:2px 0;">
+                    <div class="cfg-row cfg-row--sm">
+                      <div class="cfg-row__main">
+                        <div class="cfg-row__title">生成业务答案需通过 Answer Gate</div>
+                        <div class="cfg-row__desc">无合规来源时澄清或转人工，不用通用模型兜底</div>
+                      </div>
+                      <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="cfg-row cfg-row--sm">
+                      <div class="cfg-row__main">
+                        <div class="cfg-row__title">检索无结果 / 知识冲突时不作答</div>
+                        <div class="cfg-row__desc">命中冲突或证据不足时不给确定结论</div>
+                      </div>
+                      <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="cfg-row cfg-row--sm">
+                      <div class="cfg-row__main">
+                        <div class="cfg-row__title">高风险意图直接转人工</div>
+                        <div class="cfg-row__desc">投诉、特殊审批、涉及金额不生成业务答案</div>
+                      </div>
+                      <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="cfg-row cfg-row--sm">
+                      <div class="cfg-row__main">
+                        <div class="cfg-row__title">AI 服务故障时的降级行为</div>
+                        <div class="cfg-row__desc">保留知识检索与转人工，不阻塞顾客会话</div>
+                      </div>
+                      <span class="filter-chip active">降级为检索 + 转人工</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="group-label" style="margin-top:4px;"><i data-lucide="headset" style="width:13px;height:13px;"></i>人工坐席助手</div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;align-items:start;">
+                <div class="pcard card--focus" data-comp="agent-prompt">
+                  <div class="pcard__head">
+                    <span class="pcard__title"><i data-lucide="square-pen"></i>配置项 · Prompt 内容</span>
+                    <span style="display:flex;align-items:center;gap:8px;">
+                      <span class="badge badge-default" style="height:18px;font-size:10px;">无改动</span>
+                      <button class="link-mini"><i data-lucide="rotate-ccw"></i>还原</button>
+                    </span>
+                  </div>
+                  <div class="pcard__body">
+                    <div class="cfg-sub">草稿生成规范（面向坐席，业务可调）</div>
+                    <textarea class="form-textarea" rows="5">风格：按坐席所选语气（更简洁 / 更有同理心 / 更清晰 / 更正式）生成，不改变事实与承诺。
+必须：引用来源逐条编号，缺失信息显式标注「待核实」。
+禁止：替坐席承诺赔付、时效或政策例外；不得替顾客做决定。
+证据不足时：返回「依据不足」并建议先检索或转人工。</textarea>
+                    <div class="cfg-sub">可选语气</div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                      <span class="filter-chip active">更简洁</span>
+                      <span class="filter-chip active">更有同理心</span>
+                      <span class="filter-chip active">更清晰</span>
+                      <span class="filter-chip active">更正式</span>
+                    </div>
+                  </div>
+                  <div class="pcard__actions">
+                    <button class="btn btn-secondary btn-sm" data-toast="Prompt 草稿已保存（demo）">保存为草稿</button>
+                    <button class="link-mini"><i data-lucide="git-compare"></i>对比已发布版本</button>
+                  </div>
+                </div>
+
+                <div class="pcard card--muted" data-comp="agent-safety">
+                  <div class="pcard__head"><span class="pcard__title"><i data-lucide="shield-check"></i>配置项 · 安全与降级策略</span></div>
+                  <div style="padding:2px 0;">
+                    <div class="cfg-row cfg-row--sm">
+                      <div class="cfg-row__main">
+                        <div class="cfg-row__title">草稿只写入输入框，不自动发送</div>
+                        <div class="cfg-row__desc">必须由坐席确认后点击发送</div>
+                      </div>
+                      <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="cfg-row cfg-row--sm">
+                      <div class="cfg-row__main">
+                        <div class="cfg-row__title">依据不足时返回 partial / insufficient</div>
+                        <div class="cfg-row__desc">不输出看似确定的政策结论</div>
+                      </div>
+                      <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="cfg-row cfg-row--sm">
+                      <div class="cfg-row__main">
+                        <div class="cfg-row__title">润色需做事实一致性校验</div>
+                        <div class="cfg-row__desc">金额 / 时效 / 政策 / 订单字段变动需阻止一键覆盖</div>
+                      </div>
+                      <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="cfg-row cfg-row--sm">
+                      <div class="cfg-row__main">
+                        <div class="cfg-row__title">AI 故障时保留手工回复与知识检索</div>
+                        <div class="cfg-row__desc">生成式能力不可用时不影响坐席作业</div>
+                      </div>
+                      <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="pcard card--muted" data-comp="ai-version">
+                <div class="pcard__head">
+                  <span class="pcard__title"><i data-lucide="git-commit"></i>平台侧 · 当前生效版本</span>
+                  <span class="badge badge-default" style="height:18px;font-size:10px;">只读</span>
+                </div>
+                <div class="pcard__body">
+                  <div class="prow"><span>意图模型</span><span>intent-v4 · 09-20</span></div>
+                  <div class="prow"><span>Prompt 包</span><span>p-118 · 10-08</span></div>
+                  <div class="prow"><span>坐席草稿模型</span><span>draft-assist-2.3 · 10-05</span></div>
+                  <div class="prow"><span>知识索引</span><span>kb-idx-2026.10.16</span></div>
+                  <div class="prow"><span>工作流</span><span>return-check-v2 · 09-28</span></div>
+                </div>
+              </div>
+
+              <div class="pcard card--focus" data-comp="ai-gray">
+                <div class="pcard__head"><span class="pcard__title"><i data-lucide="percent"></i>灰度发布</span></div>
+                <div class="pcard__body">
+                  <div class="prow"><span>目标版本</span><span>Prompt p-121 · 草稿模型 2.4</span></div>
+                  <div class="prow"><span>灰度范围</span><span>10% 会话 · 中国站 · 抖音小店</span></div>
+                  <div style="margin-top:8px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;font-size:10.5px;color:var(--text-3);margin-bottom:4px;">
+                      <span>灰度进度</span><span>10%</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill indigo" style="width:10%;"></div></div>
+                  </div>
+                  <div class="cfg-hint" data-comp="ai-guard">
+                    <i data-lucide="ban"></i>
+                    <span><strong>发布门槛</strong>：安全测试需 100% 通过、错误答案率 ≤ 0.5% 且高风险错误 0 起、回滚需演练通过。当前 <span class="badge badge-warn" style="height:18px;font-size:10px;">未满足</span> 知识冲突用例 2 条待修复。</span>
+                  </div>
+                </div>
+                <div class="pcard__actions">
+                  <button class="btn btn-secondary btn-sm" data-toast="已暂停灰度：新会话回落到 p-118（demo）">暂停灰度</button>
+                  <button class="btn btn-danger btn-sm" data-confirm="回滚会立即对全部灰度会话生效，请确认。" data-toast="已回滚到 p-118（demo）">回滚</button>
+                </div>
+              </div>
+
+              <details class="strip" data-comp="ai-eval">
+                <summary>
+                  <i data-lucide="flask-conical"></i>
+                  <span style="font-weight:600;">评测与回归</span>
+                  <span style="color:var(--text-3);">418 / 420 通过 · 1 项未达标</span>
+                  <span style="flex:1;"></span>
+                  <span class="link-mini">展开 / 收起</span>
+                </summary>
+                <div class="pcard__body">
+                  <div class="prow"><span>评测集</span><span>核心回归 420 条 + 安全测试 32 条</span></div>
+                  <div class="prow"><span>通过率</span><span>418 / 420</span></div>
+                  <div class="prow"><span>安全测试</span><span>32 / 32 通过</span></div>
+                  <div class="prow"><span>未达标项</span><span><span class="badge badge-error" style="height:18px;font-size:10px;">知识冲突场景</span> 2 条用例仍会给出确定结论</span></div>
+                  <div class="prow"><span>回归对比</span><span>较 p-118 提升 3 项、持平 12 项、回退 0 项</span></div>
+                </div>
+              </details>
+
+              <details class="strip" data-comp="ai-changelog">
+                <summary>
+                  <i data-lucide="scroll-text"></i>
+                  <span style="font-weight:600;">变更记录</span>
+                  <span style="color:var(--text-3);">最近 3 条 · 10-16 08:30 评测 418 / 420</span>
+                  <span style="flex:1;"></span>
+                  <span class="link-mini">展开 / 收起</span>
+                </summary>
+                <div class="pcard__body">
+                  <div class="prow"><span>10-16 08:30</span><span>p-121 提交评测：418 / 420 通过</span></div>
+                  <div class="prow"><span>10-15 16:20</span><span>draft-assist-2.4 进入灰度 10%</span></div>
+                  <div class="prow"><span>10-12 10:05</span><span>知识索引重建 kb-idx-2026.10.16</span></div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">配置-02：AI 质量策略、评测与灰度</div>
+            <ul>
+              <li><strong>业务可调范围</strong>：明确 AI 策略中业务可调整的只有 <strong>Prompt 内容</strong> 与 <strong>安全 / 降级策略</strong>；模型、索引与工作流版本归属平台侧，只读展示</li>
+              <li><strong>按对象分区</strong>：配置项按 <strong>IQ 机器人</strong> 与 <strong>人工坐席助手</strong> 两组分别呈现，两组各有一套 Prompt 与安全降级策略，避免把两类 AI 的约束混在一起</li>
+              <li><strong>页面层级</strong>：左侧为业务可调配置区（IQ / 坐席两组，每组「Prompt 主区域 + 安全降级策略次级卡」并排），右侧为平台侧（版本只读、灰度发布主区域、评测与变更记录折叠细条）</li>
+              <li data-target="ai-iq-prompt"><strong>IQ · Prompt 内容</strong>：以文本域编辑对客话术规范（语气 / 必须包含 / 禁止表达 / 证据不足时的处理），并提供澄清话术、转接话术、禁用表达清单等可调项；卡头显示改动状态与还原，卡底可保存草稿、对比已发布版本</li>
+              <li data-target="ai-iq-safety"><strong>IQ · 安全与降级策略</strong>：以开关配置「生成业务答案需通过 Answer Gate」「检索无结果 / 知识冲突时不作答」「高风险意图直接转人工」，以及 AI 故障时的降级行为（降级为检索 + 转人工）</li>
+              <li data-target="agent-prompt"><strong>坐席助手 · Prompt 内容</strong>：编辑草稿生成规范（风格、必须带引用、禁止替坐席承诺、依据不足时的返回），并提供可选语气（更简洁 / 更有同理心 / 更清晰 / 更正式）</li>
+              <li data-target="agent-safety"><strong>坐席助手 · 安全与降级策略</strong>：配置「草稿只写入不自动发送」「依据不足返回 partial / insufficient」「润色需做事实一致性校验」「AI 故障时保留手工回复与知识检索」</li>
+              <li data-target="ai-version"><strong>平台侧 · 当前生效版本</strong>：只读展示意图模型、Prompt 包、草稿模型、知识索引与工作流版本，业务侧不可编辑</li>
+              <li data-target="ai-eval"><strong>评测与回归（折叠细条）</strong>：默认收起为一行摘要（通过率 + 未达标项数），展开可见评测集、安全测试、未达标项与回归对比</li>
+              <li data-target="ai-gray"><strong>灰度发布</strong>：展示目标版本、灰度范围与进度，并提供「暂停灰度」与「回滚」；回滚为高影响操作，点击后先确认再执行并记录审计</li>
+              <li data-target="ai-guard"><strong>发布门槛（灰度模块内的提示内容）</strong>：以警示块列出安全测试、错误答案率与回滚演练等上线阻断条件及当前达成情况，不单独占卡片</li>
+              <li data-target="ai-changelog"><strong>变更记录（折叠细条）</strong>：展示版本提交、灰度与索引重建等时间线，便于回溯</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+</div>
+
+  </div><!-- end .sections-col -->
+</div><!-- end .proto-layout -->
+
+<script>
+  (function () {
+    if (window.lucide) lucide.createIcons();
+    document.querySelectorAll('[data-confirm]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (window.confirm(el.getAttribute('data-confirm'))) {
+          var msg = el.getAttribute('data-toast');
+          if (msg) window.alert(msg);
+        }
+      });
+    });
+    var sectionMap = { 'section-cfg-01': '配置-01', 'section-cfg-02': '配置-02' };
+    var tocItems = document.querySelectorAll('.toc-item');
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      requestAnimationFrame(function () {
+        var scrollPos = window.scrollY + 120;
+        var currentId = null;
+        var ids = Object.keys(sectionMap);
+        for (var i = ids.length - 1; i >= 0; i--) {
+          var el = document.getElementById(ids[i]);
+          if (el && el.offsetTop <= scrollPos) { currentId = ids[i]; break; }
+        }
+        tocItems.forEach(function (item) {
+          item.classList.remove('active');
+          if (item.getAttribute('href') === '#' + currentId) item.classList.add('active');
+        });
+        ticking = false;
+      });
+      ticking = true;
+    });
+    if (tocItems.length) tocItems[0].classList.add('active');
+  })();
+</script>
+
+</body>
+</html>

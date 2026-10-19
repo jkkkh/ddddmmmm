@@ -1,0 +1,2901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>坐席 Chat 工作台 · 原型</title>
+
+<!-- @proto-gen:theme:start -->
+<style>
+/*
+ * proto-gen 默认主题：violet
+ * tweakcn: https://tweakcn.com/themes/cmpm3t0xk000104jq47h88i1g
+ *
+ * 切换主题：./assets/extract-theme.sh <new-tweakcn-url-or-id>
+ * 切换后须手工补：sidebar 子 token、状态色派生（tweakcn 不给）
+ */
+
+/* === 字体 CDN（与 --font-sans / --font-mono 配套） === */
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  /* === 19 个 shadcn 核心 token（OKLCH，来源 tweakcn） === */
+  --background: oklch(1.0000 0 0);
+  --foreground: oklch(0.2722 0.0494 286.0078);
+  --card: oklch(0.9885 0.0054 274.9676);
+  --card-foreground: oklch(0.2722 0.0494 286.0078);
+  --popover: oklch(1.0000 0 0);
+  --popover-foreground: oklch(0.2722 0.0494 286.0078);
+  --primary: oklch(0.5554 0.2460 273.0245);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.2722 0.0494 286.0078);
+  --secondary-foreground: oklch(1.0000 0 0);
+  --muted: oklch(0.9769 0.0109 274.8971);
+  --muted-foreground: oklch(0.2722 0.0494 286.0078);  /* 规范=foreground 同值，次级文字靠 opacity/font-size 区分 */
+  --accent: oklch(0.9221 0.0381 280.7675);
+  --accent-foreground: oklch(0.4805 0.2921 264.2112);
+  --destructive: oklch(0.6526 0.2348 32.3008);
+  --destructive-foreground: oklch(1.0000 0 0);
+  --border: oklch(0.9224 0.0184 258.3541);
+  --input: oklch(0.9809 0.0025 228.7836);
+  --ring: oklch(0.6081 0.2114 266.2130);
+  --radius: 1.3rem;
+
+  /* === Sidebar 子 token（HSL，tweakcn 不给，须从项目 src/index.css 抽） === */
+  --sidebar: hsl(228 100% 98.04%);
+  --sidebar-foreground: hsl(244.44 27.84% 19.02%);
+  --sidebar-primary: hsl(237.30 100% 65.10%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(234.19 100% 93.92%);
+  --sidebar-accent-foreground: hsl(228.85 99.22% 50%);
+  --sidebar-border: hsl(216 43.48% 90.98%);
+  --sidebar-ring: hsl(225 100% 63.92%);
+
+  /* === 状态色派生（HSL，tweakcn 不给，按项目主题文件真值） === */
+  --success: hsl(158.11 64.37% 40.98%);
+  --success-foreground: hsl(0 0% 100%);
+  --success-muted: hsl(151.76 81% 95.88%);
+  --success-border: hsl(156.22 71.65% 66.86%);
+
+  --warning: hsl(32.13 94.62% 43.73%);
+  --warning-foreground: hsl(0 0% 100%);
+  --warning-muted: hsl(36.52 92% 95.10%);
+  --warning-border: hsl(48 96.49% 76.67%);
+
+  /* info 系列 = primary 系列（shadcn 惯例：--info: var(--primary)）*/
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --info-muted: hsl(234.19 100% 96.47%);
+  --info-border: hsl(234.19 100% 88%);
+
+  /* === 字体 === */
+  --font-sans: 'Google Sans Flex', ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+  /* === proto-gen 兼容别名（旧 shared.css 用过的 token 软迁移，逐步淘汰） === */
+  --bg: var(--background);
+  --surface: var(--card);
+  --text: var(--foreground);
+  --text-2: color-mix(in oklch, var(--muted-foreground) 65%, transparent);
+  --text-3: color-mix(in oklch, var(--muted-foreground) 45%, transparent);
+  --border-2: color-mix(in oklch, var(--border) 70%, var(--foreground));
+  --primary-hover: color-mix(in oklch, var(--primary) 88%, black);
+  --primary-light: color-mix(in oklch, var(--primary) 10%, transparent);
+  --error: var(--destructive);
+
+  /* radius 阶梯（shadcn 标准 cascade + proto-gen 扩展，详见 references/default-theme.md 圆角速查）
+     当 --radius = 1.3rem (20.8px) 时实际像素：
+       chip  ≈  5px  — menu/dropdown 内 option、嵌套小子项
+       sm    ≈ 17px  — 输入框小元素备选（少用）
+       btn   ≈ 19px  — button / input / select
+       lg    ≈ 21px  — 通用容器（= --radius 本身）
+       card  ≈ 25px  — 大型卡片（Card / Dialog 整块）
+       full  = 9999  — pill / 头像 / badge 胶囊
+     装饰例外（不走阶梯）：scrollbar / kbd / 品牌图标 tile / 小 icon button ≤6px */
+  --radius-chip: calc(var(--radius) - 16px);    /* menu option / 嵌套小子项 */
+  --radius-sm:   calc(var(--radius) - 4px);     /* 小元素备选 */
+  --radius-btn:  calc(var(--radius) - 2px);     /* button / input */
+  --radius-panel: calc(var(--radius) - 4px);    /* 小面板（= sm） */
+  --radius-card: calc(var(--radius) + 4px);     /* 卡片 / 大容器 */
+  --radius-full: 9999px;
+}
+</style>
+<!-- @proto-gen:theme:end -->
+<!-- @proto-gen:shared:start -->
+<style>
+/*
+ * proto-gen shared.css —— 组件类骨架
+ * 所有颜色 / 字体 / 圆角 token 来自 theme.css（必须先于 shared.css 引入）
+ *
+ * 旧 v1 版本保留为 shared.legacy.css 作对照（脚手架，不入 git）
+ *
+ * 写法约定：
+ *   ✅ 颜色：var(--token)；半透明用 color-mix(in oklch, var(--token) N%, transparent)
+ *   ✅ 字体：var(--font-sans) / var(--font-mono)（取消旧 --font-display / --font-body 二分）
+ *   ✅ 圆角：var(--radius-chip|btn|panel|card|full)（阶梯，跟随主题 --radius）
+ *   ❌ 禁用：写死 hex / 写死 px 圆角 / 半透明色用 rgba(R,G,B,A)
+ *   例外：macOS traffic light（#ff5f57/#febc2e/#28c840）属平台装饰；纯黑阴影 rgba(0,0,0,X)
+ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans); font-size: 13px; color: var(--foreground);
+  background: oklch(0.92 0.005 280);                  /* macOS 桌面浅灰，原型悬浮其上 */
+  line-height: 1.5; -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 32px 24px;
+  box-sizing: border-box;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+
+.page-header { text-align: center; margin-bottom: 40px; }
+.page-header h1 { font-family: var(--font-sans); font-size: 32px; font-weight: 700; color: var(--foreground); letter-spacing: -0.03em; }
+.page-header p { font-size: 14px; color: var(--text-2); margin-top: 4px; }
+.page-stack { display: flex; flex-direction: column; align-items: center; gap: 48px; }   /* 旧布局：纯纵向堆叠，无 TOC */
+.section-label { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: color-mix(in oklch, var(--foreground) 75%, transparent); letter-spacing: 0.01em; padding: 0 4px; }
+
+/* 三栏布局骨架：TOC | 原型纵列 | 每个原型内右侧 PRD */
+.proto-layout {
+  display: flex; flex-direction: row;
+  align-items: flex-start; gap: 24px;
+  max-width: 100%;
+}
+.sections-col {
+  display: flex; flex-direction: column;
+  gap: 48px; min-width: 0;
+}
+.proto-stack {
+  display: flex; flex-direction: column;
+  gap: 12px; flex-shrink: 0;
+}
+
+/* macOS window：默认 1460×910（对齐常见 PC 桌面应用窗口尺寸，参 references/shadcn-tweakcn-theme.md） */
+.macos-window {
+  width: 1460px; max-width: 100%;
+  height: 910px;
+  background: var(--background);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.15),
+    0 8px 20px rgba(0,0,0,0.10),
+    0 0 0 1px rgba(0,0,0,0.06);
+}
+.macos-titlebar { background: var(--muted); height: 36px; flex-shrink: 0; display: flex; align-items: center; padding: 0 14px; gap: 10px; border-bottom: 1px solid var(--border); }
+.macos-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+/* traffic light：平台装饰，保留固定色 */
+.macos-dot.red { background: #ff5f57; } .macos-dot.yellow { background: #febc2e; } .macos-dot.green { background: #28c840; }
+.macos-title { flex: 1; text-align: center; font-size: 12px; font-weight: 500; color: var(--text-2); margin-right: 40px; }
+.macos-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 212px 1fr; grid-template-rows: 36px 1fr; position: relative; }
+
+/* Sidebar */
+.app-sidebar {
+  width: 212px; flex-shrink: 0; background: var(--sidebar); border-right: 1px solid var(--sidebar-border);
+  display: flex; flex-direction: column; padding: 16px 0; font-size: 12px;
+  grid-column: 1; grid-row: 1 / 3;
+}
+.sidebar-section { padding: 0 14px; margin-bottom: 8px; }
+.sidebar-section-header {
+  font-family: var(--font-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+  color: var(--text-3); padding: 8px 8px 6px; text-transform: uppercase;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius-btn);
+  color: var(--sidebar-foreground); cursor: pointer; transition: all 0.12s;
+}
+.sidebar-item:hover { background: color-mix(in oklch, var(--sidebar-accent) 60%, transparent); color: var(--sidebar-foreground); }
+.sidebar-item.active {
+  background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 600;
+}
+.sidebar-item .si-badge {
+  margin-left: auto; font-family: var(--font-mono); font-size: 9px;
+  border-radius: var(--radius-full);
+  padding: 0px 5px; min-width: 15px; text-align: center; line-height: 16px;
+}
+.sidebar-divider { height: 1px; background: var(--sidebar-border); margin: 8px 16px; }
+.sidebar-apps { flex: 1; overflow-y: auto; min-height: 0; }
+
+/* Main content */
+.app-main { flex: 1; padding: 24px 28px; overflow-y: auto; grid-column: 2; grid-row: 2; min-height: 0; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; border-radius: var(--radius-btn); cursor: pointer; transition: all 0.15s; border: none; white-space: nowrap; }
+.btn-primary { background: var(--primary); color: var(--primary-foreground); padding: 8px 18px; }
+.btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px color-mix(in oklch, var(--primary) 35%, transparent); transform: translateY(-1px); }
+.btn-primary[disabled], .btn-primary.is-disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary { background: transparent; color: var(--foreground); border: 1px solid var(--border); padding: 7px 18px; }
+.btn-secondary:hover { border-color: var(--border-2); background: var(--muted); }
+.btn-ghost { background: transparent; color: var(--text-2); padding: 6px 12px; }
+.btn-ghost:hover { background: var(--muted); color: var(--foreground); }
+.btn-sm { font-size: 11px; padding: 5px 10px; }
+.btn-lg { font-size: 14px; padding: 10px 24px; }
+.btn-danger { color: var(--destructive); border: 1px solid var(--destructive); background: transparent; padding: 7px 18px; }
+.btn-danger:hover { background: var(--destructive); color: var(--destructive-foreground); }
+
+/* Input */
+.input { font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; }
+.input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); }
+.input::placeholder { color: var(--text-3); }
+.input-mono { font-family: var(--font-mono); font-size: 11px; }
+
+/* Tabs */
+.inline-tabs { display: flex; gap: 2px; margin-bottom: 16px; }
+.inline-tab { padding: 6px 14px; font-size: 12px; font-weight: 500; background: transparent; border: none; color: var(--text-2); cursor: pointer; border-radius: var(--radius-btn); }
+.inline-tab.active { background: var(--primary-light); color: var(--primary); }
+
+/* Cards */
+.info-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px 18px; }
+.info-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 10px; }
+.info-row:last-child { border-bottom: none; }
+.info-label { font-size: 12px; color: var(--text-2); flex-shrink: 0; }
+.info-value { font-size: 12px; font-weight: 500; color: var(--foreground); text-align: right; }
+
+/* Badge — shadcn 公式：font-weight: 600，纯文字 + 颜色背景 */
+.badge { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); border: 1px solid; letter-spacing: 0; line-height: 1; height: 22px; box-sizing: border-box; }
+.badge-success { background: var(--success-muted); color: var(--success); border-color: var(--success-border); }
+.badge-warn { background: var(--warning-muted); color: var(--warning); border-color: var(--warning-border); }
+.badge-error { background: color-mix(in oklch, var(--destructive) 12%, transparent); color: var(--destructive); border-color: color-mix(in oklch, var(--destructive) 30%, transparent); }
+.badge-info { background: var(--info-muted); color: var(--info); border-color: var(--info-border); }
+.badge-default { background: color-mix(in oklch, var(--muted) 60%, transparent); color: var(--text-2); border-color: var(--border); }
+
+.section-title { font-family: var(--font-sans); font-size: 16px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 2px; }
+.section-desc { font-size: 12px; color: var(--text-2); margin-bottom: 14px; }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+/* Toggle */
+.toggle-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: var(--border-2); border-radius: var(--radius-full); cursor: pointer; transition: background 0.2s; }
+.toggle-slider::before { content: ""; position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; background: var(--background); border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.toggle-switch input:checked + .toggle-slider { background: var(--primary); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+.toggle-switch input[disabled] + .toggle-slider, .toggle-switch.is-disabled .toggle-slider { opacity: 0.5; cursor: not-allowed; }
+
+/* Progress */
+.progress-bar { height: 6px; background: var(--muted); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; }
+.progress-fill.indigo { background: var(--primary); }
+.progress-fill.amber { background: var(--warning); }
+
+.pulse-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px color-mix(in oklch, var(--success) 50%, transparent); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 4px color-mix(in oklch, var(--success) 40%, transparent)} 50%{box-shadow:0 0 12px color-mix(in oklch, var(--success) 70%, transparent)} }
+@keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
+.spin { animation: spin 1s linear infinite; }
+@keyframes breathe { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+.bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 100px; padding-top: 8px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar-fill { width: 100%; background: var(--primary); border-radius: 2px 2px 0 0; min-height: 3px; }
+.bar-label { font-size: 9px; color: var(--text-3); font-family: var(--font-mono); }
+
+.dist-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.dist-name { font-size: 11px; color: var(--text-2); width: 70px; flex-shrink: 0; text-align: right; }
+.dist-bar-wrap { flex: 1; height: 7px; background: var(--muted); border-radius: 4px; overflow: hidden; }
+.dist-bar-fill { height: 100%; border-radius: 4px; }
+.dist-val { font-size: 11px; font-weight: 500; width: 40px; text-align: right; font-family: var(--font-mono); }
+.dist-name img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; margin-right: 4px; vertical-align: -2px; }
+.dist-name .ch-fallback { display: inline-flex; align-items: center; justify-content: center; width: 12px; height: 12px; border-radius: 2px; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); color: var(--primary-foreground); font-size: 8px; font-weight: 700; margin-right: 4px; vertical-align: -2px; }
+
+/* 用量看板 — 金刚区 4 卡 */
+.kpi-cards .info-card { padding: 14px 12px; text-align: center; }
+.kpi-label { font-size: 10px; color: var(--text-2); letter-spacing: 0.04em; }
+.kpi-value { font-family: var(--font-sans); font-size: 18px; font-weight: 700; line-height: 1.2; margin-top: 2px; }
+.kpi-trend { font-size: 10px; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px; }
+.kpi-trend i { width: 10px; height: 10px; }
+.kpi-trend.up { color: var(--success); }
+.kpi-trend.down { color: var(--destructive); }
+.kpi-trend.flat { color: var(--text-3); }
+.kpi-sub { font-size: 9px; color: var(--text-3); margin-top: 4px; letter-spacing: 0.02em; font-family: var(--font-mono); }
+.kpi-card-quota .progress-bar { height: 4px; margin-top: 6px; }
+.kpi-card-quota .kpi-balance { font-size: 10px; color: var(--text-2); margin-top: 4px; }
+.kpi-card-quota .kpi-balance .bal-val { color: var(--warning); font-weight: 600; }
+
+/* 用量看板 — 分布卡固定高度 + 块内滚动 */
+.dist-list { height: 110px; overflow-y: auto; padding-right: 4px; }
+.dist-list::-webkit-scrollbar { width: 4px; }
+.dist-list::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+.dist-list::-webkit-scrollbar-track { background: transparent; }
+
+/* 用量看板 — 顶部工具条 */
+.usage-toolbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+.usage-toolbar .toolbar-left { display: flex; flex-direction: column; gap: 2px; }
+.usage-toolbar .toolbar-right { display: flex; align-items: center; gap: 8px; }
+
+/* 用量看板 — Agent 筛选 + 导出下拉 */
+.agent-filter, .export-dropdown { position: relative; }
+.agent-filter-btn, .export-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; font-size: 12px;
+  background: var(--background); border: 1px solid var(--border);
+  border-radius: var(--radius-btn); cursor: pointer; color: var(--foreground);
+  font-family: var(--font-sans);
+}
+.agent-filter-btn:hover, .export-btn:hover { background: var(--muted); }
+.agent-filter-btn .chev, .export-btn .chev { transition: transform 0.15s; width: 12px; height: 12px; color: var(--text-3); }
+.agent-filter.open .agent-filter-btn .chev,
+.export-dropdown.open .export-btn .chev { transform: rotate(180deg); }
+.agent-filter-menu, .export-menu {
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: 10;
+  background: var(--background); border: 1px solid var(--border);
+  border-radius: var(--radius-card); padding: 4px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1); min-width: 160px;
+  display: none;
+}
+.agent-filter.open .agent-filter-menu,
+.export-dropdown.open .export-menu { display: block; }
+.agent-filter-item, .export-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; font-size: 12px; cursor: pointer; border-radius: 4px;
+  color: var(--foreground);
+}
+.agent-filter-item:hover, .export-item:hover { background: var(--muted); }
+.agent-filter-item.active { color: var(--primary); font-weight: 600; }
+.agent-filter-item .check { width: 12px; height: 12px; opacity: 0; margin-left: auto; }
+.agent-filter-item.active .check { opacity: 1; }
+.agent-filter-item .afi-icon, .export-item .ei-icon { width: 12px; height: 12px; flex-shrink: 0; }
+.agent-filter-item i.afi-icon, .export-item i.ei-icon { color: var(--text-2); }
+.agent-filter-item img.afi-icon { border-radius: 2px; object-fit: contain; }
+.agent-filter-item .ag-fallback, .usage-detail-table .td-agent .ag-fallback {
+  width: 12px; height: 12px; border-radius: 2px;
+  background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white));
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--primary-foreground); font-size: 8px; font-weight: 700; flex-shrink: 0;
+}
+.export-item .fmt { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); margin-left: auto; }
+
+/* 用量看板 — 调用明细列表 */
+.dist-card-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 12px; margin-bottom: 6px; }
+.dist-card-header .view-all { font-size: 11px; color: var(--primary); cursor: pointer; font-weight: 500; }
+.usage-detail-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+.usage-detail-table thead th {
+  text-align: left; font-weight: 600; color: var(--text-2);
+  padding: 6px 8px; border-bottom: 1px solid var(--border);
+  font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.usage-detail-table tbody td {
+  padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle;
+}
+.usage-detail-table tbody tr:last-child td { border-bottom: none; }
+.usage-detail-table .td-agent { display: flex; align-items: center; gap: 6px; }
+.usage-detail-table .td-agent i { width: 12px; height: 12px; color: var(--text-2); }
+.usage-detail-table .td-agent img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; flex-shrink: 0; }
+.usage-detail-table .td-channel { display: flex; align-items: center; gap: 6px; }
+.usage-detail-table .td-channel img { width: 12px; height: 12px; border-radius: 2px; object-fit: contain; }
+.usage-detail-table .td-channel .ch-fallback {
+  width: 12px; height: 12px; border-radius: 2px;
+  background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white));
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--primary-foreground); font-size: 8px; font-weight: 700;
+}
+.usage-detail-table .td-model { font-family: var(--font-mono); font-size: 10px; color: var(--text-2); }
+.usage-detail-table .td-num { font-family: var(--font-mono); text-align: right; }
+.usage-detail-table .td-ts { color: var(--text-3); font-family: var(--font-mono); font-size: 10px; }
+
+.pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.price-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px; text-align: center; position: relative; }
+.price-card.featured { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.price-card .pc-tag { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--primary-foreground); font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-full); }
+.price-card .pc-name { font-family: var(--font-sans); font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.price-card .pc-price { font-family: var(--font-sans); font-size: 28px; font-weight: 700; }
+.price-card .pc-unit { font-size: 11px; color: var(--text-2); }
+.price-card .pc-desc { font-size: 11px; color: var(--text-2); margin: 10px 0; line-height: 1.5; }
+.price-card .pc-credits { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 10px; }
+
+.channel-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 14px 16px; margin-bottom: 8px; position: relative; }
+.channel-card.default { border-left: 3px solid var(--primary); }
+.channel-icon { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; object-fit: contain; }
+.channel-icon-fallback { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); display: inline-flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 10px; font-weight: 700; }
+.channel-card .channel-actions { position: absolute; top: 12px; right: 14px; display: none; gap: 4px; }
+.channel-card:hover .channel-actions,
+.channel-card.show-actions .channel-actions { display: flex; }
+.channel-action-btn { width: 26px; height: 26px; border-radius: 5px; background: transparent; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-2); position: relative; }
+.channel-action-btn:hover { background: var(--muted); color: var(--foreground); }
+.channel-action-btn .ca-tip { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: var(--foreground); color: var(--background); font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.12s; }
+.channel-action-btn:hover .ca-tip { opacity: 1; }
+.channel-action-btn.danger:hover { color: var(--destructive); }
+.channel-action-btn.is-disabled, .channel-action-btn[disabled] { color: var(--text-3); cursor: not-allowed; }
+.channel-action-btn.is-disabled:hover, .channel-action-btn[disabled]:hover { background: transparent; color: var(--text-3); }
+.model-badges { display: flex; flex-wrap: wrap; gap: 4px; max-height: 24px; overflow: hidden; transition: max-height 0.2s; }
+.model-badges.expanded { max-height: 999px; }
+.model-toggle { font-size: 11px; color: var(--primary); cursor: pointer; background: none; border: none; padding: 4px 0; margin-top: 2px; }
+
+/* 空状态占位卡片 */
+.empty-card { background: transparent; border: 1.5px dashed var(--border-2); border-radius: var(--radius-card); padding: 28px 20px; margin-bottom: 8px; text-align: center; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.empty-card:hover { border-color: var(--primary); background: var(--primary-light); }
+.empty-card__icon { width: 36px; height: 36px; margin: 0 auto 10px; border-radius: var(--radius-panel); background: var(--muted); display: flex; align-items: center; justify-content: center; color: var(--text-3); }
+.empty-card__title { font-size: 13px; font-weight: 600; color: var(--foreground); margin-bottom: 4px; }
+.empty-card__desc { font-size: 11px; color: var(--text-3); }
+
+/* Form */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
+.form-label--sm { font-size: 10px; margin-bottom: 4px; }
+.form-input { font-family: var(--font-mono); font-size: 12px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; transition: border-color 0.12s; }
+.form-input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); }
+.form-input::placeholder { color: var(--text-3); }
+.form-input[readonly] { background: var(--muted); cursor: default; }
+.form-input--sm { font-size: 11px; padding: 6px 10px; }
+.form-textarea { font-family: var(--font-mono); font-size: 12px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; resize: vertical; transition: border-color 0.12s; }
+.form-textarea:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); }
+.form-textarea::placeholder { color: var(--text-3); }
+.form-tip { font-size: 11px; color: var(--text-3); margin-top: 4px; line-height: 1.5; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-input-wrap { position: relative; }
+.form-input-wrap .form-input { padding-right: 36px; }
+.form-combobox { position: relative; display: block; width: 100%; }
+.form-combobox .form-input { padding-right: 32px; }
+.form-combobox .form-chevron { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; padding: 0; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-3); border-radius: var(--radius-chip); transition: color 0.12s, background 0.12s; }
+.form-combobox .form-chevron > svg { transition: transform 0.15s; transform-origin: center; }
+.form-combobox .form-chevron:hover { color: var(--foreground); }
+.form-combobox.open .form-chevron { color: var(--foreground); }
+.form-combobox.open .form-chevron > svg { transform: rotate(180deg); }
+.combobox-menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-btn); box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 4px; max-height: 220px; overflow-y: auto; z-index: 20; display: none; }
+.form-combobox.open .combobox-menu { display: block; }
+.combobox-option { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; color: var(--popover-foreground); font-family: var(--font-sans); }
+.combobox-option:hover { background: var(--accent); color: var(--accent-foreground); }
+.combobox-option img { width: 16px; height: 16px; flex-shrink: 0; border-radius: 3px; object-fit: contain; }
+.combobox-option .co-fallback { width: 16px; height: 16px; flex-shrink: 0; border-radius: 3px; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 9px; font-weight: 600; }
+.form-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-3); padding: 4px; display: flex; align-items: center; border-radius: 3px; }
+.form-eye:hover { color: var(--foreground); }
+.form-eye .eye-off { display: none; }
+.form-eye.shown .eye-on { display: none; }
+.form-eye.shown .eye-off { display: inline-flex; }
+.form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.form-dialog-title { font-family: var(--font-sans); font-size: 15px; font-weight: 600; margin-bottom: 20px; }
+.form-dialog { background: var(--popover); color: var(--popover-foreground); border-radius: var(--radius-card); padding: 24px 28px; width: 420px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); position: relative; }
+.modal-close-x {
+  position: absolute; top: 14px; right: 14px; width: 28px; height: 28px;
+  border: none; background: transparent; cursor: pointer; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; color: var(--text-3);
+  transition: background 0.12s; padding: 0; z-index: 1;
+}
+.modal-close-x:hover { background: var(--muted); color: var(--foreground); }
+.modal-close-x svg, .modal-close-x i { width: 16px; height: 16px; stroke-width: 1.75; }
+.apply-popover { position: absolute; top: 44px; right: 14px; z-index: 5; background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 8px 4px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); min-width: 180px; }
+.apply-popover .ap-title { font-size: 10px; color: var(--text-3); padding: 4px 12px 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+.apply-popover .ap-item { display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--popover-foreground); }
+.apply-popover .ap-item:hover { background: var(--accent); color: var(--accent-foreground); }
+.apply-popover .ap-item input[type="checkbox"] { margin: 0; }
+.apply-popover .ap-footer { display: flex; gap: 6px; justify-content: flex-end; padding: 8px 8px 4px; border-top: 1px solid var(--border); margin-top: 4px; }
+
+/* Agent tabs（带品牌 logo） */
+.agent-tabs { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+.agent-tab { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 12px; font-weight: 500; background: transparent; border: 1px solid var(--border); border-radius: var(--radius-btn); color: var(--text-2); cursor: pointer; font-family: var(--font-sans); }
+.agent-tab:hover { color: var(--foreground); background: var(--muted); }
+.agent-tab--active { color: var(--primary); border-color: var(--primary); background: var(--primary-light); }
+.agent-tab img { width: 14px; height: 14px; border-radius: 2px; object-fit: contain; }
+.agent-tab__badge { font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border-radius: 3px; background: var(--muted); color: var(--text-3); }
+.agent-tab--active .agent-tab__badge { background: var(--primary-light); color: var(--primary); }
+.agent-tab__fallback { width: 14px; height: 14px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 9px; font-weight: 700; }
+.agent-pane { animation: agent-pane-in 0.18s ease; }
+@keyframes agent-pane-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+.launch-btn { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, white)); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; }
+.launch-btn:hover { transform: scale(1.05); }
+
+/* QR Code */
+.qr-placeholder {
+  width: 140px; height: 140px; background: var(--muted); border-radius: var(--radius-panel);
+  margin: 0 auto 12px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--border);
+}
+.qr-placeholder .qr-icon { font-size: 40px; opacity: 0.4; }
+.qr-placeholder .qr-text { font-size: 11px; color: var(--text-3); }
+
+/* 顶栏 */
+.app-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.app-topbar .user-area { display: flex; align-items: center; gap: 10px; }
+.app-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-weight: 600; font-size: 11px; }
+
+/* mac 风格主区顶部操作栏 */
+.win-chrome-bar {
+  grid-column: 2; grid-row: 1;
+  display: flex; align-items: stretch; height: 36px;
+  background: var(--background); border-bottom: 1px solid var(--border);
+}
+.win-chrome-drag { flex: 1; }
+.win-chrome-actions {
+  display: flex; align-items: center; gap: 8px; padding: 0 12px;
+}
+.win-chrome-icon { width: 14px; height: 14px; stroke-width: 1.75; }
+.win-chrome-btn {
+  width: 28px; height: 28px; border: none; background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-btn); color: var(--text-2);
+}
+.win-chrome-btn:hover { background: var(--muted); color: var(--foreground); }
+.win-credits {
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--foreground);
+  padding: 0 6px;
+}
+.win-credits i { color: var(--primary); }
+.win-avatar-chip { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.win-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--primary); color: var(--primary-foreground);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 10px; flex-shrink: 0;
+}
+
+.nav-icon { width: 16px; height: 16px; stroke-width: 1.75; flex-shrink: 0; }
+img.nav-icon { border-radius: 3px; object-fit: contain; }
+
+.badge-free {
+  display: inline-block; font-family: var(--font-mono); font-size: 8px; font-weight: 600;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 3px; padding: 1px 4px; letter-spacing: 0.04em;
+}
+
+/* 登录浮层 */
+.login-modal {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-modal__backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+}
+.login-modal__card {
+  position: relative; background: var(--popover); border-radius: var(--radius-card);
+  padding: 28px 28px 24px; width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  color: var(--popover-foreground);
+}
+.login-modal__close {
+  position: absolute; top: 14px; right: 14px; width: 28px; height: 28px;
+  border: none; background: transparent; cursor: pointer; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; color: var(--text-3);
+  transition: background 0.12s;
+}
+.login-modal__close:hover { background: var(--muted); color: var(--foreground); }
+.login-modal__close svg { width: 16px; height: 16px; }
+.login-modal__title {
+  font-family: var(--font-sans); font-size: 18px; font-weight: 600;
+  letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.login-tabs { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+.login-tab {
+  padding: 6px 14px; font-size: 12px; font-weight: 500; background: transparent;
+  border: none; color: var(--text-2); cursor: pointer; border-radius: var(--radius-btn) var(--radius-btn) 0 0;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.12s;
+}
+.login-tab--active { color: var(--primary); border-bottom-color: var(--primary); }
+.login-pane label { display: block; font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 4px; margin-top: 10px; }
+.login-pane label:first-child { margin-top: 0; }
+.login-pane input { font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--background); color: var(--foreground); outline: none; width: 100%; }
+.login-pane input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); }
+.login-code-row { display: flex; gap: 8px; }
+.login-code-row input { flex: 1; }
+.login-code-btn {
+  font-family: var(--font-sans); font-size: 12px; font-weight: 500; white-space: nowrap;
+  padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border);
+  background: transparent; color: var(--foreground); cursor: pointer; transition: all 0.12s;
+}
+.login-code-btn:hover { border-color: var(--border-2); background: var(--muted); }
+.login-submit {
+  display: block; width: 100%; margin-top: 14px; padding: 10px;
+  background: var(--primary); color: var(--primary-foreground); font-family: var(--font-sans);
+  font-size: 13px; font-weight: 500; border: none; border-radius: var(--radius-btn);
+  cursor: pointer; transition: background 0.15s;
+}
+.login-submit:hover { background: var(--primary-hover); }
+.login-footer { margin-top: 12px; font-size: 11px; color: var(--text-3); display: flex; flex-direction: column; gap: 4px; }
+.login-footer a { color: var(--primary); text-decoration: none; }
+.login-qr-placeholder {
+  width: 140px; height: 140px; background: var(--muted); border-radius: var(--radius-panel);
+  margin: 20px auto 12px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); font-size: 13px; color: var(--text-3);
+}
+.login-qr-tip { text-align: center; font-size: 12px; color: var(--text-2); margin-bottom: 20px; }
+
+.login-overlay {
+  position: absolute; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-overlay__backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.25);
+}
+.login-overlay__card {
+  position: relative; background: var(--popover); border-radius: var(--radius-card);
+  padding: 28px 28px 24px; width: 340px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  color: var(--popover-foreground);
+}
+.login-overlay__subtitle {
+  font-size: 12px; color: var(--text-2); margin-top: -10px; margin-bottom: 18px;
+}
+
+.phone-input-wrap { position: relative; }
+.phone-input-wrap input { padding-left: 56px; }
+.phone-input-wrap .phone-input-prefix {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; color: var(--text-2);
+  border-right: 1px solid var(--border); padding-right: 8px;
+  pointer-events: none;
+}
+
+.win-login-btn {
+  height: 28px; padding: 0 14px;
+  border: none; background: var(--primary); color: var(--primary-foreground);
+  cursor: pointer; font-family: var(--font-sans);
+  font-size: 12px; font-weight: 500;
+  border-radius: var(--radius-btn);
+  transition: background 0.12s;
+}
+.win-login-btn:hover { background: var(--primary-hover); }
+.hero-icon { width: 28px; height: 28px; stroke-width: 1.5; }
+img.hero-icon { border-radius: 6px; object-fit: contain; }
+.info-icon { width: 14px; height: 14px; stroke-width: 1.75; vertical-align: -2px; margin-right: 4px; }
+.store-card { cursor: pointer; transition: box-shadow 0.15s, transform 0.15s; }
+.store-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+.detail-screenshot {
+  width: 100%; height: 180px; background: var(--muted); border-radius: var(--radius-panel);
+  border: 1px solid var(--border); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px; color: var(--text-3);
+}
+
+.detail-section-title {
+  font-size: 12px; font-weight: 600; color: var(--foreground); margin-bottom: 10px;
+}
+
+.search-shortcut {
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-3);
+  background: var(--muted); border-radius: 4px; padding: 2px 6px;
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* TOC 目录导航：sticky 卡片，跟随滚动；360px 宽参 ai-store 规范 */
+.toc-sidebar {
+  position: sticky; top: 32px;
+  width: 280px; flex-shrink: 0;
+  background: var(--background);
+  border-radius: var(--radius-card);
+  padding: 20px 16px;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.06),
+    0 0 0 1px rgba(0,0,0,0.04);
+  max-height: calc(100vh - 64px); overflow-y: auto;
+}
+.toc-sidebar .toc-title {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: color-mix(in oklch, var(--muted-foreground) 60%, transparent);
+  margin-bottom: 14px; padding-left: 4px;
+}
+.toc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-btn);
+  font-size: 13px; color: var(--foreground); text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.toc-item:hover { background: color-mix(in oklch, var(--muted) 60%, transparent); }
+.toc-item.active {
+  background: var(--accent); color: var(--accent-foreground);
+  font-weight: 500;
+}
+.toc-dot { width: 6px; height: 6px; border-radius: 50%; background: color-mix(in oklch, var(--primary) 55%, transparent); flex-shrink: 0; transition: background 0.15s; }
+.toc-item.active .toc-dot { background: var(--accent-foreground); }
+.toc-mirror-tag {
+  font-size: 9px; padding: 1px 5px; border-radius: 3px;
+  background: var(--muted); color: var(--text-3); flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+
+/* env issue / action chip / 抽屉 */
+.env-issue-summary {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; margin-bottom: 12px;
+  background: color-mix(in oklch, var(--warning) 8%, transparent); border: 1px solid color-mix(in oklch, var(--warning) 20%, transparent);
+  border-radius: var(--radius-btn);
+  font-size: 11px; color: var(--text-2);
+}
+.env-issue-summary .env-issue-summary__count {
+  font-weight: 600; color: var(--foreground);
+}
+.env-issue-summary .env-issue-summary__time {
+  margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--text-3);
+}
+
+.env-issue-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; margin-left: 6px;
+  background: color-mix(in oklch, var(--warning) 12%, transparent); color: var(--warning);
+  border-radius: 10px; font-size: 10px; font-weight: 500;
+  cursor: pointer; transition: all 0.12s;
+}
+.env-issue-badge:hover { background: color-mix(in oklch, var(--warning) 20%, transparent); }
+.env-issue-badge--info { background: color-mix(in oklch, var(--muted-foreground) 12%, transparent); color: var(--text-2); }
+.env-issue-badge--info:hover { background: color-mix(in oklch, var(--muted-foreground) 20%, transparent); }
+
+.env-action-chip {
+  display: inline-block; padding: 2px 6px;
+  background: var(--muted); color: var(--text-2);
+  font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+  border-radius: 3px; letter-spacing: 0.02em;
+}
+
+.env-source-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 7px;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 3px; font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+}
+.env-prereq-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 0;
+  font-family: var(--font-mono); font-size: 11px;
+}
+.env-prereq-row .env-prereq-icon { width: 12px; height: 12px; flex-shrink: 0; }
+.env-prereq-row .env-prereq-name { color: var(--foreground); }
+.env-prereq-row .env-prereq-meta { color: var(--text-3); margin-left: auto; font-size: 10px; }
+
+.win-avatar-menu {
+  position: absolute; top: 36px; right: 12px; z-index: 5;
+  background: var(--popover); border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  width: 260px; padding: 6px; font-size: 12px;
+  color: var(--popover-foreground);
+}
+.win-avatar-menu__header {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px;
+}
+.win-avatar-menu__name { font-weight: 600; font-size: 13px; color: var(--foreground); }
+.win-avatar-menu__email { font-size: 11px; color: var(--text-3); }
+.win-avatar-menu__plan {
+  padding: 8px 12px; margin-bottom: 4px;
+  background: var(--primary-light); border-radius: var(--radius-btn);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.win-avatar-menu__plan-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
+.win-avatar-menu__plan-row .plan-label { color: var(--text-2); }
+.win-avatar-menu__plan-row .plan-value { color: var(--primary); font-weight: 600; }
+.win-avatar-menu__divider { height: 1px; background: var(--border); margin: 4px -6px; }
+.win-avatar-menu__item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 4px; cursor: pointer;
+  color: var(--foreground); transition: background 0.12s;
+}
+.win-avatar-menu__item:hover { background: var(--muted); }
+.win-avatar-menu__item i.nav-icon { width: 14px; height: 14px; stroke-width: 1.75; color: var(--text-2); flex-shrink: 0; }
+.win-avatar-menu__item--danger { color: var(--destructive); }
+.win-avatar-menu__item--danger i { color: var(--destructive); }
+
+.app-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-3); margin-bottom: 10px;
+}
+.app-breadcrumb a { color: var(--text-2); text-decoration: none; cursor: pointer; }
+.app-breadcrumb a:hover { color: var(--foreground); }
+.app-breadcrumb .sep { color: var(--border-2); font-size: 10px; }
+.app-breadcrumb .current { color: var(--foreground); font-weight: 500; }
+
+.env-drawer {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 380px;
+  background: var(--background);
+  box-shadow: -8px 0 24px rgba(0,0,0,0.12);
+  z-index: 11; display: flex; flex-direction: column;
+}
+.env-drawer__header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+}
+.env-drawer__meta {
+  padding: 12px 20px; background: var(--muted); border-bottom: 1px solid var(--border);
+  font-size: 11px; color: var(--text-2); display: flex; flex-direction: column; gap: 4px;
+}
+.env-drawer__meta code {
+  font-family: var(--font-mono); font-size: 10px; color: var(--foreground);
+}
+.env-drawer__body {
+  flex: 1; overflow-y: auto; padding: 0;
+}
+.env-drawer__item {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+}
+.env-drawer__item-head {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+}
+.env-drawer__item-level {
+  margin-left: auto; font-family: var(--font-sans); font-size: 10px; font-weight: 500;
+  padding: 1px 6px; border-radius: 8px;
+}
+.env-drawer__item-level--warning { background: color-mix(in oklch, var(--warning) 15%, transparent); color: var(--warning); }
+.env-drawer__item-level--info { background: color-mix(in oklch, var(--muted-foreground) 12%, transparent); color: var(--text-2); }
+.env-drawer__item-msg { font-size: 12px; color: var(--foreground); margin-bottom: 6px; }
+.env-drawer__item-cmd {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--muted); padding: 6px 8px; border-radius: 3px;
+  color: var(--text-2); margin-bottom: 8px; overflow-x: auto;
+}
+.env-drawer__footer {
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end;
+}
+
+/* Proto navigation shell */
+.proto-nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 40px; padding: 0 20px;
+  background: color-mix(in oklch, var(--background) 92%, transparent); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.proto-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-2);
+  text-decoration: none; padding: 4px 10px; border-radius: 6px;
+  transition: background 0.15s;
+}
+.proto-back:hover { background: var(--muted); color: var(--foreground); }
+.proto-back i { width: 14px; height: 14px; stroke-width: 1.75; }
+.proto-title { font-size: 12px; color: var(--text-3); font-family: var(--font-sans); }
+
+/* 原型旁注 PRD 面板：宽 360 sticky 顶；与 macos-window (910) 同高，超长内容内部滚动 */
+.proto-with-prd {
+  display: flex; flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+}
+.proto-with-prd .macos-window { flex-shrink: 0; }
+.prd-panel-wrap {
+  width: 360px; flex-shrink: 0;
+  position: sticky; top: 32px;
+  height: 910px;
+  max-height: calc(100vh - 64px);
+  /* section-label 在 proto-with-prd 之外（proto-stack 直接子节点），PRD 与 macos-window 自然顶部对齐，无需 margin-top 下移 */
+}
+.prd-panel {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: var(--background);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.06),
+    0 0 0 1px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+.prd-panel__title {
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 700;
+  color: var(--foreground);
+  padding: 16px 22px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+  flex-shrink: 0;
+}
+.prd-panel__body {
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto;
+  padding: 16px 22px 20px;
+}
+.prd-section { margin-bottom: 18px; }
+.prd-section:last-child { margin-bottom: 0; }
+.prd-section__title {
+  font-size: 12px; font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.prd-section ul { margin: 0; padding-left: 16px; list-style: disc; }
+.prd-section li {
+  font-size: 11.5px; line-height: 1.7;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+.prd-section li:last-child { margin-bottom: 0; }
+
+/* ============ PRD ↔ 原型 双向高亮联动 ============ */
+[data-comp].is-highlight {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+  border-radius: inherit;
+  transition: outline-color .12s, box-shadow .12s;
+}
+li[data-target] { cursor: pointer; transition: background .12s; border-radius: 4px; }
+li[data-target].is-highlight {
+  background: color-mix(in oklch, var(--primary) 8%, transparent);
+  outline: 1px solid color-mix(in oklch, var(--primary) 30%, transparent);
+}
+.channel-card.is-bullet-active { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 35%, transparent); }
+.channel-card.is-bullet-active .channel-actions { display: flex; }
+</style>
+<!-- @proto-gen:shared:end -->
+<!-- @proto-gen:highlight:start -->
+<script>
+/**
+ * PRD ↔ 原型 双向高亮联动
+ *
+ * 用法：
+ *   1) 引入 shared.css（含 .is-highlight / li[data-target] / .is-bullet-active 样式）
+ *   2) 在原型组件上加 data-comp="<key>"，在 PRD bullet (<li>) 上加 data-target="<key>"
+ *   3) 多对一写法：data-target="key1,key2"（hover 该 bullet 高亮多个组件）
+ *
+ * Scope：每个 .proto-with-prd 是独立命名空间，跨 section 不传染。
+ * 视觉键：outline + var(--primary) 描边（跟随当前主题）/ 外发光，与组件自身 :hover 的 background 完全分离。
+ */
+(function() {
+  function init() {
+    document.querySelectorAll('.proto-with-prd').forEach(function(scope) {
+      function decorateCard(target, on) {
+        var card = target.closest && target.closest('.channel-card');
+        if (!card) return;
+        card.classList[on ? 'add' : 'remove']('is-bullet-active');
+      }
+
+      /* 正向：bullet → component */
+      scope.querySelectorAll('li[data-target]').forEach(function(bullet) {
+        var keys = bullet.dataset.target.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+        var targets = [];
+        keys.forEach(function(k) {
+          scope.querySelectorAll('[data-comp="' + k + '"]').forEach(function(el) { targets.push(el); });
+        });
+        if (!targets.length) return;
+        bullet.addEventListener('mouseenter', function() {
+          bullet.classList.add('is-highlight');
+          targets.forEach(function(t) { t.classList.add('is-highlight'); decorateCard(t, true); });
+        });
+        bullet.addEventListener('mouseleave', function() {
+          bullet.classList.remove('is-highlight');
+          targets.forEach(function(t) { t.classList.remove('is-highlight'); decorateCard(t, false); });
+        });
+      });
+
+      /* 反向：component → bullet（子组件 stopPropagation 避免被父组件遮盖） */
+      scope.querySelectorAll('[data-comp]').forEach(function(comp) {
+        var key = comp.dataset.comp;
+        var matched = [];
+        scope.querySelectorAll('li[data-target]').forEach(function(b) {
+          if (b.dataset.target.split(',').map(function(s) { return s.trim(); }).indexOf(key) !== -1) matched.push(b);
+        });
+        if (!matched.length) return;
+        comp.addEventListener('mouseenter', function(e) {
+          e.stopPropagation();
+          comp.classList.add('is-highlight');
+          matched.forEach(function(b) { b.classList.add('is-highlight'); });
+        });
+        comp.addEventListener('mouseleave', function(e) {
+          e.stopPropagation();
+          comp.classList.remove('is-highlight');
+          matched.forEach(function(b) { b.classList.remove('is-highlight'); });
+        });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+<!-- @proto-gen:highlight:end -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<style>
+  /* ===== 本页特有：坐席会话台布局与组件（沉淀候选，见交付说明） ===== */
+  .app-sidebar a.sidebar-item { text-decoration: none; }
+  .app-main.wb-main { padding: 0; display: flex; overflow: hidden; }
+  .wb { display: grid; grid-template-columns: 244px minmax(0, 1fr) 344px; flex: 1; min-height: 0; }
+  .wb--collapsed { grid-template-columns: 244px minmax(0, 1fr) 0; }
+  .wb--collapsed .wb-panel { display: none; }
+
+  /* A 区：会话队列 */
+  .wb-queue { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--border); }
+  .wb-queue__head { padding: 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+  .wb-search { position: relative; }
+  .wb-search i { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: var(--text-3); }
+  .wb-search .input { padding: 7px 10px 7px 28px; font-size: 12px; }
+  .wb-tabs { display: flex; gap: 2px; }
+  .wb-tabs .inline-tab { flex: 1; padding: 5px 4px; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+  .wb-tabs .count { font-family: var(--font-mono); font-size: 9px; }
+  .wb-queue__list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .wb-queue__foot { padding: 8px 12px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; color: var(--text-3); }
+  .qc { border: 1px solid var(--border); border-radius: var(--radius-btn); padding: 9px 10px; cursor: pointer; background: var(--background); transition: background 0.12s, border-color 0.12s; }
+  .qc:hover { background: var(--muted); }
+  .qc.active { border-color: var(--primary); background: var(--primary-light); }
+  .qc.sla { box-shadow: inset 3px 0 0 var(--warning); }
+  .qc__row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .qc__name { font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .qc__id { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); font-weight: 400; }
+  .qc__preview { font-size: 11.5px; color: var(--text-2); margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qc__meta { display: flex; align-items: center; gap: 8px; margin-top: 7px; font-size: 10.5px; color: var(--text-3); flex-wrap: wrap; }
+  .qc__meta span { display: inline-flex; align-items: center; gap: 3px; }
+  .qc__unread { min-width: 16px; height: 16px; padding: 0 5px; border-radius: var(--radius-full); background: var(--primary); color: var(--primary-foreground); font-family: var(--font-mono); font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+  .ic-xs { width: 11px; height: 11px; stroke-width: 1.75; }
+
+  /* B 区：对话区 */
+  .wb-chat { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+  .wb-chat__head { padding: 9px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .chat-block { flex: 1; min-width: 0; }
+  .chat-sub { display: flex; align-items: center; gap: 8px; margin-top: 3px; font-size: 10.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meta-sep { color: var(--border-2); }
+  .chat-chips { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .wb-chat__title { display: flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600; }
+  .ent-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--text-2); background: var(--muted); border-radius: var(--radius-full); padding: 3px 9px; cursor: pointer; white-space: nowrap; }
+  .ent-chip:hover { background: var(--primary-light); color: var(--primary); }
+  .ent-chip i { width: 11px; height: 11px; }
+  .wb-msgs { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { display: flex; gap: 8px; max-width: 88%; }
+  .msg--customer { align-self: flex-start; }
+  .msg--iq { align-self: flex-start; }
+  .msg--agent { align-self: flex-end; flex-direction: row-reverse; }
+  .msg__avatar { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
+  .msg__avatar.customer { background: var(--muted); color: var(--text-2); }
+  .msg__avatar.agent { background: var(--primary); color: var(--primary-foreground); }
+  .msg__avatar.iq { background: var(--primary-light); color: var(--primary); }
+  .msg__meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 10px; color: var(--text-3); margin-bottom: 4px; }
+  .msg--agent .msg__meta { justify-content: flex-end; }
+  .msg__bubble { background: var(--muted); border-radius: var(--radius-btn); padding: 9px 12px; font-size: 12.5px; line-height: 1.65; max-width: 520px; }
+  .msg--agent .msg__bubble { background: var(--primary-light); }
+  .msg--iq .msg__bubble { border-left: 2px solid var(--primary); }
+  .cite-chip { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; color: var(--primary); background: var(--primary-light); border-radius: var(--radius-full); padding: 1px 7px; cursor: pointer; }
+  .sysmsg { align-self: center; font-size: 10.5px; color: var(--text-3); background: var(--muted); border-radius: var(--radius-full); padding: 3px 12px; }
+  .flow-card { align-self: stretch; border: 1px solid var(--border); border-radius: var(--radius-btn); padding: 10px 12px; background: var(--card); }
+  .flow-steps { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .flow-step { font-size: 10.5px; padding: 2px 8px; border-radius: var(--radius-full); border: 1px solid var(--border); color: var(--text-2); }
+  .flow-step.done { background: var(--success-muted); color: var(--success); border-color: var(--success-border); }
+  .flow-step.now { background: var(--primary-light); color: var(--primary); border-color: color-mix(in oklch, var(--primary) 30%, transparent); font-weight: 600; }
+
+  /* 输入区 */
+  .wb-composer { border-top: 1px solid var(--border); padding: 10px 16px 12px; }
+  .wb-tools { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .wb-tool { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500; padding: 4px 10px; border-radius: var(--radius-full); border: 1px solid var(--border); background: var(--background); color: var(--text-2); cursor: pointer; transition: all 0.12s; }
+  .wb-tool:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+  .wb-tool i { width: 13px; height: 13px; }
+  .wb-input { border: 1px solid var(--border); border-radius: var(--radius-btn); padding: 10px 12px; min-height: 62px; max-height: 130px; overflow-y: auto; font-size: 12.5px; line-height: 1.65; outline: none; }
+  .wb-input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); }
+  .wb-input:empty::before { content: attr(data-placeholder); color: var(--text-3); }
+  .wb-send-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+  .wb-hint { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--text-3); white-space: nowrap; }
+  .wb-hint i { width: 11px; height: 11px; }
+
+  /* C 区：智能辅助面板 */
+  .wb-panel { display: flex; flex-direction: column; min-height: 0; min-width: 0; border-left: 1px solid var(--border); background: var(--card); overflow: hidden; }
+  .wb-panel__head { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .wb-panel__head .inline-tabs { margin-bottom: 0; }
+  .wb-panel__head .inline-tab { padding: 5px 11px; font-size: 11.5px; }
+  .wb-panel__body { flex: 1; overflow-y: auto; padding: 11px; display: flex; flex-direction: column; gap: 9px; }
+  /* 右侧面板模块容器：同一时间只渲染一个模块的内容（hidden 必须压过 display） */
+  [data-pane] { display: flex; flex-direction: column; gap: 9px; }
+  [data-pane][hidden] { display: none; }
+  .pcard { border: 1px solid var(--border); border-radius: var(--radius-btn); background: var(--background); }
+  .pcard__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 11px; border-bottom: 1px solid var(--border); }
+  .pcard__title { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; }
+  .pcard__title i { width: 13px; height: 13px; color: var(--primary); }
+  .pcard__body { padding: 9px 11px; font-size: 11.5px; line-height: 1.65; color: var(--text-2); }
+  .pcard__actions { display: flex; align-items: center; gap: 6px; padding: 8px 11px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+  .prow { display: flex; gap: 10px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .prow:last-child { border-bottom: none; }
+  .prow > span:first-child { color: var(--text-3); flex-shrink: 0; width: 58px; }
+  .prow > span:last-child { flex: 1; color: var(--foreground); word-break: break-word; }
+  /* 会话摘要：以「快速理解顾客诉求」为目标的信息层级 */
+  .sum-lead { display: flex; flex-direction: column; gap: 7px; padding-bottom: 9px; border-bottom: 1px dashed var(--border); }
+  .sum-lead__text { font-size: 12.5px; font-weight: 600; line-height: 1.6; color: var(--foreground); }
+  .sum-chips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .sum-block__title { display: flex; align-items: center; gap: 5px; margin: 8px 0 2px; font-size: 10px; letter-spacing: 0.04em; color: var(--text-3); }
+  .sum-quote { display: flex; gap: 7px; padding: 3px 0; font-size: 11px; line-height: 1.6; color: var(--text-2); }
+  .sum-quote__t { flex-shrink: 0; padding-top: 1px; font-family: var(--font-mono); font-size: 10px; color: var(--text-3); }
+  .link-mini { display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 500; color: var(--primary); cursor: pointer; background: none; border: none; padding: 0; }
+  .link-mini:hover { text-decoration: underline; }
+  .link-mini i { width: 11px; height: 11px; }
+  .skel { height: 10px; border-radius: var(--radius-full); background: var(--muted); animation: breathe 1.4s ease-in-out infinite; }
+  .draft-text { font-size: 12px; line-height: 1.7; color: var(--foreground); }
+  .cite-item { display: flex; gap: 7px; padding: 6px 0; border-top: 1px dashed var(--border); font-size: 10.5px; color: var(--text-2); }
+  .cite-item b { color: var(--primary); font-family: var(--font-mono); }
+
+  /* 知识搜索模块 */
+  .ai-sum { border: 1px solid color-mix(in oklch, var(--primary) 30%, transparent); background: var(--primary-light); border-radius: var(--radius-btn); padding: 9px 11px; }
+  .ai-sum__head { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; }
+  .ai-sum__head > i { width: 13px; height: 13px; color: var(--primary); flex-shrink: 0; }
+  .ai-sum__text { margin-top: 6px; font-size: 11.5px; line-height: 1.7; color: var(--foreground); }
+  .ai-sum__cites { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+  .ai-sum__note { margin-top: 6px; font-size: 10px; line-height: 1.6; color: var(--text-2); }
+  .ai-sum__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .cite-num { display: inline-flex; align-items: center; justify-content: center; min-width: 14px; height: 14px; padding: 0 3px; margin-right: 3px; border-radius: var(--radius-chip); background: var(--primary); color: var(--primary-foreground); font-family: var(--font-mono); font-size: 9px; font-weight: 600; vertical-align: 1px; }
+  .kres { border: 1px solid var(--border); border-radius: var(--radius-btn); padding: 10px 11px; background: var(--background); transition: border-color 0.12s; }
+  .kres:hover { border-color: var(--primary); }
+  .kres__title { font-size: 12px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .kres__excerpt { font-size: 11px; color: var(--text-2); line-height: 1.65; }
+  .kres__foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; font-size: 10px; color: var(--text-3); }
+  mark.hl { background: var(--primary-light); color: var(--primary); border-radius: 3px; padding: 0 2px; }
+  .filter-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--text-2); border: 1px solid var(--border); border-radius: var(--radius-full); padding: 2px 9px; cursor: pointer; background: var(--background); }
+  .filter-chip.active { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+  /* 顾客 / 订单模块 */
+  .ord-card { border: 1px solid var(--border); border-radius: var(--radius-btn); padding: 10px 11px; background: var(--background); }
+  .prod { display: flex; gap: 10px; align-items: flex-start; }
+  .prod__img { width: 46px; height: 46px; border-radius: var(--radius-chip); background: var(--muted); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text-3); }
+
+  /* 弹窗遮罩层与提示 */
+  .wb-toast { position: absolute; left: 50%; bottom: 28px; transform: translate(-50%, 10px); background: var(--foreground); color: var(--background); font-size: 12px; line-height: 1.5; padding: 8px 16px; border-radius: var(--radius-full); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 30; max-width: 70%; text-align: center; }
+  .wb-toast.show { opacity: 1; transform: translate(-50%, 0); }
+  /* 内联交互条 / 面板：坐席工作台不使用模态弹窗，确认与预览都在输入区或右侧面板内联展开 */
+  .inline-panel { margin-bottom: 8px; padding: 9px 11px; border-radius: var(--radius-btn); background: var(--card); border: 1px solid var(--border); }
+  .inline-panel__head { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; font-size: 11.5px; font-weight: 600; }
+  .inline-panel__head i { width: 13px; height: 13px; color: var(--primary); }
+  .inline-actions { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+  .diff-old { color: var(--destructive); text-decoration: line-through; }
+  .diff-new { color: var(--success); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<nav class="proto-nav">
+  <a href="index.html" class="proto-back"><i data-lucide="arrow-left"></i>返回原型索引</a>
+  <span class="proto-title">坐席 Chat 工作台 · 可点击演示（含 data-comp / data-target 评审脚手架，研发交付时剥离）</span>
+</nav>
+
+<div class="proto-layout">
+
+  <nav class="toc-sidebar">
+    <div class="toc-title">页面导航</div>
+    <a class="toc-item" href="#section-wb-01"><span class="toc-dot"></span>工作台-01 主页面 · AI 助手</a>
+    <a class="toc-item" href="#section-wb-02"><span class="toc-dot"></span>工作台-02 知识搜索模块 · 检索命中</a>
+    <a class="toc-item" href="#section-wb-03"><span class="toc-dot"></span>工作台-03 顾客/订单模块 · 接口超时</a>
+    <a class="toc-item" href="#section-wb-04"><span class="toc-dot"></span>工作台-04 转人工表单（面板内联）</a>
+  </nav>
+
+  <div class="sections-col">
+
+<!-- ============ Section 01：主页面 · AI 助手面板 ============ -->
+<div id="section-wb-01" class="proto-stack">
+  <div class="section-label">工作台-01 主页面 · AI 助手面板（默认态）</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">智能客服平台 — 客服工作台 · Chat</div>
+      </div>
+      <div class="macos-body">
+
+        <div class="app-sidebar">
+          <div style="padding:4px 14px 12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:22px;height:22px;border-radius:var(--radius-chip);background:var(--primary);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="headset" style="width:12px;height:12px;color:var(--primary-foreground);stroke-width:2.5;"></i>
+            </div>
+            <span style="font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:-0.02em;">智能客服平台</span>
+          </div>
+          <div class="sidebar-apps">
+            <div class="sidebar-section-header" style="padding-top:4px;">服务工作台</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item active" href="01-agent-workbench.html"><i data-lucide="headset" class="nav-icon"></i>客服工作台<span class="si-badge" style="background:var(--primary);color:var(--primary-foreground);">12</span></a>
+              <a class="sidebar-item" href="02-iq-handoff.html"><i data-lucide="bot" class="nav-icon"></i>IQ 会话</a>
+            </div>
+            <div class="sidebar-section-header">知识运营</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="03-knowledge-center.html"><i data-lucide="book-open" class="nav-icon"></i>知识中心</a>
+              <a class="sidebar-item" href="04-knowledge-admin.html"><i data-lucide="folder-cog" class="nav-icon"></i>知识管理<span class="si-badge" style="background:var(--warning-muted);color:var(--warning);">3</span></a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-header">洞察与治理</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="05-monitor.html"><i data-lucide="bar-chart-3" class="nav-icon"></i>监控与优化</a>
+              <a class="sidebar-item" href="06-config.html"><i data-lucide="settings" class="nav-icon"></i>配置中心</a>
+            </div>
+          </div>
+          <div class="sidebar-section" style="padding-top:8px;">
+            <div class="info-card" style="padding:10px 12px;background:var(--background);border-radius:var(--radius-btn);">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:10px;color:var(--text-3);letter-spacing:0.04em;">我的今日服务</span>
+                <span class="pulse-dot" style="width:6px;height:6px;"></span>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:6px;">
+                <div><div style="font-size:13px;font-weight:700;font-family:var(--font-mono);">18</div><div style="font-size:9px;color:var(--text-3);">已接会话</div></div>
+                <div><div style="font-size:13px;font-weight:700;font-family:var(--font-mono);">6′20″</div><div style="font-size:9px;color:var(--text-3);">平均时长</div></div>
+                <div><div style="font-size:13px;font-weight:700;font-family:var(--font-mono);">72%</div><div style="font-size:9px;color:var(--text-3);">草稿采用</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="win-chrome-bar">
+          <div style="display:flex;align-items:center;gap:8px;padding-left:12px;flex-shrink:0;">
+            <button class="btn btn-ghost btn-sm" style="gap:5px;">
+              <i data-lucide="store" style="width:13px;height:13px;"></i>云栖生活<span style="color:var(--text-3);">·</span>中国站
+              <i data-lucide="chevron-down" style="width:12px;height:12px;"></i>
+            </button>
+          </div>
+          <div class="wb-search" style="width:300px;flex-shrink:0;">
+            <i data-lucide="search"></i>
+            <input class="input" placeholder="搜索会话 / 订单号 / 顾客ID / 知识" />
+            <span class="search-shortcut">⌘K</span>
+          </div>
+          <div class="win-chrome-drag"></div>
+          <div class="win-chrome-actions">
+            <div class="win-credits"><i data-lucide="alarm-clock" class="win-chrome-icon" style="color:var(--warning);"></i><span style="color:var(--warning);">2 条超时</span></div>
+            <button class="win-chrome-btn" title="通知" style="position:relative;">
+              <i data-lucide="bell" class="win-chrome-icon"></i>
+              <span style="position:absolute;top:3px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--destructive);"></span>
+            </button>
+            <button class="win-chrome-btn" title="帮助"><i data-lucide="help-circle" class="win-chrome-icon"></i></button>
+            <div class="win-avatar-chip"><span class="win-avatar">李</span><span class="badge-free">在线</span></div>
+          </div>
+        </div>
+
+        <div class="app-main wb-main">
+          <div class="wb" id="wb">
+
+            <!-- A 区：会话队列 -->
+            <div class="wb-queue" data-comp="queue-panel">
+              <div class="wb-queue__head">
+                <div class="wb-search">
+                  <i data-lucide="search"></i>
+                  <input class="input" placeholder="顾客ID / 订单号 / 会话ID / 关键词" data-comp="queue-search" />
+                </div>
+                <div class="wb-tabs" data-comp="queue-tabs">
+                  <button class="inline-tab active" data-qtab="pending">待接入 <span class="count">2</span></button>
+                  <button class="inline-tab" data-qtab="mine">我的 <span class="count">4</span></button>
+                  <button class="inline-tab" data-qtab="follow">待处理 <span class="count">3</span></button>
+                </div>
+              </div>
+              <div class="wb-queue__list" id="queue-list" data-comp="queue-list">
+                <div class="qc active" data-conv="A">
+                  <div class="qc__row">
+                    <span class="qc__name">张明远<span class="qc__id">C-88213</span></span>
+                    <span class="qc__unread">2</span>
+                  </div>
+                  <div class="qc__preview">收到货发现颜色和图片不一样，我要退货</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="video" class="ic-xs"></i>抖音小店</span>
+                    <span><i data-lucide="clock" class="ic-xs"></i>等待 42s</span>
+                    <span class="badge badge-info" style="height:18px;font-size:10px;">退货政策</span>
+                  </div>
+                </div>
+                <div class="qc sla" data-conv="B">
+                  <div class="qc__row">
+                    <span class="qc__name">李女士<span class="qc__id">C-88240</span></span>
+                    <span class="qc__unread">1</span>
+                  </div>
+                  <div class="qc__preview">快递三天没更新了，你们到底发没发货？</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="message-circle" class="ic-xs"></i>微信小店</span>
+                    <span><i data-lucide="alarm-clock" class="ic-xs"></i>承诺 6′12″ 已超时</span>
+                    <span class="badge badge-warn" style="height:18px;font-size:10px;">物流查询</span>
+                  </div>
+                </div>
+                <div class="qc" data-conv="C">
+                  <div class="qc__row">
+                    <span class="qc__name">王先生<span class="qc__id">C-88177</span></span>
+                  </div>
+                  <div class="qc__preview">会员积分什么时候到账？</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="shopping-bag" class="ic-xs"></i>天猫旗舰店</span>
+                    <span><i data-lucide="clock" class="ic-xs"></i>等待 8s</span>
+                    <span class="badge badge-default" style="height:18px;font-size:10px;">会员积分</span>
+                  </div>
+                </div>
+                <div class="qc" data-conv="D">
+                  <div class="qc__row">
+                    <span class="qc__name">陈晓雨<span class="qc__id">C-88105</span></span>
+                    <span class="qc__unread">3</span>
+                  </div>
+                  <div class="qc__preview">这件外套有加绒款吗？尺码表能发我看看</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="globe" class="ic-xs"></i>官网商城</span>
+                    <span><i data-lucide="clock" class="ic-xs"></i>等待 1′20″</span>
+                    <span class="badge badge-default" style="height:18px;font-size:10px;">商品规格</span>
+                  </div>
+                </div>
+                <div class="qc" data-conv="E">
+                  <div class="qc__row">
+                    <span class="qc__name">赵先生<span class="qc__id">C-88091</span></span>
+                  </div>
+                  <div class="qc__preview">（已结束）已按退货规则完成取件预约</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="video" class="ic-xs"></i>抖音小店</span>
+                    <span><i data-lucide="check-check" class="ic-xs"></i>结束于 12:04</span>
+                  </div>
+                </div>
+              </div>
+              <div class="wb-queue__foot">
+                <span><i data-lucide="gauge" class="ic-xs" style="vertical-align:-1px;"></i> 队列 SLA 达成 96%</span>
+                <button class="link-mini"><i data-lucide="list-filter"></i>筛选</button>
+              </div>
+            </div>
+
+            <!-- B 区：对话区 -->
+            <div class="wb-chat">
+              <div class="wb-chat__head">
+                <div class="chat-block">
+                  <div class="wb-chat__title">
+                    <span id="chat-name">张明远</span>
+                    <span class="badge badge-default" style="height:19px;font-size:10px;" id="chat-channel">抖音小店</span>
+                    <span class="badge badge-warn" style="height:19px;font-size:10px;">优先级 高</span>
+                  </div>
+                  <div class="chat-sub" id="chat-meta">
+                    <span>会话 CH-20261016-0431</span><span class="meta-sep">·</span>
+                    <span>顾客 C-88213（已脱敏）</span><span class="meta-sep">·</span>
+                    <span>负责人 我</span><span class="meta-sep">·</span>
+                    <span>已持续 04′12″</span>
+                  </div>
+                </div>
+                <div class="chat-chips" id="chat-chips" data-comp="entity-chips">
+                  <span class="ent-chip"><i data-lucide="package"></i>订单 …345</span>
+                  <span class="ent-chip"><i data-lucide="shirt"></i>燕麦色 M</span>
+                  <span class="ent-chip"><i data-lucide="crown"></i>银卡</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                  <button class="btn btn-secondary btn-sm" id="btn-handoff" data-comp="btn-handoff">
+                    <i data-lucide="user-round-check" style="width:12px;height:12px;"></i>转人工 / 升级
+                  </button>
+                  <button class="win-chrome-btn" id="btn-toggle-panel" title="折叠 / 展开智能辅助面板" data-comp="btn-toggle-panel">
+                    <i data-lucide="panel-right-close" class="win-chrome-icon" id="toggle-panel-icon"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="wb-msgs" id="timeline" data-comp="timeline">
+                <div class="msg msg--customer">
+                  <div class="msg__avatar customer">顾</div>
+                  <div>
+                    <div class="msg__meta">张明远 · 14:18</div>
+                    <div class="msg__bubble">你好，我收到货发现颜色和图片不一样，我要退货。</div>
+                  </div>
+                </div>
+                <div class="msg msg--iq">
+                  <div class="msg__avatar iq">IQ</div>
+                  <div>
+                    <div class="msg__meta">
+                      IQ 机器人 · 14:18
+                      <span class="badge badge-info" style="height:17px;font-size:9.5px;">标准知识答复</span>
+                      <span class="cite-chip"><i data-lucide="bookmark" style="width:9px;height:9px;"></i>FAQ-102 v3</span>
+                    </div>
+                    <div class="msg__bubble">您好，签收后 7 天内的商品在未影响二次销售的情况下可以申请退货；属于运费险赔付范围的退货运费免收。您可以在「我的订单」里点申请退货，需要我帮您查一下这笔订单吗？</div>
+                  </div>
+                </div>
+                <div class="sysmsg">系统事件 · 两轮未确认订单号，已按规则转人工；转接信息见右侧会话摘要 · 14:19</div>
+                <div class="msg msg--customer">
+                  <div class="msg__avatar customer">顾</div>
+                  <div>
+                    <div class="msg__meta">张明远 · 14:20</div>
+                    <div class="msg__bubble">订单号 2025091200345</div>
+                  </div>
+                </div>
+                <div class="flow-card" data-comp="workflow-card">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i data-lucide="waypoints" style="width:13px;height:13px;color:var(--primary);"></i>
+                    <span style="font-size:11.5px;font-weight:600;">工作流 · 退货资格校验 v2</span>
+                    <span class="badge badge-info" style="height:18px;font-size:10px;">节点 2 / 4</span>
+                  </div>
+                  <div class="flow-steps">
+                    <span class="flow-step done">确认订单</span>
+                    <span class="flow-step now">校验退货条件</span>
+                    <span class="flow-step">等待顾客补充信息</span>
+                    <span class="flow-step">出具结果</span>
+                  </div>
+                </div>
+                <div class="msg msg--agent">
+                  <div class="msg__avatar agent">我</div>
+                  <div>
+                    <div class="msg__meta">我 · 14:22 <i data-lucide="check-check" style="width:11px;height:11px;"></i>已送达</div>
+                    <div class="msg__bubble">好的，我帮您核实一下这笔订单的退货条件，请稍等 1 分钟。</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="wb-composer">
+                <div class="wb-tools" data-comp="composer-tools">
+                  <button class="wb-tool" id="btn-search-kb" data-comp="btn-search-kb"><i data-lucide="search"></i>搜知识</button>
+                  <button class="wb-tool" id="btn-ai-reply" data-comp="btn-ai-reply"><i data-lucide="sparkles"></i>AI 回复</button>
+                  <button class="wb-tool" id="btn-polish" data-comp="btn-polish"><i data-lucide="wand-2"></i>润色</button>
+                  <button class="wb-tool" id="btn-more" data-comp="btn-more"><i data-lucide="ellipsis"></i>更多</button>
+                  <span style="flex:1;"></span>
+                </div>
+                <div class="inline-panel" id="polish-inline" hidden data-comp="polish-inline">
+                  <div class="inline-panel__head">
+                    <i data-lucide="wand-2"></i>润色预览（原文 → 新稿）
+                    <span style="flex:1;"></span>
+                    <span class="badge badge-success" style="height:18px;font-size:10px;"><i data-lucide="shield-check" style="width:10px;height:10px;"></i>事实一致性校验通过</span>
+                  </div>
+                  <div style="font-size:11.5px;line-height:1.75;">
+                    <span class="diff-old">您好，您的问题我们已经收到</span><span class="diff-new">您反馈的颜色问题我这边已记录</span>，<span class="diff-old">会尽快为您处理</span><span class="diff-new">核实到订单在签收 7 天内，可申请退货</span>，请把实收商品照片发我一张。
+                  </div>
+                  <div class="inline-actions">
+                    <button class="btn btn-primary btn-sm" id="btn-polish-apply">应用新稿</button>
+                    <button class="btn btn-ghost btn-sm" id="btn-polish-cancel">保留原文</button>
+                    <span style="flex:1;"></span>
+                    <span style="font-size:10px;color:var(--text-3);">不直接覆盖原文 · 应用后可撤销</span>
+                  </div>
+                </div>
+                <div class="wb-input" id="composer" contenteditable="true" data-placeholder="输入回复内容，Enter 发送，Shift + Enter 换行…" data-comp="composer"></div>
+                <div class="wb-send-row">
+                  <span class="wb-hint"><i data-lucide="cloud"></i>草稿按会话保存 · 发送前请确认知识依据</span>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="wb-hint" id="send-state"></span>
+                    <button class="btn btn-primary btn-sm" id="btn-send" disabled data-comp="btn-send">发送</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- C 区：智能辅助面板 -->
+            <div class="wb-panel" id="wb-panel" data-comp="assist-panel">
+              <div class="wb-panel__head">
+                <div class="inline-tabs" data-comp="panel-tabs">
+                  <button class="inline-tab active" data-ptab="summary">会话摘要</button>
+                  <button class="inline-tab" data-ptab="kb">知识搜索</button>
+                  <button class="inline-tab" data-ptab="ai">AI 助手</button>
+                  <button class="inline-tab" data-ptab="ctx">顾客 / 订单</button>
+                </div>
+              </div>
+              <div class="wb-panel__body">
+
+                <!-- 面板级临时动作区：不归属任何模块，切换模块时保持展开 -->
+                <div class="pcard" id="handoff-form" hidden data-comp="handoff-form">
+                    <div class="pcard__head">
+                      <span class="pcard__title"><i data-lucide="user-round-check"></i>转人工 / 升级</span>
+                      <span class="badge badge-default" style="height:18px;font-size:10px;">系统预填 · 可修改</span>
+                    </div>
+                    <div class="pcard__body">
+                      <div class="form-group" style="margin-bottom:8px;">
+                        <label class="form-label">转接原因</label>
+                        <div class="form-combobox">
+                          <input class="form-input" value="顾客要求人工处理退货申请" readonly />
+                          <button class="form-chevron" type="button"><i data-lucide="chevron-down"></i></button>
+                        </div>
+                      </div>
+                      <div class="form-group" style="margin-bottom:8px;">
+                        <label class="form-label">目标队列</label>
+                        <div class="form-combobox">
+                          <input class="form-input" value="售后二线（预计等待 3 分钟）" readonly />
+                          <button class="form-chevron" type="button"><i data-lucide="chevron-down"></i></button>
+                        </div>
+                      </div>
+                      <div class="form-group" style="margin-bottom:8px;">
+                        <label class="form-label">优先级</label>
+                        <div class="form-combobox">
+                          <input class="form-input" value="高（涉及金额）" readonly />
+                          <button class="form-chevron" type="button"><i data-lucide="chevron-down"></i></button>
+                        </div>
+                      </div>
+                      <label class="form-label">交接摘要（可编辑，随会话转交）</label>
+                      <textarea class="form-textarea" rows="4" data-comp="handoff-summary-field">诉求：实收颜色与商品图不符，要求退货并加速处理。已确认：订单 2025091200345（10-13 签收）、SKU 燕麦色 M。已答复：7 天无理由与运费险范围（FAQ-102 v3 / Notice-88 v2）。待办：需顾客提供实收商品照片；退货资格校验停在节点 2/4。风险：涉及运费争议，不要承诺赔付。</textarea>
+                      <div class="form-tip">转接为幂等操作：重复提交不会重复创建工单。</div>
+                    </div>
+                    <div class="pcard__actions">
+                      <button class="btn btn-ghost btn-sm" id="btn-handoff-cancel">取消</button>
+                      <button class="btn btn-primary btn-sm" id="btn-handoff-confirm">确认转接</button>
+                    </div>
+                </div>
+
+                <!-- 模块：会话摘要 -->
+                <div data-pane="summary">
+                  <div class="pcard" id="summary-card" data-comp="summary-card">
+                    <div class="pcard__head">
+                      <span class="pcard__title"><i data-lucide="clipboard-list"></i>会话摘要</span>
+                      <button class="link-mini" id="btn-regen-summary"><i data-lucide="refresh-cw"></i>重新生成</button>
+                    </div>
+                    <div style="padding:9px 11px 0;">
+                      <div class="inline-tabs" style="margin-bottom:6px;" data-comp="summary-scope">
+                        <button class="inline-tab active" data-scope="48h">过去 48 小时</button>
+                        <button class="inline-tab" data-scope="7d">过去 7 天</button>
+                      </div>
+                      <div style="font-size:10px;color:var(--text-3);" id="summary-meta">范围：本会话 12 条消息 + 订单 / 售后记录 · 生成于 14:26</div>
+                    </div>
+                    <div class="pcard__body" id="summary-body" style="padding-top:9px;">
+                      <div class="sum-lead">
+                        <div class="sum-lead__text" id="sum-lead">顾客认为实收颜色与商品图不符，要求退货，并希望今天内得到处理</div>
+                        <div class="sum-chips" id="sum-chips">
+                          <span class="badge badge-warn">情绪 不满（升级中）</span>
+                          <span class="badge badge-default">期望 今天内答复</span>
+                          <span class="badge badge-info">近 48h 进线 1 次</span>
+                        </div>
+                      </div>
+                      <div class="prow"><span>已确认</span><span id="sum-facts">订单 2025091200345 · 10-13 签收 · SKU 燕麦色 M</span></div>
+                      <div class="prow"><span>已答复</span><span id="sum-answered">已告知 7 天无理由与运费险范围（FAQ-102 v3）</span></div>
+                      <div class="prow"><span>还缺</span><span id="sum-gap">实收商品照片 · 退货资格校验未完成 · 运费争议未定</span></div>
+                      <div class="sum-block__title"><i data-lucide="message-square-quote" style="width:11px;height:11px;"></i>顾客原话要点</div>
+                      <div id="sum-quotes">
+                        <div class="sum-quote"><span class="sum-quote__t">14:18</span><span>「收到货发现颜色和图片不一样，我要退货」</span></div>
+                        <div class="sum-quote"><span class="sum-quote__t">14:25</span><span>「我着急用钱，别让我再找别的客服了」</span></div>
+                      </div>
+                    </div>
+                    <div class="pcard__actions">
+                      <button class="link-mini" data-toast="摘要已复制（演示）"><i data-lucide="copy"></i>复制</button>
+                      <button class="link-mini" data-toast="可在此修订摘要，修订后以人工版本为准（演示）"><i data-lucide="square-pen"></i>修订摘要</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 模块：AI 助手（回复生成） -->
+                <div data-pane="ai" hidden>
+                  <div class="pcard" data-comp="suggest-card">
+                    <div class="pcard__head"><span class="pcard__title"><i data-lucide="lightbulb"></i>建议动作</span></div>
+                    <div class="pcard__body">
+                      <div class="prow"><span>1</span><span>先向顾客确认实收商品照片，作为退货凭据<br /><span style="color:var(--text-3);">触发原因：颜色不符类退货通常需要图片佐证</span></span></div>
+                      <div class="prow"><span>2</span><span>调用订单接口校验退货资格（只读）<br /><span style="color:var(--text-3);">触发原因：已有订单号，可自动校验</span></span></div>
+                      <div class="prow"><span>3</span><span>涉及运费赔付的方案需人工判断，不可直接承诺<br /><span class="badge badge-warn" style="height:18px;font-size:10px;">需人工判断</span></span></div>
+                    </div>
+                  </div>
+
+                  <div class="pcard" id="draft-card" data-comp="draft-card">
+                    <div class="pcard__head">
+                      <span class="pcard__title"><i data-lucide="sparkles"></i>回复草稿</span>
+                      <span class="badge badge-success" style="height:18px;font-size:10px;" id="draft-status">依据充分 grounded</span>
+                    </div>
+                    <div class="pcard__body">
+                      <div class="draft-text" id="draft-text">您反馈的颜色问题我已经记录。核实到您的订单 2025091200345 在签收 7 天内，属于可申请退货范围：[1] 请把实收商品的照片发我一张，我帮您提交退货申请；[2] 退货运费在运费险赔付范围内免收，超出部分按平台规则处理。</div>
+                      <div style="margin-top:8px;">
+                        <div class="cite-item"><b>[1]</b><span>FAQ-102《7 天无理由退货规则》v3 · 生效 2026-09-01 · 全渠道</span></div>
+                        <div class="cite-item"><b>[2]</b><span>Notice-88《退货运费险说明》v2 · 生效 2026-10-16 · 抖音 / 微信小店</span></div>
+                      </div>
+                      <div style="margin-top:8px;font-size:10.5px;color:var(--text-3);">缺失信息：无 · 安全策略：<span style="color:var(--success);">通过</span></div>
+                    </div>
+                    <div class="pcard__actions">
+                      <button class="btn btn-primary btn-sm" id="btn-insert" data-comp="btn-insert">插入输入框</button>
+                      <button class="btn btn-ghost btn-sm" id="btn-regen" data-comp="btn-regen"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i>重新生成</button>
+                      <button class="btn btn-ghost btn-sm" data-toast="草稿已转入编辑区，可修改后再插入（演示）">编辑后再用</button>
+                      <button class="btn btn-ghost btn-sm" id="btn-reject" data-comp="btn-reject"><i data-lucide="thumbs-down" style="width:12px;height:12px;"></i>不采纳</button>
+                    </div>
+                  </div>
+
+                  <div class="pcard" id="gen-card" hidden>
+                    <div class="pcard__head">
+                      <span class="pcard__title"><i data-lucide="loader-2" class="spin"></i>正在生成草稿…</span>
+                      <button class="link-mini" id="btn-cancel-gen">取消</button>
+                    </div>
+                    <div class="pcard__body" style="display:flex;flex-direction:column;gap:8px;">
+                      <div class="skel" style="width:92%;"></div>
+                      <div class="skel" style="width:78%;"></div>
+                      <div class="skel" style="width:64%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="pcard">
+                    <div class="pcard__body" style="display:flex;align-items:center;gap:8px;">
+                      <span style="font-size:10.5px;color:var(--text-3);">这次结果是否可用？</span>
+                      <span style="flex:1;"></span>
+                      <button class="link-mini" data-toast="已记录反馈：有用（演示）"><i data-lucide="thumbs-up"></i>有用</button>
+                      <button class="link-mini" data-toast="已记录反馈：不相关 · 已进入质量评测队列（演示）"><i data-lucide="thumbs-down"></i>不相关</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 模块：知识搜索（精简态，完整态见 工作台-02） -->
+                <div data-pane="kb" hidden>
+                  <div class="wb-search">
+                    <i data-lucide="search"></i>
+                    <input class="input" id="kb-query" value="颜色不符 退货 条件" style="font-size:12px;" />
+                  </div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <span class="filter-chip active">FAQ</span>
+                    <span class="filter-chip active">Notice</span>
+                    <span class="filter-chip">商品</span>
+                    <span class="filter-chip">SOP</span>
+                  </div>
+                  <div class="ai-sum" id="kb-summary" data-comp="kb-summary">
+                    <div class="ai-sum__head">
+                      <i data-lucide="sparkles"></i>AI 总结
+                      <span class="badge badge-info" style="height:17px;font-size:9.5px;">基于 2 条检索结果</span>
+                      <span style="flex:1;"></span>
+                      <button class="link-mini" id="btn-regen-kb-summary"><i data-lucide="refresh-cw"></i>重新生成</button>
+                    </div>
+                    <div class="ai-sum__text" id="kb-summary-text">签收后 7 天内、商品不影响二次销售时可申请退货<span class="cite-num">1</span>；属于运费险赔付范围的退货运费免收，超出部分按平台规则由顾客承担<span class="cite-num">2</span>。</div>
+                    <div class="ai-sum__cites">
+                      <span class="filter-chip"><span class="cite-num">1</span>FAQ-102 v3</span>
+                      <span class="filter-chip"><span class="cite-num">2</span>Notice-88 v2</span>
+                    </div>
+                    <div class="ai-sum__note">只概括上方检索结果，不补充未命中的政策；插入草稿后仍需坐席确认再发送。</div>
+                    <div class="ai-sum__actions">
+                      <button class="btn btn-secondary btn-sm" id="btn-insert-kb-summary">插入草稿</button>
+                      <button class="link-mini" data-toast="AI 总结已复制为内部参考（演示）"><i data-lucide="copy"></i>复制</button>
+                    </div>
+                  </div>
+
+                  <div class="pcard" id="kb-empty" hidden style="padding:10px 11px;">
+                    <div style="font-size:11.5px;font-weight:600;">未找到有效知识，未生成 AI 总结</div>
+                    <div style="font-size:11px;color:var(--text-2);line-height:1.65;margin-top:4px;">不会用通用模型答案替代。可以扩大检索范围，或创建知识缺口任务给知识运营。</div>
+                    <div class="ai-sum__actions">
+                      <button class="btn btn-secondary btn-sm">扩大搜索范围</button>
+                      <button class="btn btn-ghost btn-sm">创建知识缺口任务</button>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;flex-direction:column;gap:8px;" id="kb-results">
+                    <div class="kres" data-comp="kb-result-card">
+                      <div class="kres__title"><i data-lucide="bookmark" style="width:12px;height:12px;color:var(--primary);"></i>7 天无理由退货规则</div>
+                      <div class="kres__excerpt">签收后 7 天内，商品<span class="hl">不影响二次销售</span>时可申请<span class="hl">退货</span>；定制类、贴身衣物除外。</div>
+                      <div class="kres__foot"><span class="badge badge-success" style="height:17px;font-size:9.5px;">已生效</span><span>FAQ · v3</span><span>更新 2026-09-01</span><span>全渠道</span></div>
+                    </div>
+                    <div class="kres">
+                      <div class="kres__title"><i data-lucide="megaphone" style="width:12px;height:12px;color:var(--warning);"></i>退货运费险说明</div>
+                      <div class="kres__excerpt">运费险覆盖范围内的<span class="hl">退货运费</span>免收；超出部分按平台规则由顾客承担。</div>
+                      <div class="kres__foot"><span class="badge badge-success" style="height:17px;font-size:9.5px;">已生效</span><span>Notice · v2</span><span>更新 2026-10-16</span><span>抖音 / 微信小店</span></div>
+                    </div>
+                  </div>
+                  <button class="link-mini" data-goto="#section-wb-02" style="justify-content:center;">查看完整知识面板（筛选 / 详情 / 反馈）→</button>
+                </div>
+
+                <!-- 模块：顾客 / 订单（精简态，完整态见 工作台-03） -->
+                <div data-pane="ctx" hidden>
+                  <div class="pcard">
+                    <div class="pcard__head"><span class="pcard__title"><i data-lucide="user-round"></i>顾客信息</span><span class="badge badge-default" style="height:18px;font-size:10px;">已脱敏</span></div>
+                    <div class="pcard__body">
+                      <div class="prow"><span>顾客</span><span>张明远 · C-88213</span></div>
+                      <div class="prow"><span>会员等级</span><span>银卡会员 · 近 90 天 3 单</span></div>
+                      <div class="prow"><span>授权范围</span><span>订单与售后（不含支付明细）</span></div>
+                    </div>
+                  </div>
+                  <div class="ord-card">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                      <span style="font-size:11.5px;font-weight:600;font-family:var(--font-mono);">2025091200345</span>
+                      <span class="badge badge-success" style="height:18px;font-size:10px;">已签收</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--text-2);margin-top:6px;">纯棉短袖 T 恤 · 燕麦色 / M · ¥149 × 1</div>
+                    <div style="font-size:10px;color:var(--text-3);margin-top:6px;">签收 2026-10-13 · 数据查询于 14:21</div>
+                  </div>
+                  <button class="link-mini" data-goto="#section-wb-03" style="justify-content:center;">查看完整顾客 / 订单面板（商品、物流、异常态）→</button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <div class="wb-toast" id="toast"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">工作台-01：主页面 · AI 助手面板</div>
+            <ul>
+              <li data-target="queue-panel"><strong>会话队列区</strong>：三栏布局最左列，展示待接入 / 我的 / 待处理分组与排队会话列表，点击任一条即切换当前会话</li>
+              <li data-target="queue-search"><strong>队列搜索框</strong>：支持按顾客 ID、订单号、会话 ID 或关键词检索；无权限的内容不出现在结果里</li>
+              <li data-target="queue-tabs"><strong>队列分组 Tab</strong>：展示「待接入 / 我的 / 待处理」，右侧显示条数；切换分组只影响列表，不改变当前打开的会话</li>
+              <li data-target="queue-list"><strong>会话卡</strong>：展示顾客显示名与脱敏 ID、最后一条消息摘要、渠道、等待时长、未读数与意图标签；超出队列承诺时长的会话卡左侧显示橙色提示条（明显但不阻断操作）</li>
+              <li><strong>不在对话区推送知识更新</strong>：知识 / 公告的更新提醒不在坐席工作台出现，避免打断接待节奏；更新通知统一在知识管理（知识库）的「知识更新通知」中查阅</li>
+              <li data-target="timeline"><strong>消息时间线</strong>：区分顾客、坐席、IQ 与系统事件；IQ 答复带「标准知识答复」标签与知识 ID / 版本引用，点击引用可查看原文</li>
+              <li data-target="workflow-card"><strong>工作流进度卡</strong>：展示流程名、版本、当前节点与已完成节点；只暴露业务节点状态，不展示内部提示词或隐藏推理</li>
+              <li data-target="entity-chips"><strong>上下文实体 Chip</strong>：识别到订单 / 商品 / 会员实体时在会话头部展示小 Chip，点击后在右侧面板打开对应详情</li>
+              <li data-target="assist-panel"><strong>右侧四模块面板</strong>：固定「会话摘要 / 知识搜索 / AI 助手 / 顾客·订单」四个模块按钮，同一时间只展示一个模块的内容，点击按钮即联动替换，不把多个模块内容堆在同一段滚动区；可折叠，切换会话时保留当前模块并重新加载该会话内容</li>
+              <li><strong>模块联动入口</strong>：输入区「搜知识」打开知识搜索模块、「AI 回复 / 重新生成」打开 AI 助手模块、点击会话头部的订单 / 商品 / 会员实体 Chip 打开顾客·订单模块；转人工 / 升级表单作为面板级临时动作区，展开时不改变当前模块</li>
+              <li data-target="summary-card"><strong>会话摘要卡</strong>：面向「让坐席 3 秒抓住顾客诉求」组织信息，自上而下依次为结论式诉求、情绪与期望、关键事实、已答复内容、仍缺什么、顾客原话要点；支持复制与人工修订（修订后以人工版本为准）</li>
+              <li data-target="summary-scope"><strong>时间范围切换</strong>：卡头下方提供「过去 48 小时 / 过去 7 天」切换，默认 48 小时。48 小时看当前处理窗口内已确认的事实与答复；7 天看跨会话的重复进线、诉求演变与历史答复，避免坐席重复解释。切换只改变摘要取数范围，不改变当前会话与消息时间线</li>
+              <li><strong>范围说明行</strong>：展示本次摘要覆盖的消息条数与会话数、数据来源（会话消息 + 订单 / 售后记录）与生成时间，便于坐席判断可信度</li>
+              <li><strong>结论式诉求</strong>：首行用一句话概括顾客要什么、卡在哪儿（如「认为实收颜色与商品图不符，要求退货并希望今天内处理」），不写流水账</li>
+              <li><strong>情绪与期望标签</strong>：用徽标展示情绪状态、期望答复时效与进线次数，帮助坐席决定沟通语气与优先级</li>
+              <li><strong>关键事实行</strong>：只保留与当前诉求直接相关的事实（订单、签收时间、SKU），并标注来源时间</li>
+              <li><strong>顾客原话要点</strong>：按时间列出 2–3 条顾客关键原话（含时间戳），让坐席无需回滚长消息就能读到顾客的真实表达</li>
+              <li><strong>不展示转接状态相关内容</strong>：转接状态、转接原因、目标队列、排队情况、上下文完整度、幂等键等运营内部字段不出现在坐席摘要中；坐席通过对话区一行系统事件感知转接事实，完整转接数据在 IQ 交接摘要页（按权限）查看</li>
+              <li><strong>对话区可读性约束</strong>：会话头部控制在 1–2 行（超出省略），消息气泡限制单行阅读宽度（约 40 个汉字）并保留气泡间距，长文本不贴边换行</li>
+              <li><strong>不设「识别信息」模块</strong>：意图、实体与工作流状态不在辅助面板单独占卡片——队列卡提供意图导航标签、会话头部提供订单 / 商品 / 会员实体 Chip、对话区提供工作流进度卡；「纠正意图」作为轻量反馈入口收进输入区「更多」菜单，不占用坐席理解顾客诉求的面板空间</li>
+              <li data-target="suggest-card"><strong>建议动作卡</strong>：最多展示 3 条下一步建议并说明触发原因，高风险动作单独标注「需人工判断」</li>
+              <li data-target="draft-card"><strong>回复草稿卡</strong>：展示草稿状态（依据充分 / 部分依据 / 依据不足 / 已阻断 / 生成失败）、正文与编号引用来源列表（标题、版本、生效日期、适用渠道）</li>
+              <li data-target="btn-insert"><strong>「插入输入框」按钮</strong>：展示主按钮（应用 .btn-primary 风格），点击后把草稿直接写入输入框——输入框为空时填入，已有内容时在光标处插入（不弹窗、不询问替换 / 追加，也不额外添加状态标记）；插入动作本身不会发送消息</li>
+              <li data-target="btn-regen"><strong>「重新生成」按钮</strong>：展示幽灵按钮（应用 .btn-ghost 风格），可选更简洁 / 更有同理心 / 更清晰 / 更正式；语气调整不改变事实与承诺</li>
+              <li data-target="btn-reject"><strong>「不采纳」按钮</strong>：展示幽灵按钮，点击后选择原因（不相关 / 事实不准 / 语气不合适 / 依据不足 / 重复 / 其他），反馈进入质量评测队列</li>
+              <li data-target="composer-tools"><strong>输入区快捷操作</strong>：仅展示 4 个高频按钮「搜知识 / AI 回复 / 润色 / 更多」，其余收进「更多」菜单；输入框为空时「润色」不可用</li>
+              <li data-target="composer"><strong>回复输入框</strong>：支持多行与粘贴，Enter 发送、Shift + Enter 换行；草稿按「会话 + 坐席」保存到服务端，切换会话不丢失</li>
+              <li data-target="btn-send"><strong>「发送」按钮</strong>：文本非空且会话可回复时启用；发送过程中显示发送中状态并禁止重复点击，避免顾客收到重复消息</li>
+              <li><strong>不设草稿状态标记</strong>：插入后输入框只呈现文本本身，不再叠加「AI 草稿 · 未发送」徽标；是否发送完全由坐席点「发送」决定，避免在输入区增加额外噪音</li>
+              <li data-target="btn-toggle-panel"><strong>面板折叠按钮</strong>：点击折叠右侧智能辅助面板，让对话区更宽；折叠状态在当前浏览器会话内记忆</li>
+              <li data-target="btn-handoff"><strong>「转人工 / 升级」按钮</strong>：明确的业务动作按钮，点击后在右侧面板内联展开原因、目标队列、优先级与可编辑的交接摘要（见 工作台-04），全程不遮挡对话区</li>
+              <li><strong>无模态弹窗原则</strong>：本页面不使用阻塞式对话框。插入草稿处理、润色预览与转人工确认都在输入区或右侧面板内联展开，遮罩层为 0；反馈类提示使用非阻断的轻提示，坐席可继续阅读消息与输入</li>
+              <li><strong>辅助面板知识 / 顾客·订单 Tab</strong>：本 section 保留精简态便于点击演示，完整态见 工作台-02 与 工作台-03</li>
+              <li><strong>异常态处理</strong>：知识无结果时展示「未找到有效知识」并给出扩大范围 / 创建缺口任务入口；发送状态未知时先确认是否送达，再允许重试</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ Section 02：知识搜索模块 · 检索命中 ============ -->
+<div id="section-wb-02" class="proto-stack">
+  <div class="section-label">工作台-02 右侧面板 · 知识搜索模块（检索命中态）</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">智能客服平台 — 客服工作台 · Chat（知识搜索模块）</div>
+      </div>
+      <div class="macos-body">
+
+        <div class="app-sidebar">
+          <div style="padding:4px 14px 12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:22px;height:22px;border-radius:var(--radius-chip);background:var(--primary);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="headset" style="width:12px;height:12px;color:var(--primary-foreground);stroke-width:2.5;"></i>
+            </div>
+            <span style="font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:-0.02em;">智能客服平台</span>
+          </div>
+          <div class="sidebar-apps">
+            <div class="sidebar-section-header" style="padding-top:4px;">服务工作台</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item active" href="01-agent-workbench.html"><i data-lucide="headset" class="nav-icon"></i>客服工作台<span class="si-badge" style="background:var(--primary);color:var(--primary-foreground);">12</span></a>
+              <a class="sidebar-item" href="02-iq-handoff.html"><i data-lucide="bot" class="nav-icon"></i>IQ 会话</a>
+            </div>
+            <div class="sidebar-section-header">知识运营</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="03-knowledge-center.html"><i data-lucide="book-open" class="nav-icon"></i>知识中心</a>
+              <a class="sidebar-item" href="04-knowledge-admin.html"><i data-lucide="folder-cog" class="nav-icon"></i>知识管理<span class="si-badge" style="background:var(--warning-muted);color:var(--warning);">3</span></a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-header">洞察与治理</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="05-monitor.html"><i data-lucide="bar-chart-3" class="nav-icon"></i>监控与优化</a>
+              <a class="sidebar-item" href="06-config.html"><i data-lucide="settings" class="nav-icon"></i>配置中心</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="win-chrome-bar">
+          <div style="display:flex;align-items:center;gap:8px;padding-left:12px;flex-shrink:0;">
+            <button class="btn btn-ghost btn-sm" style="gap:5px;">
+              <i data-lucide="store" style="width:13px;height:13px;"></i>云栖生活<span style="color:var(--text-3);">·</span>中国站
+              <i data-lucide="chevron-down" style="width:12px;height:12px;"></i>
+            </button>
+          </div>
+          <div class="wb-search" style="width:300px;flex-shrink:0;">
+            <i data-lucide="search"></i>
+            <input class="input" placeholder="搜索会话 / 订单号 / 顾客ID / 知识" />
+            <span class="search-shortcut">⌘K</span>
+          </div>
+          <div class="win-chrome-drag"></div>
+          <div class="win-chrome-actions">
+            <div class="win-credits"><i data-lucide="alarm-clock" class="win-chrome-icon" style="color:var(--warning);"></i><span style="color:var(--warning);">2 条超时</span></div>
+            <button class="win-chrome-btn" title="通知"><i data-lucide="bell" class="win-chrome-icon"></i></button>
+            <button class="win-chrome-btn" title="帮助"><i data-lucide="help-circle" class="win-chrome-icon"></i></button>
+            <div class="win-avatar-chip"><span class="win-avatar">李</span><span class="badge-free">在线</span></div>
+          </div>
+        </div>
+
+        <div class="app-main wb-main">
+          <div class="wb">
+
+            <div class="wb-queue" data-comp="kb-queue">
+              <div class="wb-queue__head">
+                <div class="wb-search">
+                  <i data-lucide="search"></i>
+                  <input class="input" placeholder="顾客ID / 订单号 / 会话ID / 关键词" />
+                </div>
+                <div class="wb-tabs">
+                  <button class="inline-tab active">待接入 <span class="count">2</span></button>
+                  <button class="inline-tab">我的 <span class="count">4</span></button>
+                  <button class="inline-tab">待处理 <span class="count">3</span></button>
+                </div>
+              </div>
+              <div class="wb-queue__list">
+                <div class="qc active">
+                  <div class="qc__row">
+                    <span class="qc__name">张明远<span class="qc__id">C-88213</span></span>
+                    <span class="qc__unread">2</span>
+                  </div>
+                  <div class="qc__preview">收到货发现颜色和图片不一样，我要退货</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="video" class="ic-xs"></i>抖音小店</span>
+                    <span><i data-lucide="clock" class="ic-xs"></i>等待 42s</span>
+                    <span class="badge badge-info" style="height:18px;font-size:10px;">退货政策</span>
+                  </div>
+                </div>
+                <div class="qc sla">
+                  <div class="qc__row">
+                    <span class="qc__name">李女士<span class="qc__id">C-88240</span></span>
+                    <span class="qc__unread">1</span>
+                  </div>
+                  <div class="qc__preview">快递三天没更新了，你们到底发没发货？</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="message-circle" class="ic-xs"></i>微信小店</span>
+                    <span><i data-lucide="alarm-clock" class="ic-xs"></i>承诺 6′12″ 已超时</span>
+                  </div>
+                </div>
+                <div class="qc">
+                  <div class="qc__row">
+                    <span class="qc__name">王先生<span class="qc__id">C-88177</span></span>
+                  </div>
+                  <div class="qc__preview">会员积分什么时候到账？</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="shopping-bag" class="ic-xs"></i>天猫旗舰店</span>
+                    <span><i data-lucide="clock" class="ic-xs"></i>等待 8s</span>
+                  </div>
+                </div>
+              </div>
+              <div class="wb-queue__foot">
+                <span><i data-lucide="gauge" class="ic-xs" style="vertical-align:-1px;"></i> 队列 SLA 达成 96%</span>
+                <button class="link-mini"><i data-lucide="list-filter"></i>筛选</button>
+              </div>
+            </div>
+
+            <div class="wb-chat">
+              <div class="wb-chat__head">
+                <div class="chat-block">
+                  <div class="wb-chat__title">
+                    <span>张明远</span>
+                    <span class="badge badge-default" style="height:19px;font-size:10px;">抖音小店</span>
+                    <span class="badge badge-warn" style="height:19px;font-size:10px;">优先级 高</span>
+                  </div>
+                  <div class="chat-sub">
+                    <span>会话 CH-20261016-0431</span><span class="meta-sep">·</span>
+                    <span>顾客 C-88213（已脱敏）</span><span class="meta-sep">·</span>
+                    <span>负责人 我</span>
+                  </div>
+                </div>
+                <div class="chat-chips">
+                  <span class="ent-chip"><i data-lucide="package"></i>订单 …345</span>
+                  <span class="ent-chip"><i data-lucide="crown"></i>银卡</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                  <button class="btn btn-secondary btn-sm"><i data-lucide="user-round-check" style="width:12px;height:12px;"></i>转人工 / 升级</button>
+                  <button class="win-chrome-btn" title="折叠智能辅助面板"><i data-lucide="panel-right-close" class="win-chrome-icon"></i></button>
+                </div>
+              </div>
+
+              <div class="wb-msgs">
+                <div class="msg msg--customer">
+                  <div class="msg__avatar customer">顾</div>
+                  <div>
+                    <div class="msg__meta">张明远 · 14:18</div>
+                    <div class="msg__bubble">你好，我收到货发现颜色和图片不一样，我要退货。</div>
+                  </div>
+                </div>
+                <div class="msg msg--iq">
+                  <div class="msg__avatar iq">IQ</div>
+                  <div>
+                    <div class="msg__meta">
+                      IQ 机器人 · 14:18
+                      <span class="badge badge-info" style="height:17px;font-size:9.5px;">标准知识答复</span>
+                      <span class="cite-chip"><i data-lucide="bookmark" style="width:9px;height:9px;"></i>FAQ-102 v3</span>
+                    </div>
+                    <div class="msg__bubble">您好，签收后 7 天内的商品在未影响二次销售的情况下可以申请退货；属于运费险赔付范围的退货运费免收。</div>
+                  </div>
+                </div>
+                <div class="msg msg--customer">
+                  <div class="msg__avatar customer">顾</div>
+                  <div>
+                    <div class="msg__meta">张明远 · 14:20</div>
+                    <div class="msg__bubble">订单号 2025091200345</div>
+                  </div>
+                </div>
+                <div class="msg msg--agent">
+                  <div class="msg__avatar agent">我</div>
+                  <div>
+                    <div class="msg__meta">我 · 14:22 <i data-lucide="check-check" style="width:11px;height:11px;"></i>已送达</div>
+                    <div class="msg__bubble">好的，我帮您核实一下这笔订单的退货条件，请稍等 1 分钟。</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="wb-composer">
+                <div class="wb-tools">
+                  <button class="wb-tool"><i data-lucide="search"></i>搜知识</button>
+                  <button class="wb-tool"><i data-lucide="sparkles"></i>AI 回复</button>
+                  <button class="wb-tool"><i data-lucide="wand-2"></i>润色</button>
+                  <button class="wb-tool"><i data-lucide="ellipsis"></i>更多</button>
+                </div>
+                <div class="wb-input">实体不符类退货，我先帮您确认一下实收照片，随后按 7 天无理由提交申请。</div>
+                <div class="wb-send-row">
+                  <span class="wb-hint"><i data-lucide="cloud"></i>草稿已保存（会话 + 坐席维度）</span>
+                  <button class="btn btn-primary btn-sm">发送</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="wb-panel">
+              <div class="wb-panel__head">
+                <div class="inline-tabs">
+                  <button class="inline-tab">会话摘要</button>
+                  <button class="inline-tab active">知识搜索</button>
+                  <button class="inline-tab">AI 助手</button>
+                  <button class="inline-tab">顾客 / 订单</button>
+                </div>
+              </div>
+              <div class="wb-panel__body">
+                <div class="wb-search" data-comp="kb-search">
+                  <i data-lucide="search"></i>
+                  <input class="input" value="颜色不符 退货 条件" style="font-size:12px;" />
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;" data-comp="kb-filters">
+                  <span class="filter-chip active"><i data-lucide="bookmark" style="width:10px;height:10px;"></i>FAQ</span>
+                  <span class="filter-chip active"><i data-lucide="megaphone" style="width:10px;height:10px;"></i>Notice</span>
+                  <span class="filter-chip">SOP</span>
+                  <span class="filter-chip">话术模板</span>
+                  <span class="filter-chip">已生效</span>
+                  <span class="filter-chip">中国站 · 抖音小店</span>
+                </div>
+                <div style="font-size:10.5px;color:var(--text-3);">检索词自动带入顾客最新问题；已默认过滤无权限、已撤回与失效内容。</div>
+
+                <div class="ai-sum" data-comp="kb-summary">
+                  <div class="ai-sum__head">
+                    <i data-lucide="sparkles"></i>AI 总结
+                    <span class="badge badge-info" style="height:17px;font-size:9.5px;">基于 3 条检索结果</span>
+                  </div>
+                  <div class="ai-sum__text">签收后 7 天内、商品不影响二次销售时可申请退货<span class="cite-num">1</span>；属于运费险赔付范围的退货运费免收<span class="cite-num">2</span>；颜色不符类退货应先索取实收商品照片，再走退货资格校验流程<span class="cite-num">3</span>。</div>
+                  <div class="ai-sum__cites">
+                    <span class="filter-chip"><span class="cite-num">1</span>FAQ-102 v3</span>
+                    <span class="filter-chip"><span class="cite-num">2</span>Notice-88 v2</span>
+                    <span class="filter-chip"><span class="cite-num">3</span>SOP-31 v1</span>
+                  </div>
+                  <div class="ai-sum__note">只概括上方检索结果，不补充未命中的政策；证据不足时改为提示「建议先核实 / 检索」而不给结论。摘要仅供内部参考，插入给顾客的内容仍需坐席确认后发送。</div>
+                  <div class="ai-sum__actions">
+                    <button class="btn btn-secondary btn-sm">插入草稿</button>
+                    <button class="btn btn-ghost btn-sm"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i>重新生成</button>
+                    <button class="link-mini"><i data-lucide="eye"></i>查看引用原文</button>
+                    <button class="link-mini"><i data-lucide="copy"></i>复制</button>
+                  </div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:8px;" data-comp="kb-results">
+                  <div class="kres" data-comp="kb-result-1">
+                    <div class="kres__title"><i data-lucide="bookmark" style="width:12px;height:12px;color:var(--primary);"></i>7 天无理由退货规则</div>
+                    <div class="kres__excerpt">签收后 7 天内，商品<span class="hl">不影响二次销售</span>时可申请<span class="hl">退货</span>；定制类、贴身衣物、已拆封食品除外。退货运费按运费险规则处理。</div>
+                    <div class="kres__foot"><span class="badge badge-success" style="height:17px;font-size:9.5px;">已生效</span><span>FAQ-102 · v3</span><span>更新 2026-09-01</span><span>全渠道</span><span>来源：知识中心</span></div>
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                      <button class="link-mini"><i data-lucide="eye"></i>查看原文</button>
+                      <button class="link-mini"><i data-lucide="corner-down-left"></i>插入知识片段</button>
+                      <button class="link-mini"><i data-lucide="link"></i>复制内部链接</button>
+                    </div>
+                  </div>
+                  <div class="kres" data-comp="kb-result-2">
+                    <div class="kres__title"><i data-lucide="megaphone" style="width:12px;height:12px;color:var(--warning);"></i>退货运费险说明</div>
+                    <div class="kres__excerpt">运费险覆盖范围内的<span class="hl">退货运费</span>免收；超出部分按平台规则由顾客承担，坐席不得承诺额外赔付。</div>
+                    <div class="kres__foot"><span class="badge badge-success" style="height:17px;font-size:9.5px;">已生效</span><span>Notice-88 · v2</span><span>更新 2026-10-16</span><span>抖音 / 微信小店</span></div>
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                      <button class="link-mini"><i data-lucide="eye"></i>查看原文</button>
+                      <button class="link-mini"><i data-lucide="corner-down-left"></i>插入知识片段</button>
+                    </div>
+                  </div>
+                  <div class="kres" data-comp="kb-result-3">
+                    <div class="kres__title"><i data-lucide="workflow" style="width:12px;height:12px;color:var(--primary);"></i>SOP · 颜色不符类退货处理</div>
+                    <div class="kres__excerpt">先索取实收商品照片 → 核对订单与 SKU → 走<span class="hl">退货</span>资格校验工作流 → 出具结论后再引导顾客提申请。</div>
+                    <div class="kres__foot"><span class="badge badge-warn" style="height:17px;font-size:9.5px;">待审核新版</span><span>SOP-31 · v1（v2 审核中）</span><span>更新 2026-08-20</span></div>
+                      <div style="display:flex;gap:8px;margin-top:8px;">
+                      <button class="link-mini"><i data-lucide="eye"></i>查看原文</button>
+                      <button class="link-mini"><i data-lucide="history"></i>查看版本差异</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pcard" data-comp="kb-feedback">
+                  <div class="pcard__body" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                    <span style="font-size:10.5px;color:var(--text-3);">结果是否可用？</span>
+                    <span style="flex:1;"></span>
+                    <button class="filter-chip">相关</button>
+                    <button class="filter-chip">不相关</button>
+                    <button class="filter-chip">已过期</button>
+                    <button class="filter-chip">内容有误</button>
+                    <button class="filter-chip">信息缺失</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">工作台-02：知识搜索模块（检索命中态）</div>
+            <ul>
+              <li data-target="kb-queue"><strong>会话队列与对话区</strong>：同 工作台-01，本 section 只描述右侧「知识」Tab</li>
+              <li data-target="kb-search"><strong>知识搜索框</strong>：默认带入当前顾客最新问题，坐席可手动改写；支持自然语言、FAQ 关键词、商品名称 / SKU 与公告标题</li>
+              <li data-target="kb-summary"><strong>AI 总结卡</strong>：位于检索结果之上，基于本次命中的知识片段生成 2–3 句总结，每个结论都带编号引用（与下方结果卡一一对应）；明确标注「仅概括检索结果、不补充未命中的政策」，插入草稿后仍需坐席确认再发送</li>
+              <li><strong>AI 总结的状态分支</strong>：生成中显示骨架屏并保留原文；重新生成不改变引用来源；检索无结果或证据不足时不输出结论，改为「未找到有效知识，未生成 AI 总结」并给出扩大范围 / 创建缺口任务</li>
+              <li data-target="kb-filters"><strong>筛选条件</strong>：支持知识类型、市场 / 品牌、渠道、语言、是否生效与更新时间；默认过滤无权限、已撤回与失效内容</li>
+              <li><strong>检索范围提示</strong>：明确说明已按权限与生效状态过滤，避免坐席误判「知识不存在」</li>
+              <li data-target="kb-results"><strong>检索结果列表</strong>：按相关性排序展示，结果卡必须包含标题、类型、摘要（含关键词高亮）、适用范围、更新时间 / 版本、来源系统与状态标签</li>
+              <li data-target="kb-result-1"><strong>结果卡 · 已生效知识</strong>：展示绿色「已生效」徽标、知识 ID 与版本、更新日期、适用渠道，并提供「查看原文 / 插入知识片段 / 复制内部链接」</li>
+              <li data-target="kb-result-3"><strong>结果卡 · 审核中版本</strong>：橙色「待审核新版」徽标提示当前生效版本可用于答复、新版本尚未生效；可查看版本差异，避免坐席引用未放行内容</li>
+              <li><strong>「查看原文」操作</strong>：在面板内或弹窗中打开完整内容，不丢失当前 Chat 状态</li>
+              <li><strong>「插入知识片段」操作</strong>：把选中的标准文本插入输入框，不自动发送，插入后仍显示「未发送」标记</li>
+              <li data-target="kb-feedback"><strong>结果反馈</strong>：提供相关 / 不相关 / 已过期 / 内容有误 / 信息缺失五类轻量反馈，提交时自动附带查询词、知识 ID 与版本</li>
+              <li><strong>无结果处理</strong>：检索无命中时展示「未找到有效知识」，提供「扩大搜索范围」与「创建知识缺口任务」入口，不用通用模型答案替代</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ Section 03：顾客/订单模块 · 接口超时 ============ -->
+<div id="section-wb-03" class="proto-stack">
+  <div class="section-label">工作台-03 右侧面板 · 顾客/订单模块（业务接口超时态）</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">智能客服平台 — 客服工作台 · Chat（顾客 / 订单模块）</div>
+      </div>
+      <div class="macos-body">
+
+        <div class="app-sidebar">
+          <div style="padding:4px 14px 12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:22px;height:22px;border-radius:var(--radius-chip);background:var(--primary);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="headset" style="width:12px;height:12px;color:var(--primary-foreground);stroke-width:2.5;"></i>
+            </div>
+            <span style="font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:-0.02em;">智能客服平台</span>
+          </div>
+          <div class="sidebar-apps">
+            <div class="sidebar-section-header" style="padding-top:4px;">服务工作台</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item active" href="01-agent-workbench.html"><i data-lucide="headset" class="nav-icon"></i>客服工作台<span class="si-badge" style="background:var(--primary);color:var(--primary-foreground);">12</span></a>
+              <a class="sidebar-item" href="02-iq-handoff.html"><i data-lucide="bot" class="nav-icon"></i>IQ 会话</a>
+            </div>
+            <div class="sidebar-section-header">知识运营</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="03-knowledge-center.html"><i data-lucide="book-open" class="nav-icon"></i>知识中心</a>
+              <a class="sidebar-item" href="04-knowledge-admin.html"><i data-lucide="folder-cog" class="nav-icon"></i>知识管理<span class="si-badge" style="background:var(--warning-muted);color:var(--warning);">3</span></a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-header">洞察与治理</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="05-monitor.html"><i data-lucide="bar-chart-3" class="nav-icon"></i>监控与优化</a>
+              <a class="sidebar-item" href="06-config.html"><i data-lucide="settings" class="nav-icon"></i>配置中心</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="win-chrome-bar">
+          <div style="display:flex;align-items:center;gap:8px;padding-left:12px;flex-shrink:0;">
+            <button class="btn btn-ghost btn-sm" style="gap:5px;">
+              <i data-lucide="store" style="width:13px;height:13px;"></i>云栖生活<span style="color:var(--text-3);">·</span>中国站
+              <i data-lucide="chevron-down" style="width:12px;height:12px;"></i>
+            </button>
+          </div>
+          <div class="wb-search" style="width:300px;flex-shrink:0;">
+            <i data-lucide="search"></i>
+            <input class="input" placeholder="搜索会话 / 订单号 / 顾客ID / 知识" />
+            <span class="search-shortcut">⌘K</span>
+          </div>
+          <div class="win-chrome-drag"></div>
+          <div class="win-chrome-actions">
+            <div class="win-credits"><i data-lucide="alarm-clock" class="win-chrome-icon" style="color:var(--warning);"></i><span style="color:var(--warning);">2 条超时</span></div>
+            <button class="win-chrome-btn" title="通知"><i data-lucide="bell" class="win-chrome-icon"></i></button>
+            <button class="win-chrome-btn" title="帮助"><i data-lucide="help-circle" class="win-chrome-icon"></i></button>
+            <div class="win-avatar-chip"><span class="win-avatar">李</span><span class="badge-free">在线</span></div>
+          </div>
+        </div>
+
+        <div class="app-main wb-main">
+          <div class="wb">
+
+            <div class="wb-queue" data-comp="ctx-queue">
+              <div class="wb-queue__head">
+                <div class="wb-search">
+                  <i data-lucide="search"></i>
+                  <input class="input" placeholder="顾客ID / 订单号 / 会话ID / 关键词" />
+                </div>
+                <div class="wb-tabs">
+                  <button class="inline-tab active">待接入 <span class="count">2</span></button>
+                  <button class="inline-tab">我的 <span class="count">4</span></button>
+                  <button class="inline-tab">待处理 <span class="count">3</span></button>
+                </div>
+              </div>
+              <div class="wb-queue__list">
+                <div class="qc active">
+                  <div class="qc__row">
+                    <span class="qc__name">李女士<span class="qc__id">C-88240</span></span>
+                    <span class="qc__unread">1</span>
+                  </div>
+                  <div class="qc__preview">快递三天没更新了，你们到底发没发货？</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="message-circle" class="ic-xs"></i>微信小店</span>
+                    <span><i data-lucide="alarm-clock" class="ic-xs"></i>已超时 6′12″</span>
+                  </div>
+                </div>
+                <div class="qc">
+                  <div class="qc__row">
+                    <span class="qc__name">张明远<span class="qc__id">C-88213</span></span>
+                    <span class="qc__unread">2</span>
+                  </div>
+                  <div class="qc__preview">收到货发现颜色和图片不一样，我要退货</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="video" class="ic-xs"></i>抖音小店</span>
+                    <span><i data-lucide="clock" class="ic-xs"></i>等待 42s</span>
+                  </div>
+                </div>
+                <div class="qc">
+                  <div class="qc__row">
+                    <span class="qc__name">王先生<span class="qc__id">C-88177</span></span>
+                  </div>
+                  <div class="qc__preview">会员积分什么时候到账？</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="shopping-bag" class="ic-xs"></i>天猫旗舰店</span>
+                    <span><i data-lucide="clock" class="ic-xs"></i>等待 8s</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="wb-chat">
+              <div class="wb-chat__head">
+                <div class="chat-block">
+                  <div class="wb-chat__title">
+                    <span>李女士</span>
+                    <span class="badge badge-default" style="height:19px;font-size:10px;">微信小店</span>
+                    <span class="badge badge-warn" style="height:19px;font-size:10px;">优先级 高</span>
+                  </div>
+                  <div class="chat-sub">
+                    <span>会话 CH-20261016-0428</span><span class="meta-sep">·</span>
+                    <span>顾客 C-88240（已脱敏）</span><span class="meta-sep">·</span>
+                    <span>负责人 我</span>
+                  </div>
+                </div>
+                <div class="chat-chips">
+                  <span class="ent-chip"><i data-lucide="truck"></i>物流查询</span>
+                  <span class="ent-chip"><i data-lucide="package"></i>订单 …882</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                  <button class="btn btn-secondary btn-sm"><i data-lucide="user-round-check" style="width:12px;height:12px;"></i>转人工 / 升级</button>
+                  <button class="win-chrome-btn" title="折叠智能辅助面板"><i data-lucide="panel-right-close" class="win-chrome-icon"></i></button>
+                </div>
+              </div>
+
+              <div class="wb-msgs">
+                <div class="msg msg--customer">
+                  <div class="msg__avatar customer">顾</div>
+                  <div>
+                    <div class="msg__meta">李女士 · 14:05</div>
+                    <div class="msg__bubble">快递三天没更新了，你们到底发没发货？</div>
+                  </div>
+                </div>
+                <div class="msg msg--agent">
+                  <div class="msg__avatar agent">我</div>
+                  <div>
+                    <div class="msg__meta">我 · 14:06 <i data-lucide="check-check" style="width:11px;height:11px;"></i>已送达</div>
+                    <div class="msg__bubble">我马上帮您查一下最新的物流节点，请稍等。</div>
+                  </div>
+                </div>
+                <div class="sysmsg">系统事件 · 物流查询接口超时（request_id req_8841c）· 14:06</div>
+              </div>
+
+              <div class="wb-composer">
+                <div class="wb-tools">
+                  <button class="wb-tool"><i data-lucide="search"></i>搜知识</button>
+                  <button class="wb-tool"><i data-lucide="sparkles"></i>AI 回复</button>
+                  <button class="wb-tool"><i data-lucide="wand-2"></i>润色</button>
+                  <button class="wb-tool"><i data-lucide="ellipsis"></i>更多</button>
+                </div>
+                <div class="wb-input" data-placeholder="物流数据暂时无法确认，请先按 SOP 说明后再回复顾客…"></div>
+                <div class="wb-send-row">
+                  <span class="wb-hint"><i data-lucide="triangle-alert"></i>数据未确认前，不建议向顾客给出确定性结论</span>
+                  <button class="btn btn-primary btn-sm">发送</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="wb-panel">
+              <div class="wb-panel__head">
+                <div class="inline-tabs">
+                  <button class="inline-tab">会话摘要</button>
+                  <button class="inline-tab">知识搜索</button>
+                  <button class="inline-tab">AI 助手</button>
+                  <button class="inline-tab active">顾客 / 订单</button>
+                </div>
+              </div>
+              <div class="wb-panel__body">
+                <div class="pcard" data-comp="customer-card">
+                  <div class="pcard__head">
+                    <span class="pcard__title"><i data-lucide="user-round"></i>顾客信息</span>
+                    <span class="badge badge-default" style="height:18px;font-size:10px;">默认脱敏</span>
+                  </div>
+                  <div class="pcard__body">
+                    <div class="prow"><span>顾客</span><span>李女士 · C-88240</span></div>
+                    <div class="prow"><span>手机号</span><span>138****6621</span></div>
+                    <div class="prow"><span>会员等级</span><span>金卡会员 · 近 90 天 7 单</span></div>
+                    <div class="prow"><span>标签</span><span>高价值客户 · 曾投诉物流</span></div>
+                    <div class="prow"><span>授权范围</span><span>订单 / 物流 / 售后（不含支付明细）</span></div>
+                  </div>
+                </div>
+
+                <div class="ord-card" data-comp="order-card-error">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:11.5px;font-weight:600;font-family:var(--font-mono);">2025091900882</span>
+                    <span class="badge badge-warn" style="height:18px;font-size:10px;"><i data-lucide="triangle-alert" style="width:10px;height:10px;"></i>暂时无法确认</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text-2);margin-top:6px;">羽绒服 · 黑色 / L · ¥599 × 1 · 待收货</div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:6px;">上次成功查询：14:02（缓存值不作为当前状态展示）</div>
+                  <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
+                    <button class="btn btn-secondary btn-sm"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i>重试</button>
+                    <button class="link-mini"><i data-lucide="workflow"></i>按 SOP 转人工</button>
+                    <span class="pulse-dot" style="width:6px;height:6px;background:var(--destructive);box-shadow:none;"></span>
+                    <span style="font-size:10px;color:var(--text-3);">查询失败：业务接口超时，可重试</span>
+                  </div>
+                </div>
+
+                <div class="ord-card" data-comp="product-card">
+                  <div class="prod">
+                    <div class="prod__img"><i data-lucide="image" style="width:16px;height:16px;"></i></div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-size:11.5px;font-weight:600;">90 白鸭绒连帽羽绒服</div>
+                      <div style="font-size:10.5px;color:var(--text-2);margin-top:3px;">SPU 8891-01 · SKU 8891-01-BK-L</div>
+                      <div class="prow" style="margin-top:4px;"><span>颜色尺码</span><span>黑色 / L</span></div>
+                      <div class="prow"><span>材质</span><span>面料 100% 锦纶 · 填充 90% 白鸭绒</span></div>
+                      <div class="prow"><span>洗护</span><span>建议专业干洗，忌漂白</span></div>
+                      <div class="prow"><span>来源版本</span><span>商品中心 · 数据版本 2026-10-12</span></div>
+                      <div style="display:flex;gap:8px;margin-top:8px;">
+                        <button class="link-mini"><i data-lucide="external-link"></i>打开商品详情</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ord-card" data-comp="logistics-card">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:11.5px;font-weight:600;"><i data-lucide="truck" style="width:12px;height:12px;vertical-align:-2px;"></i> 物流 / 退货状态</span>
+                    <span class="badge badge-warn" style="height:18px;font-size:10px;">暂时无法确认</span>
+                  </div>
+                  <div style="font-size:10.5px;color:var(--text-2);margin-top:6px;">物流接口连续 2 次超时，未取到可用节点；不做猜测性答复。</div>
+                  <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button class="btn btn-secondary btn-sm"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i>刷新数据</button>
+                    <button class="btn btn-ghost btn-sm">查看历史查询记录</button>
+                  </div>
+                </div>
+
+                <div class="pcard" data-comp="ctx-scope">
+                  <div class="pcard__body">
+                    <div style="display:flex;align-items:flex-start;gap:7px;">
+                      <i data-lucide="shield-check" style="width:13px;height:13px;color:var(--primary);flex-shrink:0;margin-top:2px;"></i>
+                      <span>本 Tab 只提供查询。退款、取消订单、修改地址等写操作不在面板内直接开放，统一走带授权校验的业务动作流程。</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">工作台-03：顾客 / 订单模块（接口超时态）</div>
+            <ul>
+              <li data-target="ctx-queue"><strong>会话队列与对话区</strong>：同 工作台-01，本 section 只描述右侧「顾客 / 订单」Tab 与异常态</li>
+              <li data-target="customer-card"><strong>顾客信息卡</strong>：展示身份、会员等级、标签与授权范围，敏感字段默认脱敏展示</li>
+              <li data-target="order-card-error"><strong>订单卡 · 接口超时态</strong>：订单主状态显示「暂时无法确认」并标注上次成功查询时间；缓存值不作为当前状态展示</li>
+              <li><strong>「重试」按钮</strong>：展示次按钮（应用 .btn-secondary 风格），点击后重新查询订单，带加载、成功、空结果与失败四种状态</li>
+              <li><strong>「按 SOP 转人工」入口</strong>：接口多次失败时提供符合流程的兜底动作，并附带失败原因与查询时间</li>
+              <li data-target="product-card"><strong>商品卡</strong>：展示主图、标题、SPU / SKU、颜色尺码、材质与洗护信息及商品详情链接；标注数据来源版本，避免引用其他 SKU 的属性</li>
+              <li data-target="logistics-card"><strong>物流 / 退货状态卡</strong>：实时状态必须来自业务接口并标明查询时间；接口超时或失败时显示「暂时无法确认」并提供刷新与历史查询记录</li>
+              <li data-target="ctx-scope"><strong>写操作边界说明</strong>：明确本面板只做查询，退款、取消订单、修改地址等写操作统一进入带授权校验的业务动作流程</li>
+              <li><strong>对话区异常提示</strong>：接口失败时在系统事件中展示 request_id，方便排障追溯</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ Section 04：转人工表单内联在右侧面板 ============ -->
+<div id="section-wb-04" class="proto-stack">
+  <div class="section-label">工作台-04 转人工 / 升级表单（内联在右侧面板，含可编辑交接摘要）</div>
+  <div class="proto-with-prd">
+
+    <div class="macos-window">
+      <div class="macos-titlebar">
+        <div class="macos-dot red"></div>
+        <div class="macos-dot yellow"></div>
+        <div class="macos-dot green"></div>
+        <div class="macos-title">智能客服平台 — 客服工作台 · 转人工确认</div>
+      </div>
+      <div class="macos-body">
+
+        <div class="app-sidebar">
+          <div style="padding:4px 14px 12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:22px;height:22px;border-radius:var(--radius-chip);background:var(--primary);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="headset" style="width:12px;height:12px;color:var(--primary-foreground);stroke-width:2.5;"></i>
+            </div>
+            <span style="font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:-0.02em;">智能客服平台</span>
+          </div>
+          <div class="sidebar-apps">
+            <div class="sidebar-section-header" style="padding-top:4px;">服务工作台</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item active" href="01-agent-workbench.html"><i data-lucide="headset" class="nav-icon"></i>客服工作台<span class="si-badge" style="background:var(--primary);color:var(--primary-foreground);">12</span></a>
+              <a class="sidebar-item" href="02-iq-handoff.html"><i data-lucide="bot" class="nav-icon"></i>IQ 会话</a>
+            </div>
+            <div class="sidebar-section-header">知识运营</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="03-knowledge-center.html"><i data-lucide="book-open" class="nav-icon"></i>知识中心</a>
+              <a class="sidebar-item" href="04-knowledge-admin.html"><i data-lucide="folder-cog" class="nav-icon"></i>知识管理</a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-header">洞察与治理</div>
+            <div class="sidebar-section">
+              <a class="sidebar-item" href="05-monitor.html"><i data-lucide="bar-chart-3" class="nav-icon"></i>监控与优化</a>
+              <a class="sidebar-item" href="06-config.html"><i data-lucide="settings" class="nav-icon"></i>配置中心</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="win-chrome-bar">
+          <div class="win-chrome-drag"></div>
+          <div class="win-chrome-actions">
+            <button class="win-chrome-btn" title="帮助"><i data-lucide="help-circle" class="win-chrome-icon"></i></button>
+            <div class="win-avatar-chip"><span class="win-avatar">李</span><span class="badge-free">在线</span></div>
+          </div>
+        </div>
+
+        <div class="app-main wb-main">
+          <div class="wb">
+            <div class="wb-queue">
+              <div class="wb-queue__head">
+                <div class="wb-tabs">
+                  <button class="inline-tab active">待接入 <span class="count">2</span></button>
+                  <button class="inline-tab">我的 <span class="count">4</span></button>
+                </div>
+              </div>
+              <div class="wb-queue__list">
+                <div class="qc active">
+                  <div class="qc__row">
+                    <span class="qc__name">张明远<span class="qc__id">C-88213</span></span>
+                    <span class="qc__unread">2</span>
+                  </div>
+                  <div class="qc__preview">收到货发现颜色和图片不一样，我要退货</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="video" class="ic-xs"></i>抖音小店</span>
+                    <span><i data-lucide="clock" class="ic-xs"></i>等待 42s</span>
+                  </div>
+                </div>
+                <div class="qc sla">
+                  <div class="qc__row">
+                    <span class="qc__name">李女士<span class="qc__id">C-88240</span></span>
+                    <span class="qc__unread">1</span>
+                  </div>
+                  <div class="qc__preview">快递三天没更新了，你们到底发没发货？</div>
+                  <div class="qc__meta">
+                    <span><i data-lucide="message-circle" class="ic-xs"></i>微信小店</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="wb-chat">
+              <div class="wb-chat__head">
+                <div class="chat-block">
+                  <div class="wb-chat__title">
+                    <span>张明远</span>
+                    <span class="badge badge-default" style="height:19px;font-size:10px;">抖音小店</span>
+                    <span class="badge badge-warn" style="height:19px;font-size:10px;">优先级 高</span>
+                  </div>
+                  <div class="chat-sub"><span>会话 CH-20261016-0431</span><span class="meta-sep">·</span><span>顾客 C-88213（已脱敏）</span><span class="meta-sep">·</span><span>负责人 我</span></div>
+                </div>
+                <div class="chat-chips">
+                  <span class="ent-chip"><i data-lucide="package"></i>订单 …345</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <button class="btn btn-secondary btn-sm"><i data-lucide="user-round-check" style="width:12px;height:12px;"></i>转人工 / 升级</button>
+                </div>
+              </div>
+              <div class="wb-msgs">
+                <div class="msg msg--customer">
+                  <div class="msg__avatar customer">顾</div>
+                  <div>
+                    <div class="msg__meta">张明远 · 14:25</div>
+                    <div class="msg__bubble">你们能直接给我退吗？我着急用钱，别让我再找别的客服了。</div>
+                  </div>
+                </div>
+              </div>
+              <div class="wb-composer">
+                <div class="wb-tools">
+                  <button class="wb-tool"><i data-lucide="search"></i>搜知识</button>
+                  <button class="wb-tool"><i data-lucide="sparkles"></i>AI 回复</button>
+                  <button class="wb-tool"><i data-lucide="wand-2"></i>润色</button>
+                  <button class="wb-tool"><i data-lucide="ellipsis"></i>更多</button>
+                </div>
+                <div class="wb-input" data-placeholder="输入回复内容，Enter 发送，Shift + Enter 换行…"></div>
+                <div class="wb-send-row">
+                  <span class="wb-hint"><i data-lucide="cloud"></i>草稿按「会话 + 坐席」保存到服务端</span>
+                  <button class="btn btn-primary btn-sm" disabled>发送</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="wb-panel">
+              <div class="wb-panel__head">
+                <div class="inline-tabs">
+                  <button class="inline-tab active">会话摘要</button>
+                  <button class="inline-tab">知识搜索</button>
+                  <button class="inline-tab">AI 助手</button>
+                  <button class="inline-tab">顾客 / 订单</button>
+                </div>
+              </div>
+              <div class="wb-panel__body">
+                <div class="pcard" data-comp="handoff-form">
+                  <div class="pcard__head">
+                    <span class="pcard__title"><i data-lucide="user-round-check"></i>转人工 / 升级</span>
+                    <span class="badge badge-default" style="height:18px;font-size:10px;">系统预填 · 可修改</span>
+                  </div>
+                  <div class="pcard__body">
+                    <div class="form-group" style="margin-bottom:8px;">
+                      <label class="form-label">转接原因</label>
+                      <div class="form-combobox">
+                        <input class="form-input" value="顾客要求人工处理退货申请" readonly />
+                        <button class="form-chevron" type="button"><i data-lucide="chevron-down"></i></button>
+                      </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:8px;">
+                      <label class="form-label">目标队列</label>
+                      <div class="form-combobox">
+                        <input class="form-input" value="售后二线（预计等待 3 分钟）" readonly />
+                        <button class="form-chevron" type="button"><i data-lucide="chevron-down"></i></button>
+                      </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:8px;">
+                      <label class="form-label">优先级</label>
+                      <div class="form-combobox">
+                        <input class="form-input" value="高（涉及金额）" readonly />
+                        <button class="form-chevron" type="button"><i data-lucide="chevron-down"></i></button>
+                      </div>
+                    </div>
+                    <label class="form-label">交接摘要（可编辑，随会话转交）</label>
+                    <textarea class="form-textarea" rows="4" data-comp="handoff-summary-field">诉求：实收颜色与商品图不符，要求退货。已确认：订单 2025091200345（10-13 签收）、SKU 燕麦色 M。已答复：7 天无理由与运费险范围（FAQ-102 v3 / Notice-88 v2）。待办：需顾客提供实收商品照片。风险：涉及运费争议，不要承诺赔付。</textarea>
+                    <div class="form-tip">转接为幂等操作：重复提交不会重复创建工单。</div>
+                  </div>
+                  <div class="pcard__actions">
+                    <button class="btn btn-ghost btn-sm">取消</button>
+                    <button class="btn btn-primary btn-sm">确认转接</button>
+                  </div>
+                </div>
+
+                <div class="pcard">
+                  <div class="pcard__head">
+                    <span class="pcard__title"><i data-lucide="clipboard-list"></i>会话摘要</span>
+                    <span class="badge badge-default" style="height:18px;font-size:10px;">过去 48 小时</span>
+                  </div>
+                  <div class="pcard__body">
+                    <div class="sum-lead">
+                      <div class="sum-lead__text">顾客要求退货并加速处理，情绪不满、希望今天内答复</div>
+                      <div class="sum-chips">
+                        <span class="badge badge-warn">情绪 不满（升级中）</span>
+                        <span class="badge badge-default">期望 今天内答复</span>
+                      </div>
+                    </div>
+                    <div class="prow"><span>已确认</span><span>订单 2025091200345 · SKU 燕麦色 M</span></div>
+                    <div class="prow"><span>还缺</span><span>实收商品照片 · 退货资格校验未完成</span></div>
+                    <div class="sum-block__title"><i data-lucide="message-square-quote" style="width:11px;height:11px;"></i>顾客原话要点</div>
+                    <div class="sum-quote"><span class="sum-quote__t">14:25</span><span>「你们能直接给我退吗？我着急用钱」</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="prd-panel-wrap">
+      <aside class="prd-panel">
+        <div class="prd-panel__title">功能概览</div>
+        <div class="prd-panel__body">
+          <div class="prd-section">
+            <div class="prd-section__title">工作台-04：转人工 / 升级表单（面板内联）</div>
+            <ul>
+              <li><strong>触发方式</strong>：会话头部「转人工 / 升级」按钮在右侧面板顶部展开本表单，不弹出对话框、不产生遮罩；该动作不做成 AI 回复菜单里的深层入口</li>
+              <li data-target="handoff-form"><strong>内联表单主体</strong>：展示转接原因、目标队列、优先级与交接摘要；前三项由系统按规则预填，坐席可在确认前调整</li>
+              <li><strong>转接原因</strong>：展示触发来源（顾客要求人工 / 多次未命中 / 高风险意图 / 工作流关键节点失败）</li>
+              <li><strong>目标队列</strong>：展示候选队列及预计等待信息；无可用人工队列时展示留言 / 回呼说明并创建待办</li>
+              <li data-target="handoff-summary-field"><strong>交接摘要</strong>：展示顾客诉求、已确认事实、已发送答复、待办事项与风险提示，可编辑；字段口径与转人工上下文一致</li>
+              <li><strong>幂等说明</strong>：文案明确「重复提交不会重复创建工单」，避免坐席重复点击造成重复转接</li>
+              <li><strong>「取消」按钮</strong>：展示幽灵按钮（应用 .btn-ghost 风格），收起表单且不产生任何转接动作</li>
+              <li><strong>「确认转接」按钮</strong>：展示主按钮（应用 .btn-primary 风格），提交成功后对话区插入一行系统事件文字；转接数据写入 IQ 交接摘要供主管 / 质检追溯，不注入坐席侧会话摘要</li>
+              <li><strong>对话不中断</strong>：表单展开期间消息时间线、输入框与发送按钮保持可用，坐席可继续与顾客沟通后再确认转接</li>
+              <li><strong>坐席侧摘要不含转接内部字段</strong>：转接状态、队列排队、上下文完整度与幂等键等字段不在右侧摘要出现，避免占用坐席理解顾客诉求的注意力</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+</div>
+
+  </div><!-- end .sections-col -->
+</div><!-- end .proto-layout -->
+
+<script>
+  /* 页面交互（演示用，非业务逻辑） */
+  (function () {
+    var root = document.getElementById('wb');
+    var toastEl = document.getElementById('toast');
+    var toastTimer;
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+    }
+
+    var CONVS = {
+      A: { name: '张明远', channel: '抖音小店', meta: ['会话 CH-20261016-0431', '顾客 C-88213（已脱敏）', '负责人 我', '已持续 04′12″'], draft: '' },
+      B: { name: '李女士', channel: '微信小店', meta: ['会话 CH-20261016-0428', '顾客 C-88240（已脱敏）', '负责人 我', '等待 06′12″（已超时）'], draft: '我帮您查一下最新物流节点：包裹 10-14 已到杭州转运中心，目前显示在途。若 48 小时仍无更新，我为您发起物流异常核查。' },
+      C: { name: '王先生', channel: '天猫旗舰店', meta: ['会话 CH-20261016-0442', '顾客 C-88177（已脱敏）', '待接入', '等待 00′08″'], draft: '' },
+      D: { name: '陈晓雨', channel: '官网商城', meta: ['会话 CH-20261016-0415', '顾客 C-88105（已脱敏）', '负责人 我', '等待 01′20″'], draft: '' },
+      E: { name: '赵先生', channel: '抖音小店', meta: ['会话 CH-20261016-0390', '顾客 C-88091（已脱敏）', '已结束 · 12:04', '时长 08′40″'], draft: '' }
+    };
+
+    var activeConv = 'A';
+    var drafts = {};
+    var composer = document.getElementById('composer');
+    var CHIPS = {
+      A: [['package', '订单 …345'], ['shirt', '燕麦色 M'], ['crown', '银卡']],
+      B: [['truck', '物流 …882'], ['package', '订单 …882'], ['crown', '金卡']],
+      C: [['ticket', '积分 2,180']],
+      D: [['shirt', '外套 …105']],
+      E: [['package', '订单 …091']]
+    };
+    var draftText = '您反馈的颜色问题我已经记录。核实到您的订单 2025091200345 在签收 7 天内，属于可申请退货范围：[1] 请把实收商品的照片发我一张，我帮您提交退货申请；[2] 退货运费在运费险赔付范围内免收，超出部分按平台规则处理。';
+
+    function syncSend() {
+      document.getElementById('btn-send').disabled = composer.textContent.trim().length === 0;
+    }
+
+    document.querySelectorAll('#queue-list .qc').forEach(function (card) {
+      card.addEventListener('click', function () {
+        var key = card.getAttribute('data-conv');
+        if (key === activeConv) return;
+        drafts[activeConv] = composer.textContent;
+        document.querySelectorAll('#queue-list .qc').forEach(function (c) { c.classList.remove('active'); });
+        card.classList.add('active');
+        activeConv = key;
+        var c = CONVS[key];
+        document.getElementById('chat-name').textContent = c.name;
+        document.getElementById('chat-channel').textContent = c.channel;
+        document.getElementById('chat-meta').innerHTML = c.meta.map(function (m) { return '<span>' + m + '</span>'; })
+          .join('<span class="meta-sep">·</span>');
+        document.getElementById('chat-chips').innerHTML = (CHIPS[key] || []).map(function (ch) {
+          return '<span class="ent-chip"><i data-lucide="' + ch[0] + '"></i>' + ch[1] + '</span>';
+        }).join('');
+        if (window.lucide) lucide.createIcons();
+        composer.textContent = drafts[key] || c.draft || '';
+        document.getElementById('send-state').textContent = '';
+        syncSend();
+        toast('已切换到 ' + c.name + ' 的会话 · 该会话未发送草稿已恢复（切换会话不丢草稿）');
+      });
+    });
+
+    document.querySelectorAll('.wb-tabs .inline-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('.wb-tabs .inline-tab').forEach(function (t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+      });
+    });
+
+    /* 右侧面板：四个模块（会话摘要 / 知识搜索 / AI 助手 / 顾客·订单），同一时间只展示一个模块的内容 */
+    function activatePane(key) {
+      document.querySelectorAll('[data-ptab]').forEach(function (t) {
+        t.classList.toggle('active', t.getAttribute('data-ptab') === key);
+      });
+      document.querySelectorAll('[data-pane]').forEach(function (pane) {
+        pane.hidden = pane.getAttribute('data-pane') !== key;
+      });
+    }
+    document.querySelectorAll('[data-ptab]').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activatePane(tab.getAttribute('data-ptab'));
+      });
+    });
+    document.getElementById('chat-chips').addEventListener('click', function (e) {
+      var chip = e.target.closest('.ent-chip');
+      if (!chip) return;
+      activatePane('ctx');
+      toast('已联动右侧「顾客 / 订单」模块：' + chip.textContent.trim());
+    });
+
+    /* 会话摘要：按时间范围切换，内容以「快速理解顾客诉求」为组织顺序 */
+    var SUMMARIES = {
+      '48h': {
+        meta: '范围：本会话 12 条消息 + 订单 / 售后记录 · 生成于 14:26',
+        lead: '顾客认为实收颜色与商品图不符，要求退货，并希望今天内得到处理',
+        chips: [['warn', '情绪 不满（升级中）'], ['default', '期望 今天内答复'], ['info', '近 48h 进线 1 次']],
+        facts: '订单 2025091200345 · 10-13 签收 · SKU 燕麦色 M',
+        answered: '已告知 7 天无理由与运费险范围（FAQ-102 v3）',
+        gap: '实收商品照片 · 退货资格校验未完成 · 运费争议未定',
+        quotes: [['14:18', '「收到货发现颜色和图片不一样，我要退货」'], ['14:25', '「我着急用钱，别让我再找别的客服了」']]
+      },
+      '7d': {
+        meta: '范围：近 7 天 3 个会话（共 21 条消息）+ 订单 / 售后记录 · 生成于 14:26',
+        lead: '同一订单近 7 天 3 次咨询，诉求由「颜色偏暗」升级为「要求退货并加速处理」',
+        chips: [['warn', '情绪 不满（升级中）'], ['default', '期望 今天内答复'], ['error', '同问题重复进线 2 次']],
+        facts: '订单 2025091200345 · 10-10 下单 / 10-13 签收 · SKU 燕麦色 M',
+        answered: '三次咨询均引用 FAQ-102 v3，未给出退货结论',
+        gap: '实收商品照片 · 退货方式未确认 · 运费争议未定',
+        quotes: [['10-13', '「衣服到手了，颜色有点暗」'], ['10-16 14:18', '「颜色和图片不一样，我要退货」'], ['10-16 14:25', '「我着急用钱，别让我再找别的客服了」']]
+      }
+    };
+    function renderSummary(scope) {
+      var d = SUMMARIES[scope];
+      if (!d) return;
+      document.getElementById('summary-meta').textContent = d.meta;
+      document.getElementById('sum-lead').textContent = d.lead;
+      document.getElementById('sum-chips').innerHTML = d.chips.map(function (c) {
+        return '<span class="badge badge-' + c[0] + '">' + c[1] + '</span>';
+      }).join('');
+      document.getElementById('sum-facts').textContent = d.facts;
+      document.getElementById('sum-answered').textContent = d.answered;
+      document.getElementById('sum-gap').textContent = d.gap;
+      document.getElementById('sum-quotes').innerHTML = d.quotes.map(function (q) {
+        return '<div class="sum-quote"><span class="sum-quote__t">' + q[0] + '</span><span>' + q[1] + '</span></div>';
+      }).join('');
+    }
+    document.querySelectorAll('[data-scope]').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('[data-scope]').forEach(function (t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        var scope = tab.getAttribute('data-scope');
+        renderSummary(scope);
+        toast(scope === '7d'
+          ? '已切换到「过去 7 天」：含 3 个会话的历史诉求与顾客原话'
+          : '已切换到「过去 48 小时」：只看当前处理窗口内的信息');
+      });
+    });
+
+    document.getElementById('btn-toggle-panel').addEventListener('click', function () {
+      root.classList.toggle('wb--collapsed');
+      var collapsed = root.classList.contains('wb--collapsed');
+      document.getElementById('toggle-panel-icon').setAttribute('data-lucide', collapsed ? 'panel-right-open' : 'panel-right-close');
+      if (window.lucide) lucide.createIcons();
+      toast(collapsed ? '已折叠智能辅助面板，对话区已扩展' : '已展开智能辅助面板');
+    });
+
+    composer.addEventListener('input', syncSend);
+    composer.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!document.getElementById('btn-send').disabled) document.getElementById('btn-send').click();
+      }
+    });
+
+    document.getElementById('btn-send').addEventListener('click', function () {
+      var btn = this;
+      if (btn.disabled) return;
+      var text = composer.textContent.trim();
+      if (!text) return;
+      btn.disabled = true;
+      btn.textContent = '发送中…';
+      document.getElementById('send-state').textContent = '正在发送，请勿重复点击';
+      setTimeout(function () {
+        var d = new Date();
+        var hm = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+        var wrap = document.createElement('div');
+        wrap.className = 'msg msg--agent';
+        wrap.innerHTML = '<div class="msg__avatar agent">我</div><div><div class="msg__meta">我 · ' + hm +
+          ' <i data-lucide="check-check" style="width:11px;height:11px;"></i>已送达</div><div class="msg__bubble"></div></div>';
+        wrap.querySelector('.msg__bubble').textContent = text;
+        var timeline = document.getElementById('timeline');
+        timeline.appendChild(wrap);
+        timeline.scrollTop = timeline.scrollHeight;
+        composer.textContent = '';
+        drafts[activeConv] = '';
+        document.getElementById('send-state').textContent = '';
+        btn.textContent = '发送';
+        syncSend();
+        if (window.lucide) lucide.createIcons();
+        toast('已发送（message_id msg_20261016_1423 · 幂等去重已启用）');
+      }, 900);
+    });
+
+    /* 插入草稿：直接在光标处写入输入框（无弹窗、无替换/追加询问、不添加额外状态标记） */
+    function insertText(text) {
+      var sel = window.getSelection();
+      var hasCaretInComposer = sel && sel.rangeCount > 0 && composer.contains(sel.anchorNode);
+      if (!composer.textContent.trim()) {
+        composer.textContent = text;
+      } else if (hasCaretInComposer) {
+        var range = sel.getRangeAt(0);
+        range.deleteContents();
+        var node = document.createTextNode(text);
+        range.insertNode(node);
+        range.setStartAfter(node);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else {
+        composer.textContent = composer.textContent.trim() + text;
+      }
+      drafts[activeConv] = composer.textContent;
+      syncSend();
+      composer.focus();
+    }
+    function doInsert() {
+      insertText(draftText);
+      toast('草稿已写入输入框；点击发送才会产生对客消息');
+    }
+
+    /* 知识搜索：AI 总结（只概括检索证据，带引用） */
+    var kbSummaryHtml = document.getElementById('kb-summary-text').innerHTML;
+    document.getElementById('btn-regen-kb-summary').addEventListener('click', function () {
+      var t = document.getElementById('kb-summary-text');
+      t.innerHTML = '<div class="skel" style="width:92%;"></div><div class="skel" style="width:74%;margin-top:6px;"></div>';
+      setTimeout(function () {
+        t.innerHTML = kbSummaryHtml;
+        toast('已基于当前检索结果重新生成 AI 总结（仍只概括检索结果，不补充未命中政策）');
+      }, 1000);
+    });
+    document.getElementById('btn-insert-kb-summary').addEventListener('click', function () {
+      insertText('签收后 7 天内、商品不影响二次销售时可申请退货；属于运费险赔付范围的退货运费免收，超出部分按平台规则由顾客承担。');
+      toast('AI 总结已写入输入框；点击发送前请核对引用来源');
+    });
+    document.getElementById('kb-query').addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      var q = this.value.trim();
+      var noHit = /积分|换新|旧机/.test(q);
+      document.getElementById('kb-summary').hidden = noHit;
+      document.getElementById('kb-results').hidden = noHit;
+      document.getElementById('kb-empty').hidden = !noHit;
+      toast(noHit
+        ? '未检索到有效知识：不生成 AI 总结，提供扩大范围 / 创建缺口任务入口'
+        : '已按「' + q + '」重新检索，并在结果之上生成带引用的 AI 总结');
+    });
+    document.getElementById('btn-insert').addEventListener('click', function () {
+      doInsert();
+    });
+
+    function regenerate() {
+      activatePane('ai');
+      var gen = document.getElementById('gen-card');
+      var card = document.getElementById('draft-card');
+      card.style.display = 'none';
+      gen.hidden = false;
+      setTimeout(function () {
+        gen.hidden = true;
+        card.style.display = '';
+        toast('已按「更简洁」重新生成草稿（事实与承诺未改变）');
+      }, 1200);
+    }
+    document.getElementById('btn-regen').addEventListener('click', regenerate);
+    document.getElementById('btn-ai-reply').addEventListener('click', regenerate);
+    document.getElementById('btn-cancel-gen').addEventListener('click', function () {
+      document.getElementById('gen-card').hidden = true;
+      document.getElementById('draft-card').style.display = '';
+      toast('已取消生成；此前已有的草稿内容保持不变');
+    });
+    document.getElementById('btn-reject').addEventListener('click', function () {
+      document.getElementById('draft-card').style.display = 'none';
+      toast('已标记「不采纳」：原因可选 不相关 / 事实不准 / 语气不合适 / 依据不足 / 重复；反馈进入质量评测队列');
+    });
+
+    document.getElementById('btn-search-kb').addEventListener('click', function () {
+      activatePane('kb');
+      document.getElementById('kb-query').value = '颜色不符 退货 条件';
+      toast('已用当前顾客问题预填检索词，并联动打开右侧「知识搜索」模块');
+    });
+
+    document.getElementById('btn-more').addEventListener('click', function () {
+      toast('更多：会话摘要 / 下一步建议 / 纠正意图 / 翻译 / 反馈问题（按功能可用性检查后展示）');
+    });
+
+    document.getElementById('btn-polish').addEventListener('click', function () {
+      if (!composer.textContent.trim()) { toast('输入框为空：请先输入或插入草稿内容后再润色'); return; }
+      document.getElementById('polish-inline').hidden = false;
+    });
+    document.getElementById('btn-polish-cancel').addEventListener('click', function () {
+      document.getElementById('polish-inline').hidden = true;
+      toast('已保留原文，润色预览已收起');
+    });
+    document.getElementById('btn-polish-apply').addEventListener('click', function () {
+      document.getElementById('polish-inline').hidden = true;
+      composer.textContent = '您反馈的颜色问题我这边已记录，核实到订单在签收 7 天内可申请退货，请把实收商品照片发我一张。';
+      drafts[activeConv] = composer.textContent;
+      syncSend();
+      toast('已应用润色稿（原稿可撤销恢复）');
+    });
+
+    function openHandoffForm() {
+      var form = document.getElementById('handoff-form');
+      form.hidden = false;
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelector('#handoff-form .pcard__actions .btn-primary').focus();
+    }
+    document.getElementById('btn-handoff').addEventListener('click', function () {
+      openHandoffForm();
+      toast('已在右侧面板展开转接表单：对话区与消息时间线保持可读可操作，确认前可继续与顾客沟通');
+    });
+    document.getElementById('btn-handoff-cancel').addEventListener('click', function () {
+      document.getElementById('handoff-form').hidden = true;
+      toast('已取消转接（未产生工单）');
+    });
+    document.getElementById('btn-handoff-confirm').addEventListener('click', function () {
+      document.getElementById('handoff-form').hidden = true;
+      var timeline = document.getElementById('timeline');
+      var d = new Date();
+      var hm = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+      var el = document.createElement('div');
+      el.className = 'sysmsg';
+      el.textContent = '系统事件 · 已转接售后二线（' + hm + '）';
+      timeline.appendChild(el);
+      timeline.scrollTop = timeline.scrollHeight;
+      toast('转接成功（handoff_id hf_20261016_0091）；对话区已记录系统事件，转接详情在 IQ 交接摘要中可查');
+    });
+
+    document.getElementById('btn-regen-summary').addEventListener('click', function () {
+      toast('正在重新生成会话摘要…（生成失败时保留原摘要并给出重试入口）');
+    });
+
+    document.querySelectorAll('[data-toast]').forEach(function (el) {
+      el.addEventListener('click', function () { toast(el.getAttribute('data-toast')); });
+    });
+    document.querySelectorAll('[data-goto]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var t = document.querySelector(el.getAttribute('data-goto'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    syncSend();
+    if (window.lucide) lucide.createIcons();
+
+    var sectionMap = {
+      'section-wb-01': '工作台-01',
+      'section-wb-02': '工作台-02',
+      'section-wb-03': '工作台-03',
+      'section-wb-04': '工作台-04'
+    };
+    var tocItems = document.querySelectorAll('.toc-item');
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      requestAnimationFrame(function () {
+        var scrollPos = window.scrollY + 120;
+        var currentId = null;
+        var ids = Object.keys(sectionMap);
+        for (var i = ids.length - 1; i >= 0; i--) {
+          var el = document.getElementById(ids[i]);
+          if (el && el.offsetTop <= scrollPos) { currentId = ids[i]; break; }
+        }
+        tocItems.forEach(function (item) {
+          item.classList.remove('active');
+          if (item.getAttribute('href') === '#' + currentId) item.classList.add('active');
+        });
+        ticking = false;
+      });
+      ticking = true;
+    });
+    if (tocItems.length) tocItems[0].classList.add('active');
+  })();
+</script>
+
+</body>
+</html>
