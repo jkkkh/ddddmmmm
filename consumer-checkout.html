@@ -1,0 +1,3892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f4f3ef" />
+  <title>LIVE TO ORDER · 消费者全链路 Demo</title>
+  <style>
+    :root {
+      --red: #e60012;
+      --red-dark: #c4000f;
+      --ink: #111111;
+      --muted: #77736d;
+      --faint: #aaa59d;
+      --paper: #ffffff;
+      --canvas: #f2f1ed;
+      --line: #e8e5de;
+      --line-strong: #d7d3ca;
+      --soft: #f7f6f2;
+      --green: #07c160;
+      --green-dark: #059c4c;
+      --success-soft: #eaf8f0;
+      --amber-soft: #fff6e6;
+      --amber: #9a6500;
+      --shadow: 0 30px 90px rgba(35, 30, 24, 0.18), 0 4px 16px rgba(35, 30, 24, 0.08);
+      --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      background: var(--canvas);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        linear-gradient(rgba(20, 18, 15, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20, 18, 15, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 78% 16%, rgba(230, 0, 18, 0.08), transparent 26%),
+        var(--canvas);
+      background-size: 32px 32px, 32px 32px, auto, auto;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid var(--red);
+      outline-offset: 2px;
+    }
+
+    svg {
+      display: block;
+    }
+
+    .g-main {
+      fill: var(--garment, #c9bda9);
+      transition: fill 180ms ease;
+    }
+
+    .g-shade {
+      fill: color-mix(in srgb, var(--garment, #c9bda9), #332d26 17%);
+      transition: fill 180ms ease;
+    }
+
+    .g-dark {
+      fill: color-mix(in srgb, var(--garment, #c9bda9), #17140f 24%);
+      transition: fill 180ms ease;
+    }
+
+    .g-line {
+      fill: none;
+      stroke: color-mix(in srgb, var(--garment, #c9bda9), #17140f 43%);
+      stroke-width: 0.8;
+      opacity: 0.48;
+      transition: stroke 180ms ease;
+    }
+
+    .g-button {
+      fill: color-mix(in srgb, var(--garment, #c9bda9), #17140f 48%);
+      transition: fill 180ms ease;
+    }
+
+    .demo-layout {
+      width: min(1180px, calc(100vw - 64px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 42px 0 30px;
+      display: grid;
+      grid-template-columns: minmax(340px, 1fr) 390px;
+      align-items: center;
+      gap: clamp(54px, 8vw, 120px);
+    }
+
+    .briefing {
+      align-self: center;
+      max-width: 560px;
+    }
+
+    .brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 42px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--ink);
+      font-family: Georgia, serif;
+      font-size: 18px;
+      font-style: italic;
+      letter-spacing: -0.08em;
+    }
+
+    .brand-mark::after {
+      content: "";
+      width: 5px;
+      height: 5px;
+      margin-left: 3px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .eyebrow {
+      margin: 0 0 15px;
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .briefing h1 {
+      margin: 0;
+      font-size: clamp(43px, 5vw, 68px);
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -0.065em;
+    }
+
+    .briefing h1 span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .lead {
+      max-width: 470px;
+      margin: 25px 0 32px;
+      color: #625e57;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .journey {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      max-width: 520px;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .journey-step {
+      position: relative;
+      min-height: 56px;
+      padding: 15px 20px 14px 31px;
+      border-bottom: 1px solid var(--line-strong);
+      color: #9c978f;
+      font-size: 12px;
+      line-height: 1.35;
+      transition: color 180ms ease, background 180ms ease;
+    }
+
+    .journey-step:nth-child(odd) {
+      border-right: 1px solid var(--line-strong);
+    }
+
+    .journey-step::before {
+      content: "";
+      position: absolute;
+      top: 19px;
+      left: 9px;
+      width: 8px;
+      height: 8px;
+      border: 1px solid #c7c2b9;
+      border-radius: 50%;
+      background: var(--canvas);
+      transition: all 180ms ease;
+    }
+
+    .journey-step strong {
+      display: block;
+      margin-bottom: 2px;
+      color: #8f8a82;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+    }
+
+    .journey-step.is-active {
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .journey-step.is-active::before {
+      width: 9px;
+      height: 9px;
+      border-color: var(--red);
+      background: var(--red);
+      box-shadow: 0 0 0 4px rgba(230, 0, 18, 0.09);
+    }
+
+    .journey-step.is-done::before {
+      border-color: #4d4a45;
+      background: #4d4a45;
+    }
+
+    .brief-foot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .brief-foot .pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 0 0 rgba(230, 0, 18, 0.34);
+      animation: pulse 2.1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(230, 0, 18, 0.3); }
+      70% { box-shadow: 0 0 0 8px rgba(230, 0, 18, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(230, 0, 18, 0); }
+    }
+
+    .device-column {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .device-caption {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      color: #8e8981;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .device-caption strong {
+      color: var(--ink);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    .phone {
+      --status-color: #111111;
+      position: relative;
+      width: 390px;
+      height: 844px;
+      max-height: calc(100vh - 104px);
+      min-height: 650px;
+      aspect-ratio: 390 / 844;
+      overflow: hidden;
+      border: 8px solid #171614;
+      border-radius: 43px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .phone::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 200;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 34px;
+      pointer-events: none;
+    }
+
+    .phone-app {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 34px;
+      background: #fff;
+    }
+
+    .status-bar {
+      position: absolute;
+      z-index: 150;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 39px;
+      padding: 9px 22px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      color: var(--status-color);
+      pointer-events: none;
+      transition: color 180ms ease;
+    }
+
+    .status-time {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .dynamic-island {
+      position: absolute;
+      top: 7px;
+      left: 50%;
+      width: 100px;
+      height: 26px;
+      border-radius: 20px;
+      background: #050505;
+      transform: translateX(-50%);
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .signal {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 10px;
+    }
+
+    .signal i {
+      width: 2px;
+      border-radius: 1px;
+      background: currentColor;
+    }
+
+    .signal i:nth-child(1) { height: 4px; }
+    .signal i:nth-child(2) { height: 6px; }
+    .signal i:nth-child(3) { height: 8px; }
+    .signal i:nth-child(4) { height: 10px; }
+
+    .battery {
+      position: relative;
+      width: 19px;
+      height: 9px;
+      border: 1px solid currentColor;
+      border-radius: 2px;
+    }
+
+    .battery::before {
+      content: "";
+      position: absolute;
+      top: 1px;
+      bottom: 1px;
+      left: 1px;
+      width: 13px;
+      border-radius: 1px;
+      background: currentColor;
+    }
+
+    .battery::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: -3px;
+      width: 2px;
+      height: 3px;
+      border-radius: 0 1px 1px 0;
+      background: currentColor;
+    }
+
+    .app-screen {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #fff;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: opacity 260ms ease, transform 260ms ease, visibility 260ms ease;
+    }
+
+    .app-screen.is-active {
+      z-index: 5;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .tiny-icon {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Entry */
+    .entry-screen {
+      padding: 54px 22px 24px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.8), transparent 38%),
+        #f8f7f3;
+    }
+
+    .mini-brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+    }
+
+    .mini-brand svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .entry-visual {
+      position: relative;
+      height: 402px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 71% 29%, rgba(255,255,255,0.95) 0 8%, transparent 33%),
+        linear-gradient(150deg, #dcd4c6, #c9bcad 55%, #b6a391);
+    }
+
+    .entry-visual::before {
+      content: "LIVE";
+      position: absolute;
+      top: 22px;
+      left: 18px;
+      z-index: 4;
+      color: rgba(255,255,255,0.9);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+    }
+
+    .entry-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent 52%, rgba(0,0,0,0.28));
+    }
+
+    .entry-model {
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      bottom: -31px;
+      width: 219px;
+      height: 354px;
+      transform: translateX(-52%);
+    }
+
+    .entry-live-badge {
+      position: absolute;
+      z-index: 5;
+      right: 15px;
+      top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
+      color: #fff;
+      background: rgba(17,17,17,0.7);
+      backdrop-filter: blur(10px);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+    }
+
+    .entry-live-badge::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .entry-copy {
+      position: relative;
+      z-index: 3;
+      margin-top: -37px;
+      padding: 27px 22px 20px;
+      color: #fff;
+    }
+
+    .entry-copy p {
+      margin: 0 0 8px;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+    }
+
+    .entry-copy h2 {
+      margin: 0;
+      font-size: 27px;
+      font-weight: 500;
+      letter-spacing: -0.05em;
+      line-height: 1.18;
+    }
+
+    .entry-copy h2 em {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+    }
+
+    .entry-actions {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 26px;
+    }
+
+    .entry-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      color: #67625c;
+      font-size: 10px;
+    }
+
+    .entry-meta span:last-child {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    .enter-button {
+      width: 100%;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #fff;
+      background: var(--red);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .enter-button:active {
+      transform: scale(0.985);
+      background: var(--red-dark);
+    }
+
+    .enter-button svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+      stroke: none;
+    }
+
+    /* Live room */
+    .live-screen {
+      background: #171411;
+    }
+
+    .live-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 70% 27%, rgba(255,248,230,0.78), transparent 19%),
+        linear-gradient(155deg, #ddd6ca 0%, #cdc3b6 39%, #a99481 100%);
+    }
+
+    .live-stage::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 44%;
+      opacity: 0.27;
+      background:
+        linear-gradient(90deg, transparent 33%, rgba(105,88,68,0.5) 34% 35%, transparent 36% 68%, rgba(105,88,68,0.4) 69% 70%, transparent 71%),
+        linear-gradient(180deg, transparent 0 21%, rgba(255,255,255,0.3) 22% 22.5%, transparent 23% 44%, rgba(255,255,255,0.28) 45% 45.5%, transparent 46%);
+    }
+
+    .live-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(12,10,8,0.45) 0%, transparent 22%, transparent 57%, rgba(12,10,8,0.8) 100%);
+    }
+
+    .live-window {
+      position: absolute;
+      top: 48px;
+      left: 15px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #fff;
+    }
+
+    .live-avatar {
+      width: 35px;
+      height: 35px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 50%;
+      background: #201d19;
+      font-family: Georgia, serif;
+      font-size: 15px;
+      font-style: italic;
+    }
+
+    .live-window strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .live-window span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 3px;
+      color: rgba(255,255,255,0.74);
+      font-size: 8px;
+    }
+
+    .live-window span::before {
+      content: "LIVE";
+      padding: 1px 4px;
+      color: #fff;
+      background: var(--red);
+      font-size: 6px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .live-actions-top {
+      position: absolute;
+      z-index: 7;
+      top: 48px;
+      right: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .viewer-pill {
+      height: 27px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 9px;
+      color: #fff;
+      border-radius: 20px;
+      background: rgba(0,0,0,0.28);
+      backdrop-filter: blur(12px);
+      font-size: 8px;
+    }
+
+    .round-icon {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.28);
+      backdrop-filter: blur(12px);
+    }
+
+    .round-icon .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .live-model {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      top: 103px;
+      width: 285px;
+      height: 590px;
+      transform: translateX(-50%);
+    }
+
+    .live-tag {
+      position: absolute;
+      z-index: 6;
+      top: 132px;
+      right: 14px;
+      width: 94px;
+      padding: 8px 8px 9px;
+      color: #16130f;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 8px 25px rgba(25,20,15,0.14);
+      backdrop-filter: blur(8px);
+    }
+
+    .live-tag small {
+      display: block;
+      margin-bottom: 2px;
+      color: #8a8379;
+      font-size: 6px;
+      letter-spacing: 0.13em;
+    }
+
+    .live-tag strong {
+      display: block;
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .live-tag span {
+      display: block;
+      margin-top: 4px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .live-pin {
+      position: absolute;
+      z-index: 6;
+      top: 249px;
+      left: 17px;
+      padding: 5px 8px;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.37);
+      border-radius: 2px;
+      background: rgba(27,22,18,0.26);
+      backdrop-filter: blur(8px);
+      font-size: 8px;
+      letter-spacing: 0.03em;
+    }
+
+    .live-comments {
+      position: absolute;
+      z-index: 5;
+      left: 15px;
+      bottom: 183px;
+      width: 235px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      color: #fff;
+      font-size: 9px;
+      line-height: 1.45;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    }
+
+    .comment {
+      width: fit-content;
+      max-width: 100%;
+      padding: 6px 9px;
+      border-radius: 3px;
+      background: rgba(24,21,18,0.26);
+      backdrop-filter: blur(8px);
+    }
+
+    .comment b {
+      margin-right: 4px;
+      color: #ffd1cc;
+      font-weight: 600;
+    }
+
+    .comment.system {
+      background: rgba(255,255,255,0.16);
+    }
+
+    .live-right-rail {
+      position: absolute;
+      z-index: 7;
+      right: 13px;
+      bottom: 190px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      color: #fff;
+    }
+
+    .rail-action {
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      padding: 0;
+      color: inherit;
+      background: transparent;
+      font-size: 8px;
+    }
+
+    .rail-action i {
+      width: 37px;
+      height: 37px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(20,17,14,0.31);
+      backdrop-filter: blur(8px);
+    }
+
+    .rail-action .icon {
+      width: 19px;
+      height: 19px;
+    }
+
+    .cart-bubble {
+      position: relative;
+    }
+
+    .cart-bubble::after {
+      content: "3";
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 15px;
+      height: 15px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 50%;
+      background: var(--red);
+      font-size: 7px;
+      font-style: normal;
+    }
+
+    .product-drawer {
+      position: absolute;
+      z-index: 12;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: min(466px, calc(100% - 54px));
+      padding: 0 14px 18px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 18px 18px 0 0;
+      background: rgba(255,255,255,0.985);
+      box-shadow: 0 -14px 40px rgba(0,0,0,0.2);
+      transform: translateY(calc(100% - 74px));
+      transition: transform 420ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .product-drawer.is-open {
+      transform: translateY(0);
+    }
+
+    .drawer-trigger {
+      flex: 0 0 74px;
+      width: 100%;
+      height: 74px;
+      padding: 9px 2px 8px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--ink);
+      background: transparent;
+      text-align: left;
+    }
+
+    .drawer-trigger .bag-mini {
+      width: 52px;
+      height: 49px;
+      display: grid;
+      place-items: center;
+      background: #f1eee8;
+    }
+
+    .bag-mini svg {
+      width: 34px;
+      height: 41px;
+    }
+
+    .drawer-trigger-copy {
+      flex: 1;
+    }
+
+    .drawer-trigger-copy strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .drawer-trigger-copy span {
+      display: block;
+      margin-top: 3px;
+      color: #8c877f;
+      font-size: 8px;
+    }
+
+    .drawer-chevron {
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      color: #77736d;
+      border: 1px solid #e5e1d9;
+      border-radius: 50%;
+      transition: transform 280ms ease;
+    }
+
+    .product-drawer.is-open .drawer-chevron {
+      transform: rotate(180deg);
+    }
+
+    .drawer-heading {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 2px 10px;
+      border-top: 1px solid #efede8;
+    }
+
+    .drawer-heading strong {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .drawer-heading span {
+      color: #99938a;
+      font-size: 8px;
+    }
+
+    .product-list {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 1px 1px 3px;
+      scrollbar-width: none;
+    }
+
+    .product-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .list-product {
+      flex: 0 0 84px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr) 24px;
+      align-items: center;
+      gap: 12px;
+      padding: 0;
+      overflow: hidden;
+      color: var(--ink);
+      border: 1px solid #ece9e3;
+      border-radius: 3px;
+      background: #fff;
+      text-align: left;
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+
+    .list-product:active {
+      transform: scale(0.98);
+    }
+
+    .list-product:hover {
+      border-color: #a9a49b;
+    }
+
+    .list-product-visual {
+      position: relative;
+      align-self: stretch;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #f2efe9;
+    }
+
+    .list-product-visual::after {
+      content: attr(data-code);
+      position: absolute;
+      left: 7px;
+      top: 7px;
+      color: rgba(17,17,17,0.46);
+      font-size: 6px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .list-product-visual .garment-svg {
+      width: 69px;
+      height: 79px;
+      transform: translateY(4px);
+    }
+
+    .list-product-copy {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .list-product-copy strong {
+      display: -webkit-box;
+      min-height: 0;
+      overflow: hidden;
+      color: #37342f;
+      font-size: 10px;
+      font-weight: 400;
+      line-height: 1.45;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .list-product-copy span {
+      display: block;
+      margin-top: 6px;
+      color: #24211d;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .list-product-arrow {
+      display: grid;
+      place-items: center;
+      color: #aaa59c;
+    }
+
+    .list-product-arrow .icon {
+      width: 15px;
+      height: 15px;
+    }
+
+    .drawer-scrim {
+      position: absolute;
+      z-index: 10;
+      inset: 39px 0 0;
+      visibility: hidden;
+      opacity: 0;
+      background: rgba(10,8,6,0.23);
+      transition: opacity 220ms ease, visibility 220ms ease;
+    }
+
+    /* Product sheet */
+    .detail-sheet {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 64%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 19px 19px 0 0;
+      background: #fff;
+      box-shadow: 0 -18px 50px rgba(0,0,0,0.25);
+      transform: translateY(103%);
+      transition: height 440ms cubic-bezier(.2,.8,.2,1), transform 440ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .detail-sheet.is-open {
+      transform: translateY(0);
+    }
+
+    .detail-sheet.is-full {
+      height: 100%;
+      border-radius: 0;
+    }
+
+    .sheet-grip {
+      flex: 0 0 17px;
+      display: grid;
+      place-items: center;
+      touch-action: none;
+      cursor: ns-resize;
+      background: #fff;
+    }
+
+    .sheet-grip::before {
+      content: "";
+      width: 34px;
+      height: 3px;
+      border-radius: 3px;
+      background: #d4d0c8;
+    }
+
+    .detail-nav {
+      flex: 0 0 47px;
+      display: grid;
+      grid-template-columns: 40px 1fr 40px;
+      align-items: center;
+      padding: 0 10px;
+      background: #fff;
+      border-bottom: 1px solid #f1eee9;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      background: transparent;
+    }
+
+    .icon-button .icon {
+      width: 19px;
+      height: 19px;
+    }
+
+    .detail-nav-title {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .detail-swipe-zone {
+      flex: 0 0 auto;
+      touch-action: none;
+      cursor: ns-resize;
+    }
+
+    .detail-media {
+      position: relative;
+      height: 205px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        linear-gradient(140deg, rgba(255,255,255,0.75), transparent 45%),
+        #eeeae2;
+      transition: height 420ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .detail-sheet.is-full .detail-media {
+      height: 310px;
+    }
+
+    .detail-media::before {
+      content: "LIVEWEAR / AUTUMN 26";
+      position: absolute;
+      top: 15px;
+      left: 17px;
+      color: rgba(20,18,15,0.35);
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+    }
+
+    .detail-media::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 50%;
+    }
+
+    .detail-media .garment-svg {
+      position: relative;
+      z-index: 1;
+      width: 214px;
+      height: 228px;
+      filter: drop-shadow(0 13px 12px rgba(70,60,49,0.12));
+      transition: width 420ms ease, height 420ms ease;
+    }
+
+    .detail-sheet.is-full .detail-media .garment-svg {
+      width: 280px;
+      height: 305px;
+    }
+
+    .expand-hint {
+      position: absolute;
+      z-index: 2;
+      right: 13px;
+      bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+      color: #fff;
+      border-radius: 20px;
+      background: rgba(24,21,18,0.56);
+      backdrop-filter: blur(8px);
+      font-size: 7px;
+    }
+
+    .expand-hint .icon {
+      width: 11px;
+      height: 11px;
+    }
+
+    .detail-sheet.is-full .expand-hint {
+      display: none;
+    }
+
+    .detail-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+    }
+
+    .detail-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .detail-summary {
+      padding: 14px 17px 15px;
+      border-bottom: 7px solid #f5f3ef;
+    }
+
+    .detail-kicker {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+      color: #8d887f;
+      font-size: 7px;
+      letter-spacing: 0.14em;
+    }
+
+    .detail-kicker span:first-child {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .detail-summary h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.35;
+      letter-spacing: -0.035em;
+    }
+
+    .detail-subtitle {
+      margin: 5px 0 9px;
+      color: #77726b;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .price-row strong {
+      color: var(--red);
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.045em;
+    }
+
+    .price-row strong small {
+      margin-right: 1px;
+      font-size: 11px;
+    }
+
+    .option-block {
+      padding: 16px 17px;
+      border-bottom: 1px solid #ebe8e2;
+    }
+
+    .option-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 11px;
+    }
+
+    .option-title strong {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .option-title span {
+      color: #99938a;
+      font-size: 8px;
+    }
+
+    .color-options {
+      display: flex;
+      gap: 12px;
+    }
+
+    .color-option {
+      display: grid;
+      justify-items: center;
+      gap: 5px;
+      color: #817c74;
+      background: transparent;
+      font-size: 7px;
+    }
+
+    .swatch {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      border: 1px solid #d9d5cd;
+      border-radius: 50%;
+      background: var(--swatch);
+      box-shadow: inset 0 0 0 3px #fff;
+      transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .color-option.is-selected {
+      color: var(--ink);
+    }
+
+    .color-option.is-selected .swatch {
+      border-color: var(--ink);
+      box-shadow: inset 0 0 0 2px #fff;
+      transform: scale(1.04);
+    }
+
+    .size-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .size-option {
+      height: 35px;
+      color: #55514b;
+      border: 1px solid #ddd9d1;
+      background: #fff;
+      font-size: 10px;
+      transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+
+    .size-option.is-selected {
+      color: #fff;
+      border-color: var(--ink);
+      background: var(--ink);
+    }
+
+    .option-block.is-nudged {
+      animation: nudge 360ms ease;
+    }
+
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      58% { transform: translateX(4px); }
+      80% { transform: translateX(-2px); }
+    }
+
+    .selection-note {
+      margin: 0;
+      padding: 10px 17px 12px;
+      color: #8c877f;
+      font-size: 8px;
+      line-height: 1.55;
+    }
+
+    .detail-service {
+      margin: 0 17px 18px;
+      padding: 13px 0;
+      border-top: 1px solid #e9e6df;
+      border-bottom: 1px solid #e9e6df;
+    }
+
+    .service-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #65615a;
+      font-size: 9px;
+      line-height: 2;
+    }
+
+    .service-line .icon {
+      width: 13px;
+      height: 13px;
+      color: #77736d;
+    }
+
+    .detail-footer {
+      flex: 0 0 77px;
+      display: grid;
+      grid-template-columns: 57px 1fr;
+      gap: 9px;
+      padding: 10px 14px 16px;
+      border-top: 1px solid #e8e5df;
+      background: #fff;
+    }
+
+    .heart-button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      color: #62605a;
+      border: 1px solid #ddd9d1;
+      background: #fff;
+      font-size: 7px;
+    }
+
+    .heart-button .icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    .heart-button.is-liked {
+      color: var(--red);
+      border-color: #efc6c8;
+      background: #fff9f9;
+    }
+
+    .buy-button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      color: #fff;
+      background: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: background 160ms ease;
+    }
+
+    .buy-button.is-ready {
+      background: var(--red);
+    }
+
+    .buy-button:active {
+      background: var(--red-dark);
+    }
+
+    .buy-button small {
+      color: rgba(255,255,255,0.7);
+      font-size: 7px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    /* Login */
+    .login-sheet {
+      position: absolute;
+      z-index: 40;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      background: #f8f7f3;
+      transform: translateY(103%);
+      transition: transform 380ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .login-sheet.is-open {
+      transform: translateY(0);
+    }
+
+    .login-nav {
+      height: 83px;
+      flex: 0 0 83px;
+      padding: 39px 17px 0;
+      display: grid;
+      grid-template-columns: 35px 1fr 35px;
+      align-items: center;
+      background: #fff;
+    }
+
+    .login-nav-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .login-hero {
+      position: relative;
+      flex: 0 0 319px;
+      overflow: hidden;
+      padding: 32px 25px 0;
+      color: #fff;
+      background:
+        radial-gradient(circle at 76% 29%, rgba(255,236,230,0.27), transparent 29%),
+        linear-gradient(145deg, #201b18, #433329 60%, #805b49);
+    }
+
+    .login-hero::before {
+      content: "MEMBERS";
+      position: absolute;
+      right: -23px;
+      bottom: 25px;
+      color: rgba(255,255,255,0.055);
+      font-size: 74px;
+      font-weight: 700;
+      letter-spacing: -0.08em;
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+
+    .login-hero::after {
+      content: "L/W";
+      position: absolute;
+      top: 27px;
+      right: 25px;
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.26);
+      border-radius: 50%;
+      font-family: Georgia, serif;
+      font-size: 10px;
+      font-style: italic;
+    }
+
+    .login-eyebrow {
+      color: #e7c5b9;
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+    }
+
+    .login-hero h2 {
+      position: relative;
+      z-index: 2;
+      width: 250px;
+      margin: 12px 0 13px;
+      font-size: 31px;
+      font-weight: 400;
+      line-height: 1.22;
+      letter-spacing: -0.055em;
+    }
+
+    .login-hero h2 em {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+    }
+
+    .login-hero p {
+      position: relative;
+      z-index: 2;
+      width: 248px;
+      margin: 0;
+      color: rgba(255,255,255,0.6);
+      font-size: 9px;
+      line-height: 1.8;
+    }
+
+    .member-art {
+      position: absolute;
+      z-index: 1;
+      right: 10px;
+      bottom: -27px;
+      width: 150px;
+      height: 198px;
+      opacity: 0.64;
+    }
+
+    .login-panel {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 21px 23px 22px;
+      background: #fff;
+    }
+
+    .login-benefits {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 19px;
+      border-bottom: 1px solid #ebe8e2;
+    }
+
+    .benefit {
+      color: #8a857d;
+      font-size: 7px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .benefit .icon {
+      width: 19px;
+      height: 19px;
+      margin: 0 auto 6px;
+      color: #4b4842;
+      stroke-width: 1.35;
+    }
+
+    .login-methods {
+      padding-top: 18px;
+    }
+
+    .wechat-login-button {
+      width: 100%;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      color: #fff;
+      background: var(--green);
+      font-size: 12px;
+      font-weight: 600;
+      transition: transform 150ms ease, background 150ms ease;
+    }
+
+    .wechat-login-button:active {
+      transform: scale(0.99);
+      background: var(--green-dark);
+    }
+
+    .wechat-icon {
+      width: 21px;
+      height: 21px;
+      fill: #fff;
+    }
+
+    .login-button-loader {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: rotate 0.7s linear infinite;
+    }
+
+    .wechat-login-button.is-loading .wechat-icon {
+      display: none;
+    }
+
+    .wechat-login-button.is-loading .login-button-loader {
+      display: block;
+    }
+
+    @keyframes rotate {
+      to { transform: rotate(360deg); }
+    }
+
+    .login-other {
+      width: 100%;
+      height: 39px;
+      margin-top: 8px;
+      color: #6d6861;
+      border: 1px solid #e4e0d9;
+      background: #fff;
+      font-size: 9px;
+    }
+
+    .consent-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      margin-top: 17px;
+      color: #7d7871;
+      font-size: 8px;
+      line-height: 1.65;
+    }
+
+    .consent-row.is-shaking {
+      animation: nudge 360ms ease;
+    }
+
+    .check-box {
+      position: relative;
+      flex: 0 0 14px;
+      width: 14px;
+      height: 14px;
+      margin-top: 1px;
+      border: 1px solid #bdb8af;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .check-box::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 2px;
+      width: 3px;
+      height: 6px;
+      border: solid #fff;
+      border-width: 0 1.5px 1.5px 0;
+      opacity: 0;
+      transform: rotate(45deg);
+    }
+
+    .check-box.is-checked {
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    .check-box.is-checked::after {
+      opacity: 1;
+    }
+
+    .text-link {
+      color: #383530;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
+    .login-footnote {
+      margin: 11px 0 0;
+      color: #aaa59d;
+      font-size: 7px;
+      text-align: center;
+    }
+
+    /* Authorization modal */
+    .modal-backdrop {
+      position: absolute;
+      z-index: 50;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      visibility: hidden;
+      opacity: 0;
+      background: rgba(13,12,10,0.58);
+      backdrop-filter: blur(4px);
+      transition: opacity 220ms ease, visibility 220ms ease;
+    }
+
+    .modal-backdrop.is-open {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .auth-card {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 13px;
+      background: #fff;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.29);
+      transform: translateY(9px) scale(0.98);
+      transition: transform 250ms ease;
+    }
+
+    .modal-backdrop.is-open .auth-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .auth-head {
+      position: relative;
+      padding: 24px 22px 19px;
+      overflow: hidden;
+      color: #fff;
+      background: linear-gradient(128deg, #16130f, #46352a);
+    }
+
+    .auth-head::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      right: -38px;
+      top: -46px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 50%;
+    }
+
+    .auth-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .auth-icon svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .auth-head h2 {
+      margin: 0 0 7px;
+      font-size: 19px;
+      font-weight: 500;
+      letter-spacing: -0.035em;
+    }
+
+    .auth-head p {
+      margin: 0;
+      color: rgba(255,255,255,0.58);
+      font-size: 9px;
+      line-height: 1.65;
+    }
+
+    .auth-body {
+      padding: 15px 21px 18px;
+    }
+
+    .auth-consent {
+      margin: 13px 0 15px;
+      padding: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      color: #6f6a63;
+      border: 1px solid #ebe7e0;
+      background: #faf9f6;
+      font-size: 8px;
+      line-height: 1.6;
+    }
+
+    .auth-consent .check-box {
+      border-radius: 2px;
+    }
+
+    .auth-consent .check-box.is-checked {
+      border-color: var(--red);
+      background: var(--red);
+    }
+
+    .auth-buttons {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 8px;
+    }
+
+    .modal-secondary,
+    .modal-primary {
+      height: 42px;
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    .modal-secondary {
+      color: #77726b;
+      border: 1px solid #dfdcd5;
+      background: #fff;
+    }
+
+    .modal-primary {
+      color: #fff;
+      background: var(--ink);
+      transition: background 160ms ease, opacity 160ms ease;
+    }
+
+    .modal-primary.is-enabled {
+      background: var(--red);
+    }
+
+    .modal-primary:disabled {
+      cursor: not-allowed;
+      opacity: 0.32;
+    }
+
+    .agreement-backdrop {
+      position: absolute;
+      z-index: 60;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      visibility: hidden;
+      opacity: 0;
+      background: rgba(13,12,10,0.55);
+      transition: opacity 220ms ease, visibility 220ms ease;
+    }
+
+    .agreement-backdrop.is-open {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .agreement-sheet {
+      width: 100%;
+      height: 73%;
+      display: flex;
+      flex-direction: column;
+      border-radius: 18px 18px 0 0;
+      background: #fff;
+      transform: translateY(100%);
+      transition: transform 330ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .agreement-backdrop.is-open .agreement-sheet {
+      transform: translateY(0);
+    }
+
+    .agreement-head {
+      flex: 0 0 60px;
+      display: grid;
+      grid-template-columns: 38px 1fr 38px;
+      align-items: center;
+      padding: 0 12px;
+      border-bottom: 1px solid #edeae4;
+    }
+
+    .agreement-head strong {
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .agreement-body {
+      flex: 1;
+      padding: 20px 22px;
+      overflow-y: auto;
+      color: #5d5952;
+      font-size: 9px;
+      line-height: 1.85;
+    }
+
+    .agreement-body h3 {
+      margin: 0 0 12px;
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .agreement-body h4 {
+      margin: 18px 0 5px;
+      color: var(--ink);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .agreement-body p {
+      margin: 0;
+    }
+
+    .agreement-action {
+      flex: 0 0 68px;
+      padding: 10px 16px 17px;
+      border-top: 1px solid #edeae4;
+    }
+
+    .agreement-action button {
+      width: 100%;
+      height: 41px;
+      color: #fff;
+      background: var(--ink);
+      font-size: 10px;
+    }
+
+    /* Checkout */
+    .checkout-screen {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: #f4f2ee;
+      scrollbar-width: none;
+    }
+
+    .checkout-screen::-webkit-scrollbar {
+      display: none;
+    }
+
+    .checkout-topbar {
+      position: sticky;
+      z-index: 5;
+      top: 0;
+      height: 83px;
+      padding: 39px 14px 0;
+      display: grid;
+      grid-template-columns: 38px 1fr 38px;
+      align-items: center;
+      background: rgba(255,255,255,0.96);
+      border-bottom: 1px solid #ece9e3;
+      backdrop-filter: blur(14px);
+    }
+
+    .checkout-topbar strong {
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .checkout-content {
+      padding-bottom: 102px;
+    }
+
+    .address-card {
+      position: relative;
+      padding: 20px 53px 18px 48px;
+      background: #fff;
+    }
+
+    .address-card::before {
+      content: "";
+      position: absolute;
+      top: 21px;
+      left: 18px;
+      width: 17px;
+      height: 17px;
+      border: 1.6px solid #27241f;
+      border-radius: 50% 50% 50% 2px;
+      transform: rotate(-45deg);
+    }
+
+    .address-card::after {
+      content: "";
+      position: absolute;
+      top: 25px;
+      left: 22px;
+      width: 5px;
+      height: 5px;
+      border: 1px solid #27241f;
+      border-radius: 50%;
+    }
+
+    .address-name {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 6px;
+      color: #26231f;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .address-name span {
+      color: #807b74;
+      font-size: 9px;
+      font-weight: 400;
+    }
+
+    .address-detail {
+      margin: 0;
+      color: #5e5a53;
+      font-size: 9px;
+      line-height: 1.65;
+    }
+
+    .address-arrow {
+      position: absolute;
+      top: 50%;
+      right: 17px;
+      transform: translateY(-50%);
+    }
+
+    .address-arrow .icon {
+      width: 14px;
+      height: 14px;
+      color: #aaa59c;
+    }
+
+    .checkout-section {
+      margin-top: 7px;
+      padding: 14px 15px;
+      background: #fff;
+    }
+
+    .section-mini-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 13px;
+    }
+
+    .section-mini-head strong {
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .section-mini-head span {
+      color: #9c978e;
+      font-size: 7px;
+    }
+
+    .checkout-product {
+      display: grid;
+      grid-template-columns: 83px 1fr;
+      gap: 12px;
+    }
+
+    .checkout-thumb {
+      position: relative;
+      width: 83px;
+      height: 105px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #f0ede7;
+    }
+
+    .checkout-thumb .garment-svg {
+      width: 74px;
+      height: 88px;
+    }
+
+    .checkout-product-info {
+      min-width: 0;
+    }
+
+    .checkout-product-info h3 {
+      margin: 0 0 5px;
+      overflow: hidden;
+      color: #36322d;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 1.55;
+    }
+
+    .checkout-spec {
+      margin: 0;
+      color: #a29d95;
+      font-size: 8px;
+      line-height: 1.8;
+    }
+
+    .checkout-product-bottom {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-top: 9px;
+    }
+
+    .checkout-product-bottom strong {
+      color: #292621;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .quantity {
+      color: #77736c;
+      font-size: 8px;
+    }
+
+    .note-row,
+    .summary-row,
+    .invoice-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 38px;
+      border-bottom: 1px solid #efede8;
+      color: #57534c;
+      font-size: 9px;
+    }
+
+    .note-row:last-child,
+    .summary-row:last-child,
+    .invoice-row:last-child {
+      border-bottom: 0;
+    }
+
+    .note-row span:last-child {
+      color: var(--red);
+    }
+
+    .grand-total {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-end;
+      gap: 6px;
+      padding-top: 11px;
+      border-top: 1px solid #ebe8e1;
+      font-size: 8px;
+    }
+
+    .grand-total strong {
+      color: var(--red);
+      font-size: 19px;
+      font-weight: 600;
+    }
+
+    .grand-total strong small {
+      font-size: 9px;
+    }
+
+    .sync-status-card {
+      margin-top: 7px;
+      padding: 13px 15px;
+      display: grid;
+      grid-template-columns: 26px 1fr 27px;
+      align-items: center;
+      gap: 9px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .sync-status-card.is-off {
+      background: #fffaf0;
+    }
+
+    .sync-status-icon {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      border-radius: 50%;
+      background: var(--success-soft);
+    }
+
+    .sync-status-card.is-off .sync-status-icon {
+      color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .sync-status-icon .icon {
+      width: 14px;
+      height: 14px;
+    }
+
+    .sync-status-copy strong {
+      display: block;
+      color: #38342f;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .sync-status-copy span {
+      display: block;
+      margin-top: 3px;
+      color: #8e8981;
+      font-size: 7px;
+    }
+
+    .sync-status-card > .icon {
+      width: 14px;
+      height: 14px;
+      color: #aaa59d;
+    }
+
+    .checkout-bottom {
+      position: absolute;
+      z-index: 8;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 74px;
+      padding: 10px 14px 17px 17px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.98);
+      border-top: 1px solid #e6e3dc;
+      backdrop-filter: blur(14px);
+    }
+
+    .bottom-total {
+      flex: 1;
+      color: #78736c;
+      font-size: 8px;
+    }
+
+    .bottom-total strong {
+      display: block;
+      margin-top: 2px;
+      color: var(--red);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+    .bottom-total strong small {
+      font-size: 9px;
+    }
+
+    .pay-order-button {
+      width: 148px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: #fff;
+      background: var(--red);
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    .pay-order-button:active {
+      transform: scale(0.985);
+      background: var(--red-dark);
+    }
+
+    .pay-order-button .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Payment */
+    .payment-backdrop {
+      position: absolute;
+      z-index: 70;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      visibility: hidden;
+      opacity: 0;
+      background: rgba(12,11,9,0.54);
+      transition: opacity 220ms ease, visibility 220ms ease;
+    }
+
+    .payment-backdrop.is-open {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .payment-sheet {
+      width: 100%;
+      padding: 9px 18px 31px;
+      border-radius: 18px 18px 0 0;
+      background: #fff;
+      transform: translateY(100%);
+      transition: transform 340ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .payment-backdrop.is-open .payment-sheet {
+      transform: translateY(0);
+    }
+
+    .payment-grip {
+      width: 34px;
+      height: 3px;
+      margin: 0 auto 20px;
+      border-radius: 3px;
+      background: #d9d5cd;
+    }
+
+    .payment-heading {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .payment-heading small {
+      display: block;
+      margin-bottom: 5px;
+      color: #958f87;
+      font-size: 8px;
+    }
+
+    .payment-heading strong {
+      font-size: 27px;
+      font-weight: 500;
+      letter-spacing: -0.045em;
+    }
+
+    .payment-method {
+      display: grid;
+      grid-template-columns: 34px 1fr 15px;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 0;
+      border-top: 1px solid #ece9e3;
+      border-bottom: 1px solid #ece9e3;
+    }
+
+    .pay-logo {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      background: var(--green);
+    }
+
+    .pay-logo .wechat-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .payment-method strong {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .payment-method span {
+      display: block;
+      margin-top: 2px;
+      color: #9b968e;
+      font-size: 7px;
+    }
+
+    .pay-confirm {
+      position: relative;
+      width: 100%;
+      height: 46px;
+      margin-top: 18px;
+      color: #fff;
+      background: var(--green);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .pay-confirm.is-loading {
+      color: transparent;
+      pointer-events: none;
+    }
+
+    .pay-confirm.is-loading::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 17px;
+      height: 17px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: rotate 0.7s linear infinite;
+    }
+
+    .pay-cancel {
+      width: 100%;
+      margin-top: 12px;
+      padding: 5px;
+      color: #8d887f;
+      background: transparent;
+      font-size: 9px;
+    }
+
+    /* Success */
+    .success-screen {
+      overflow-y: auto;
+      padding: 83px 22px 28px;
+      background:
+        radial-gradient(circle at 70% 8%, rgba(230,0,18,0.07), transparent 30%),
+        #f8f7f3;
+    }
+
+    .success-topbar {
+      position: absolute;
+      z-index: 6;
+      top: 46px;
+      right: 13px;
+      pointer-events: none;
+    }
+
+    .mini-exit-capsule {
+      width: 88px;
+      height: 32px;
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      align-items: center;
+      padding: 0 8px;
+      color: #27241f;
+      border: 1px solid rgba(30,27,23,0.16);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.82);
+      box-shadow: 0 2px 9px rgba(30,27,23,0.06);
+      backdrop-filter: blur(12px);
+      pointer-events: auto;
+    }
+
+    .mini-exit-more {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .mini-exit-more i {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .mini-exit-divider {
+      width: 1px;
+      height: 15px;
+      background: rgba(30,27,23,0.16);
+    }
+
+    .mini-exit-close {
+      display: grid;
+      place-items: center;
+    }
+
+    .mini-exit-close .icon {
+      width: 14px;
+      height: 14px;
+      stroke-width: 1.7;
+    }
+
+    .mini-exit-capsule:active {
+      background: rgba(236,233,227,0.95);
+    }
+
+    .success-mark {
+      position: relative;
+      width: 67px;
+      height: 67px;
+      margin: 35px auto 20px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 0 8px rgba(230,0,18,0.07);
+    }
+
+    .success-mark .icon {
+      width: 29px;
+      height: 29px;
+      stroke-width: 2.2;
+    }
+
+    .success-title {
+      margin: 0;
+      text-align: center;
+      font-size: 27px;
+      font-weight: 500;
+      letter-spacing: -0.055em;
+    }
+
+    .success-caption {
+      margin: 8px 0 28px;
+      color: #817c74;
+      font-size: 9px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .receipt-card {
+      padding: 18px;
+      background: #fff;
+      border: 1px solid #ebe8e2;
+    }
+
+    .receipt-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #ece9e3;
+    }
+
+    .receipt-head strong {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .receipt-head span {
+      color: var(--green);
+      font-size: 8px;
+    }
+
+    .receipt-product {
+      display: grid;
+      grid-template-columns: 65px 1fr;
+      gap: 11px;
+      padding: 14px 0;
+      border-bottom: 1px solid #ece9e3;
+    }
+
+    .receipt-thumb {
+      width: 65px;
+      height: 75px;
+      display: grid;
+      place-items: center;
+      background: #f0ede7;
+    }
+
+    .receipt-thumb .garment-svg {
+      width: 58px;
+      height: 68px;
+    }
+
+    .receipt-product h3 {
+      margin: 2px 0 5px;
+      font-size: 9px;
+      font-weight: 500;
+      line-height: 1.55;
+    }
+
+    .receipt-product p {
+      margin: 0;
+      color: #a19c94;
+      font-size: 8px;
+      line-height: 1.7;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 13px;
+      color: #89847c;
+      font-size: 8px;
+      line-height: 1.8;
+    }
+
+    .receipt-row strong {
+      color: #403c37;
+      font-weight: 500;
+    }
+
+    .success-actions {
+      margin-top: 21px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .success-actions button {
+      width: 100%;
+      height: 45px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .order-detail-btn {
+      color: #54504a;
+      border: 1px solid #dad6ce;
+      background: transparent;
+    }
+
+    .demo-note {
+      margin: 17px 0 0;
+      color: #a29d95;
+      font-size: 7px;
+      line-height: 1.65;
+      text-align: center;
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      z-index: 100;
+      left: 50%;
+      top: 92px;
+      width: max-content;
+      max-width: calc(100% - 42px);
+      padding: 9px 14px;
+      color: #fff;
+      border-radius: 3px;
+      background: rgba(24,22,19,0.9);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.16);
+      font-size: 9px;
+      line-height: 1.5;
+      text-align: center;
+      opacity: 0;
+      transform: translate(-50%, -8px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 940px) {
+      .demo-layout {
+        width: 100%;
+        padding: 0;
+        display: block;
+      }
+
+      .briefing,
+      .device-caption {
+        display: none;
+      }
+
+      .device-column {
+        width: 100%;
+        min-height: 100dvh;
+        justify-content: center;
+      }
+
+      .phone {
+        width: min(100vw, 430px);
+        height: 100dvh;
+        max-height: none;
+        min-height: 0;
+        aspect-ratio: auto;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .phone-app {
+        border-radius: 0;
+      }
+
+      .phone::after {
+        display: none;
+      }
+    }
+
+    @media (max-height: 760px) and (min-width: 941px) {
+      .phone {
+        transform: scale(0.86);
+        transform-origin: center center;
+      }
+
+      .device-column {
+        margin-top: -58px;
+        margin-bottom: -58px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5.6v12.8L18.6 12 8 5.6Z"/></symbol>
+      <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+      <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+      <symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+      <symbol id="icon-chevron-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+      <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+      <symbol id="icon-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.3 10.8 7.4-4.5M8.3 13.2l7.4 4.5"/></symbol>
+      <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M20.8 5.8a5.4 5.4 0 0 0-7.7 0L12 7l-1.2-1.2a5.4 5.4 0 0 0-7.7 7.7L12 22l8.8-8.6a5.4 5.4 0 0 0 0-7.6Z"/></symbol>
+      <symbol id="icon-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+      <symbol id="icon-message" viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 0 1-9.4 7.8L5 21l1.7-5.1A8 8 0 1 1 20 11.5Z"/></symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.6 4.6"/></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5.5c0 4.8-3.2 8.1-8 9.8-4.8-1.7-8-5-8-9.8V6l8-3Z"/><path d="m8.8 12 2.1 2.1 4.5-4.5"/></symbol>
+      <symbol id="icon-pack" viewBox="0 0 24 24"><path d="M4 8.5 12 4l8 4.5v7L12 20l-8-4.5v-7Z"/><path d="m4 8.5 8 4.5 8-4.5M12 13v7"/></symbol>
+      <symbol id="icon-gift" viewBox="0 0 24 24"><path d="M4 10h16v10H4V10ZM3 6h18v4H3V6ZM12 6v14"/><path d="M12 6H8.7C7.2 6 6 5 6 3.8 6 2.8 6.8 2 7.8 2c1.5 0 4.2 4 4.2 4ZM12 6h3.3C16.8 6 18 5 18 3.8 18 2.8 17.2 2 16.2 2 14.7 2 12 6 12 6Z"/></symbol>
+      <symbol id="icon-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+      <symbol id="icon-wechat" viewBox="0 0 24 24"><path d="M9.6 4C5.4 4 2 6.7 2 10c0 1.9 1.1 3.6 2.9 4.7l-.7 2.4 2.7-1.3c.8.2 1.7.3 2.7.3h.3a5.8 5.8 0 0 1-.2-1.5c0-3.4 3-6.1 6.8-6.1h.4C15.9 5.9 13 4 9.6 4Zm-2.4 3.1a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8Zm4.8 0a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8Z"/><path d="M22 13.7c0-2.8-2.7-5-5.9-5s-5.9 2.2-5.9 5 2.7 5 5.9 5c.7 0 1.4-.1 2-.3l2.2 1-.6-2c1.4-.9 2.3-2.3 2.3-3.7Zm-7.7-1.2a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6Zm3.7 0a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6Z"/></symbol>
+      <symbol id="icon-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v2M16 5a3 3 0 0 1 0 6M18 14a4 4 0 0 1 3 3.9V20"/></symbol>
+      <symbol id="icon-scissors" viewBox="0 0 24 24"><circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="m8.4 8.4 11.1 8.1M8.4 15.6 19.5 7.5"/></symbol>
+      <symbol id="icon-rotate" viewBox="0 0 24 24"><path d="M20 7v5h-5"/><path d="M18.3 17a8 8 0 1 1 1.6-7.5L20 12"/></symbol>
+      <symbol id="garment-cardigan" viewBox="0 0 240 300">
+        <path class="g-main" d="M79 31 33 57 11 170l29 9 15-55 3 147c19 6 38 9 62 9s43-3 62-9l3-147 15 55 29-9L207 57l-46-26-28 17H108L79 31Z"/>
+        <path class="g-shade" d="M79 31 58 186l-1 85c17 5 34 8 58 9l6-232-22-17Z"/>
+        <path class="g-shade" d="M161 31 144 280c24-1 41-4 58-9l1-85-18-155-24 17Z" opacity=".42"/>
+        <path class="g-line" d="M120 48v232M78 33l21 53 6 194M162 33l-21 53-5 194"/>
+        <path class="g-button" d="M112 102h4v4h-4zM112 141h4v4h-4zM112 180h4v4h-4zM112 219h4v4h-4z"/>
+        <path class="g-dark" d="M77 32c13 14 28 20 43 20s30-6 43-20l10 10c-16 19-33 27-53 27s-37-8-53-27l10-10Z"/>
+        <path class="g-line" d="m34 58-8 102 14 4M206 58l8 102-14 4"/>
+      </symbol>
+      <symbol id="garment-tee" viewBox="0 0 240 300">
+        <path class="g-main" d="m79 31-57 36 28 66 28-16-18 169c26 9 94 9 120 0l-18-169 28 16 28-66-57-36c-15 20-32 28-41 28S94 51 79 31Z"/>
+        <path class="g-shade" d="M79 31 60 286c11 4 26 6 50 7l12-264c-11 0-28-8-43-28Z" opacity=".46"/>
+        <path class="g-shade" d="M161 31 178 286c-10 4-26 6-48 7l-12-264c11 0 28-8 43-28Z" opacity=".2"/>
+        <path class="g-dark" d="M79 31c11 24 25 36 41 36s30-12 41-36l12 12c-11 31-31 45-53 45s-42-14-53-45l12-12Z"/>
+        <path class="g-line" d="M120 43v250M58 70l20 47M182 70l-20 47"/>
+      </symbol>
+      <symbol id="garment-pants" viewBox="0 0 240 300">
+        <path class="g-main" d="M65 16h110l13 269-53 2-15-159-15 159-53-2L65 16Z"/>
+        <path class="g-shade" d="M65 16h55l4 270-57-1L65 16Z" opacity=".4"/>
+        <path class="g-dark" d="M65 16h110v25H65z"/>
+        <path class="g-line" d="M120 17v110M94 42h52M83 80c10 13 13 27 10 40M157 80c-10 13-13 27-10 40M87 285l-3-82M153 285l3-82"/>
+        <circle class="g-button" cx="111" cy="28" r="2.1"/><circle class="g-button" cx="130" cy="28" r="2.1"/>
+        <path class="g-line" d="M67 62h106"/>
+      </symbol>
+      <symbol id="model-live" viewBox="0 0 285 590">
+        <defs>
+          <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c58d6e"/><stop offset="1" stop-color="#a76d52"/></linearGradient>
+          <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d9d0c3"/><stop offset="1" stop-color="#b8aa99"/></linearGradient>
+          <linearGradient id="denim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5b6674"/><stop offset="1" stop-color="#343d49"/></linearGradient>
+        </defs>
+        <ellipse cx="146" cy="565" rx="102" ry="17" fill="rgba(39,29,22,.18)"/>
+        <path d="M112 531c8-76 2-147 0-211h66c4 67 12 132 18 211h-30l-8-151-7 151h-39Z" fill="url(#denim)"/>
+        <path d="M95 224c9-25 32-37 48-40 22-4 47 10 58 39l11 128c-7 25-16 44-24 61l-103-4c-13-42-20-77-18-115l28-69Z" fill="#ede6dc"/>
+        <path d="M94 227c7-21 18-37 33-47l28 16 9 39-29 21-40-4 15-25Z" fill="#d8d0c5"/>
+        <path d="M127 181c-6 40 3 91 11 131l17-4c-11-45-9-95-2-134l-26 7Z" fill="url(#coat)"/>
+        <path d="M171 186c25 10 42 27 48 51l8 87-20 3-17-87-34-28 15-26Z" fill="url(#coat)"/>
+        <path d="M103 175c-21 6-35 31-44 69l-13 81 17 7 25-75 26-45-11-37Z" fill="url(#coat)"/>
+        <path d="M91 323 69 418l17 8 28-80-23-23Z" fill="url(#skin)"/>
+        <path d="m69 415-3 31c0 7 4 11 10 11 7 0 10-4 10-10l-2-26-15-6Z" fill="#a96f53"/>
+        <path d="M170 181c9-12 13-31 14-50l31 4c1 31-6 50-20 62l-25-16Z" fill="url(#skin)"/>
+        <path d="M151 125c1-28 20-43 45-37 18 4 27 20 23 41-4 22-15 46-37 49-21 2-32-27-31-53Z" fill="url(#skin)"/>
+        <path d="M148 122c-3-42 30-59 58-45 15 8 22 26 16 51-7-10-17-19-27-23-5 16-27 25-47 32v-15Z" fill="#241a15"/>
+        <path d="M153 103c10-31 50-42 69-11-17-5-40-2-53 15l-16 17v-21Z" fill="#33231b"/>
+        <path d="M199 128c7 1 12 5 11 11-2 7-8 9-13 7" fill="none" stroke="#7e4d38" stroke-width="2" stroke-linecap="round"/>
+        <path d="M181 151c8 5 17 6 24 1" fill="none" stroke="#743e31" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="174" cy="124" rx="2.4" ry="3" fill="#2d1a14"/>
+        <ellipse cx="201" cy="121" rx="2.4" ry="3" fill="#2d1a14"/>
+        <path d="M142 184c4 9 14 19 28 22l33 1-3 28c-27 11-52 3-69-19l11-32Z" fill="#dbd2c6"/>
+        <path d="M122 330h93l6 103c-34 12-65 14-100 0l1-103Z" fill="#ece6dc" opacity=".86"/>
+        <path d="M164 340v122M120 382c22 5 47 5 79-2" fill="none" stroke="#bdb2a4" stroke-width="1.4" opacity=".85"/>
+        <path d="M116 251c-9 29-11 81-3 127M207 257c11 32 13 81 5 122" fill="none" stroke="#c9bdae" stroke-width="1.5" opacity=".6"/>
+      </symbol>
+      <symbol id="model-entry" viewBox="0 0 219 354">
+        <ellipse cx="112" cy="345" rx="83" ry="9" fill="rgba(54,36,23,.16)"/>
+        <path d="M84 317c2-52 0-101-1-142h69c-2 46 1 95 8 142h-28l-10-102-11 102H84Z" fill="#5e5148"/>
+        <path d="M57 135c15-28 39-40 59-39 24 1 45 16 54 41l-7 130c-7 17-10 29-11 43l-125-1c-3-37-5-75 3-111l27-63Z" fill="#e8e0d4"/>
+        <path d="M84 114c9-17 20-28 32-32l25 21-18 91-32-12-7-68Z" fill="#cfc3b3"/>
+        <path d="M94 99c0-26 18-42 40-37 18 4 26 21 21 44-5 23-14 37-30 38-18 1-31-21-31-45Z" fill="#c89272"/>
+        <path d="M91 96c-5-33 14-52 39-51 28 1 42 28 28 56-1-16-1-24-7-32-7 11-32 17-48 33l-12-6Z" fill="#2c2019"/>
+        <path d="M50 145c-21 19-32 51-37 91l-5 55 17 3 18-67 27-57-20-25Z" fill="#e8e0d4"/>
+        <path d="M30 286c-4 21-1 31 8 32 8 1 12-6 12-15v-19l-20 2Z" fill="#c89272"/>
+        <path d="M180 142c21 19 28 51 30 87l2 43-18 2-14-65-20-42 20-25Z" fill="#e8e0d4"/>
+        <path d="M196 268c3 19 7 28 17 28 9 0 13-9 8-20l-6-14-19 6Z" fill="#c89272"/>
+        <path d="M111 109c-4 21 9 30 26 32l12-18-8-15h-30Z" fill="#bd8164"/>
+        <path d="M96 150c24 12 66 9 82-1v27c-21 10-58 14-81 2v-28Z" fill="#f2ece3"/>
+        <path d="M137 154v141M81 190c29 6 77 5 111-2" fill="none" stroke="#b7aa99" stroke-width="1.2" opacity=".8"/>
+      </symbol>
+      <symbol id="model-member" viewBox="0 0 150 198">
+        <path d="M63 179c-3-37-2-77 1-104h31c4 34 8 70 11 104H63Z" fill="#2f2722"/>
+        <path d="M31 88c9-22 25-34 45-35 21 0 39 12 48 35l2 91H27l4-91Z" fill="#a5644e"/>
+        <path d="M61 56c-3-25 11-41 31-38 19 3 26 22 18 42-6 16-16 25-29 25-13 0-18-15-20-29Z" fill="#c89477"/>
+        <path d="M56 57C49 21 84 1 111 18c15 9 19 31 8 52-4-15-10-26-20-32-5 14-22 21-43 19Z" fill="#241913"/>
+        <path d="M36 87c-15 23-19 54-20 82M118 87c16 23 20 54 20 82" fill="none" stroke="#a5644e" stroke-width="13" stroke-linecap="round"/>
+        <path d="M76 84v92" stroke="#874832" stroke-width="1" opacity=".55"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <main class="demo-layout">
+    <aside class="briefing" aria-label="演示说明">
+      <div class="brand-lockup">
+        <span class="brand-mark">L</span>
+        <span>LIFEWEAR / LIVE COMMERCE</span>
+      </div>
+      <p class="eyebrow">Consumer Checkout Journey · 2026</p>
+      <h1>从一场直播，<span>到一笔完整体验。</span></h1>
+      <p class="lead">以克制、清晰的生活方式零售视觉，串联直播商品清单、半屏详情、会员登录、微信授权与支付。所有关键节点均可点击体验。</p>
+
+      <div class="journey" aria-label="体验进度">
+        <div class="journey-step is-active" data-step="1"><strong>01 / LIVE</strong>进入直播间</div>
+        <div class="journey-step" data-step="2"><strong>02 / PRODUCTS</strong>拉起商品清单</div>
+        <div class="journey-step" data-step="3"><strong>03 / DETAIL</strong>查看并选择规格</div>
+        <div class="journey-step" data-step="4"><strong>04 / MEMBER</strong>会员登录</div>
+        <div class="journey-step" data-step="5"><strong>05 / CONSENT</strong>微信授权</div>
+        <div class="journey-step" data-step="6"><strong>06 / CHECKOUT</strong>确认并支付</div>
+      </div>
+
+      <div class="brief-foot">
+        <span class="pulse"></span>
+        <span id="sideStatus">当前：进入直播间</span>
+      </div>
+    </aside>
+
+    <section class="device-column" aria-label="可交互手机演示">
+      <div class="device-caption">
+        <span>Interactive prototype</span>
+        <strong>390 × 844</strong>
+      </div>
+
+      <div class="phone" id="phone">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <span class="dynamic-island"></span>
+          <span class="status-icons">
+            <span class="signal"><i></i><i></i><i></i><i></i></span>
+            <span>5G</span>
+            <span class="battery"></span>
+          </span>
+        </div>
+
+        <div class="phone-app">
+          <section class="app-screen entry-screen is-active" id="entryScreen" aria-label="直播间入口">
+            <div class="mini-brand">
+              <span>LIFE / WEAR</span>
+              <svg class="icon"><use href="#icon-search"></use></svg>
+            </div>
+            <div class="entry-visual">
+              <span class="entry-live-badge">正在直播</span>
+              <svg class="entry-model" viewBox="0 0 219 354" aria-hidden="true"><use href="#model-entry"></use></svg>
+              <div class="entry-copy">
+                <p>WEEKEND EDIT / 秋冬新品</p>
+                <h2>穿得舒适，<br><em>也穿得像自己。</em></h2>
+              </div>
+            </div>
+            <div class="entry-actions">
+              <div class="entry-meta">
+                <span>11.03 MON · 20:00</span>
+                <span>统一零售价</span>
+              </div>
+              <button class="enter-button" id="enterLiveButton" type="button">
+                <svg><use href="#icon-play"></use></svg>
+                进入直播间
+              </button>
+            </div>
+          </section>
+
+          <section class="app-screen live-screen" id="liveScreen" aria-label="品牌直播间">
+            <div class="live-stage">
+              <svg class="live-model" viewBox="0 0 285 590" aria-hidden="true"><use href="#model-live"></use></svg>
+            </div>
+
+            <div class="live-window">
+              <span class="live-avatar">L</span>
+              <div>
+                <strong>LIFEWEAR 直播精选</strong>
+                <span>2.4万人正在观看</span>
+              </div>
+            </div>
+
+            <div class="live-actions-top">
+              <div class="viewer-pill">
+                <svg class="icon tiny-icon"><use href="#icon-eye"></use></svg>
+                2.4w
+              </div>
+              <button class="round-icon" id="closeLiveButton" type="button" aria-label="退出直播间">
+                <svg class="icon"><use href="#icon-close"></use></svg>
+              </button>
+            </div>
+
+            <div class="live-tag">
+              <small>LIVE COLLECTION</small>
+              <strong>精纺羊毛圆领开衫</strong>
+              <span>¥ 299</span>
+            </div>
+
+            <span class="live-pin">本次直播 · 秋冬衣橱</span>
+
+            <div class="live-comments" aria-label="直播评论">
+              <div class="comment system">欢迎来到 LIFEWEAR 直播间</div>
+              <div class="comment"><b>陈小满：</b>燕麦色很温柔</div>
+              <div class="comment"><b>Echo：</b>主播身高体重多少？</div>
+            </div>
+
+            <div class="live-right-rail">
+              <button class="rail-action" type="button" aria-label="点赞">
+                <i><svg class="icon"><use href="#icon-heart"></use></svg></i>
+                <span>1.8w</span>
+              </button>
+              <button class="rail-action" id="messageButton" type="button" aria-label="评论">
+                <i><svg class="icon"><use href="#icon-message"></use></svg></i>
+                <span>评论</span>
+              </button>
+              <button class="rail-action" id="cartRailButton" type="button" aria-label="直播购物袋">
+                <i class="cart-bubble"><svg class="icon"><use href="#icon-bag"></use></svg></i>
+                <span>购物袋</span>
+              </button>
+            </div>
+
+            <div class="drawer-scrim" id="drawerScrim"></div>
+            <section class="product-drawer" id="productDrawer" aria-label="直播商品清单">
+              <button class="drawer-trigger" id="drawerTrigger" type="button" aria-expanded="false">
+                <span class="bag-mini">
+                  <svg viewBox="0 0 70 83" aria-hidden="true">
+                    <path d="M18 28h34l5 43H13l5-43Z" fill="#e5e0d7"/>
+                    <path d="M25 32V21c0-11 20-11 20 0v11" fill="none" stroke="#79736a" stroke-width="2"/>
+                    <rect x="30" y="48" width="10" height="10" fill="#e60012"/>
+                  </svg>
+                </span>
+                <span class="drawer-trigger-copy">
+                  <strong>直播商品清单</strong>
+                  <span>3 件商品 · 点击查看并选购</span>
+                </span>
+                <span class="drawer-chevron">
+                  <svg class="icon"><use href="#icon-chevron-up"></use></svg>
+                </span>
+              </button>
+              <div class="drawer-heading">
+                <strong>本场精选</strong>
+                <span>点击商品查看详情</span>
+              </div>
+              <div class="product-list" id="productList"></div>
+            </section>
+
+            <section class="detail-sheet" id="detailSheet" aria-label="商品详情">
+              <div class="sheet-grip" id="sheetGrip" aria-hidden="true"></div>
+              <div class="detail-nav">
+                <button class="icon-button" id="closeDetailButton" type="button" aria-label="返回直播间">
+                  <svg class="icon"><use href="#icon-chevron-left"></use></svg>
+                </button>
+                <div class="detail-nav-title">商品详情</div>
+                <button class="icon-button" type="button" id="shareButton" aria-label="分享商品">
+                  <svg class="icon"><use href="#icon-share"></use></svg>
+                </button>
+              </div>
+              <div class="detail-swipe-zone" id="detailSwipeZone">
+                <div class="detail-media" id="detailMedia">
+                  <svg class="garment-svg" viewBox="0 0 240 300" aria-hidden="true"><use id="detailGarmentUse" href="#garment-cardigan"></use></svg>
+                  <span class="expand-hint">
+                    上滑展开
+                    <svg class="icon"><use href="#icon-chevron-up"></use></svg>
+                  </span>
+                </div>
+              </div>
+              <div class="detail-scroll" id="detailScroll">
+                <div class="detail-summary">
+                  <div class="detail-kicker">
+                    <span id="detailCode">LIVE ITEM 01</span>
+                    <span>商品标价</span>
+                  </div>
+                  <h2 id="detailName">精纺美利奴羊毛圆领开衫</h2>
+                  <p class="detail-subtitle" id="detailSubtitle">轻盈保暖 · 日常通勤 · 可机洗</p>
+                  <div class="price-row">
+                    <strong><small>¥</small><span id="detailPrice">299</span></strong>
+                  </div>
+                </div>
+
+                <div class="option-block" id="colorBlock">
+                  <div class="option-title">
+                    <strong>颜色</strong>
+                    <span id="colorSelectionText">请选择</span>
+                  </div>
+                  <div class="color-options" id="colorOptions"></div>
+                </div>
+
+                <div class="option-block" id="sizeBlock">
+                  <div class="option-title">
+                    <strong>尺码</strong>
+                    <span id="sizeSelectionText">请选择</span>
+                  </div>
+                  <div class="size-options" id="sizeOptions"></div>
+                </div>
+
+                <p class="selection-note" id="selectionNote">请选择颜色与尺码后加入购物袋。</p>
+
+                <div class="detail-service">
+                  <div class="service-line">
+                    <svg class="icon"><use href="#icon-pack"></use></svg>
+                    顺丰包邮 · 预计 11 月 5 日后送达
+                  </div>
+                  <div class="service-line">
+                    <svg class="icon"><use href="#icon-rotate"></use></svg>
+                    30 天无理由退换 · 门店可退
+                  </div>
+                  <div class="service-line">
+                    <svg class="icon"><use href="#icon-shield"></use></svg>
+                    正品保障 · 微信安全支付
+                  </div>
+                </div>
+              </div>
+              <div class="detail-footer">
+                <button class="heart-button" id="likeButton" type="button">
+                  <svg class="icon"><use href="#icon-heart"></use></svg>
+                  <span>收藏</span>
+                </button>
+                <button class="buy-button" id="buyButton" type="button">
+                  <span>立即购买</span>
+                  <small id="buyButtonHint">先选择规格</small>
+                </button>
+              </div>
+            </section>
+          </section>
+
+          <section class="login-sheet" id="loginSheet" aria-label="会员登录">
+            <div class="login-nav">
+              <button class="icon-button" id="closeLoginButton" type="button" aria-label="关闭登录">
+                <svg class="icon"><use href="#icon-chevron-left"></use></svg>
+              </button>
+              <span class="login-nav-title">会员登录</span>
+              <span></span>
+            </div>
+            <div class="login-hero">
+              <span class="login-eyebrow">A BETTER EVERYDAY</span>
+              <h2>欢迎回来，<br><em>让好衣服被记住。</em></h2>
+              <p>登录后可保存购物袋、累计会员积分，并同步本次直播订单与售后权益。</p>
+              <svg class="member-art" viewBox="0 0 150 198" aria-hidden="true"><use href="#model-member"></use></svg>
+            </div>
+            <div class="login-panel">
+              <div class="login-benefits">
+                <div class="benefit">
+                  <svg class="icon"><use href="#icon-gift"></use></svg>
+                  会员积分
+                </div>
+                <div class="benefit">
+                  <svg class="icon"><use href="#icon-card"></use></svg>
+                  积分与礼遇
+                </div>
+                <div class="benefit">
+                  <svg class="icon"><use href="#icon-rotate"></use></svg>
+                  无忧售后
+                </div>
+              </div>
+              <div class="login-methods">
+                <button class="wechat-login-button" id="wechatLoginButton" type="button">
+                  <svg class="wechat-icon"><use href="#icon-wechat"></use></svg>
+                  <span>微信一键登录</span>
+                  <span class="login-button-loader"></span>
+                </button>
+                <button class="login-other" type="button" id="otherLoginButton">使用手机号登录</button>
+                <div class="consent-row" id="loginConsentRow">
+                  <span class="check-box" id="loginCheckbox" role="checkbox" aria-checked="false" tabindex="0"></span>
+                  <span>我已阅读并同意 <span class="text-link">《会员服务协议》</span>、<span class="text-link">《隐私政策》</span> 与 <span class="text-link">《微信用户信息授权》</span></span>
+                  <input type="checkbox" id="loginConsent" hidden />
+                </div>
+                <p class="login-footnote">本次演示不会读取或上传真实个人信息</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="modal-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+            <div class="auth-card">
+              <div class="auth-head">
+                <span class="auth-icon">
+                  <svg class="wechat-icon"><use href="#icon-wechat"></use></svg>
+                </span>
+                <h2 id="authTitle">微信账号授权</h2>
+                <p>当前登录微信号授权</p>
+              </div>
+              <div class="auth-body">
+                <div class="auth-consent" id="authConsentRow">
+                  <span class="check-box" id="authCheckbox" role="checkbox" aria-checked="false" tabindex="0"></span>
+                  <span>我已阅读并同意 <span class="text-link" id="openAgreement">《微信账号授权协议》</span></span>
+                  <input type="checkbox" id="authConsent" hidden />
+                </div>
+                <div class="auth-buttons">
+                  <button class="modal-secondary" id="declineAuthButton" type="button">暂不授权</button>
+                  <button class="modal-primary" id="agreeAuthButton" type="button" disabled>同意并继续</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="agreement-backdrop" id="agreementModal" role="dialog" aria-modal="true" aria-labelledby="agreementTitle">
+            <div class="agreement-sheet">
+              <div class="agreement-head">
+                <button class="icon-button" id="closeAgreementButton" type="button" aria-label="关闭协议">
+                  <svg class="icon"><use href="#icon-close"></use></svg>
+                </button>
+                <strong>微信账号授权协议</strong>
+                <span></span>
+              </div>
+              <div class="agreement-body">
+                <h3 id="agreementTitle">微信账号授权说明</h3>
+                <p>为确认当前微信账号身份，请在阅读后授权当前登录微信号。</p>
+                <h4>一、授权内容</h4>
+                <p>当前登录微信号及完成账号关联所需的必要标识信息。</p>
+                <h4>二、授权用途</h4>
+                <p>仅用于确认微信账号身份并完成会员账号关联。</p>
+                <h4>三、授权管理</h4>
+                <p>您可以随时在会员中心查看或撤回授权。</p>
+                <h4>四、数据安全</h4>
+                <p>品牌方将采用加密传输、访问控制等措施保护账号信息，并仅在上述目的范围内处理。</p>
+                <p style="margin-top:18px;color:#aaa59d;">演示页面，协议文本仅用于交互展示。</p>
+              </div>
+              <div class="agreement-action">
+                <button id="readAgreementButton" type="button">我已阅读</button>
+              </div>
+            </div>
+          </div>
+
+          <section class="app-screen checkout-screen" id="checkoutScreen" aria-label="确认订单">
+            <header class="checkout-topbar">
+              <button class="icon-button" id="backFromCheckout" type="button" aria-label="返回商品详情">
+                <svg class="icon"><use href="#icon-chevron-left"></use></svg>
+              </button>
+              <strong>确认订单</strong>
+              <span></span>
+            </header>
+            <div class="checkout-content">
+              <div class="address-card">
+                <div class="address-name">陈小满 <span>138****8000</span></div>
+                <p class="address-detail">上海市静安区南京西路 1266 号<br>LIFEWEAR 城市旗舰店 · 自提柜 A12</p>
+                <span class="address-arrow"><svg class="icon"><use href="#icon-chevron-right"></use></svg></span>
+              </div>
+
+              <div class="checkout-section">
+                <div class="section-mini-head">
+                  <strong>直播精选</strong>
+                  <span>48 小时内发出</span>
+                </div>
+                <div class="checkout-product">
+                  <div class="checkout-thumb" id="checkoutThumb">
+                    <svg class="garment-svg" viewBox="0 0 240 300" aria-hidden="true"><use id="checkoutGarmentUse" href="#garment-cardigan"></use></svg>
+                  </div>
+                  <div class="checkout-product-info">
+                    <h3 id="checkoutProductName">精纺美利奴羊毛圆领开衫</h3>
+                    <p class="checkout-spec" id="checkoutSpec">燕麦色 / M</p>
+                    <div class="checkout-product-bottom">
+                      <strong id="checkoutPrice">¥299</strong>
+                      <span class="quantity">× 1</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="margin-top:13px;">
+                  <div class="note-row"><span>订单备注</span><span style="color:#aaa59d;">选填</span></div>
+                  <div class="invoice-row"><span>发票</span><span style="color:#77736c;">不开发票 ›</span></div>
+                </div>
+              </div>
+
+              <div class="checkout-section">
+                <div class="section-mini-head">
+                  <strong>金额明细</strong>
+                  <span>价格明细</span>
+                </div>
+                <div class="summary-row"><span>商品小计</span><span id="summarySubtotal">¥299</span></div>
+                <div class="summary-row"><span>运费</span><span>¥0</span></div>
+                <div class="grand-total">
+                  <span>应付</span>
+                  <strong><small>¥</small><span id="summaryTotal">299</span></strong>
+                </div>
+              </div>
+
+              <div class="sync-status-card" id="syncStatusCard" role="button" tabindex="0">
+                <span class="sync-status-icon">
+                  <svg class="icon"><use href="#icon-check"></use></svg>
+                </span>
+                <span class="sync-status-copy">
+                  <strong id="syncStatusTitle">订单同步已开启</strong>
+                  <span id="syncStatusDetail">将同步至 LIFEWEAR 直播间账号</span>
+                </span>
+                <svg class="icon"><use href="#icon-chevron-right"></use></svg>
+              </div>
+
+              <div style="padding:11px 17px 80px;color:#a5a097;font-size:7px;line-height:1.7;">
+                提交订单即表示同意《购买条款》。本页面为交互演示，不会产生真实扣款。
+              </div>
+            </div>
+
+            <div class="checkout-bottom">
+              <div class="bottom-total">
+                合计
+                <strong><small>¥</small><span id="bottomTotal">299</span></strong>
+              </div>
+              <button class="pay-order-button" id="payOrderButton" type="button">
+                <svg class="icon"><use href="#icon-lock"></use></svg>
+                微信支付
+              </button>
+            </div>
+          </section>
+
+          <div class="payment-backdrop" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+            <div class="payment-sheet">
+              <div class="payment-grip"></div>
+              <div class="payment-heading">
+                <small>LIFEWEAR 小程序订单</small>
+                <strong id="paymentTitle"><span style="font-size:14px;">¥</span><span id="paymentAmount">299</span></strong>
+              </div>
+              <div class="payment-method">
+                <span class="pay-logo"><svg class="wechat-icon"><use href="#icon-wechat"></use></svg></span>
+                <span>
+                  <strong>微信支付</strong>
+                  <span>零钱 / 银行卡 / 信用卡</span>
+                </span>
+                <span style="color:#07c160;">✓</span>
+              </div>
+              <button class="pay-confirm" id="confirmPayButton" type="button">确认支付</button>
+              <button class="pay-cancel" id="cancelPayButton" type="button">暂不支付</button>
+            </div>
+          </div>
+
+          <section class="app-screen success-screen" id="successScreen" aria-label="支付成功">
+            <div class="success-topbar">
+              <button class="mini-exit-capsule" id="exitToLiveButton" type="button" aria-label="退出小程序并返回直播间">
+                <span class="mini-exit-more" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="mini-exit-divider" aria-hidden="true"></span>
+                <span class="mini-exit-close" aria-hidden="true">
+                  <svg class="icon"><use href="#icon-close"></use></svg>
+                </span>
+              </button>
+            </div>
+            <div class="success-mark">
+              <svg class="icon"><use href="#icon-check"></use></svg>
+            </div>
+            <h2 class="success-title">支付成功</h2>
+            <p class="success-caption">好衣服正在为你准备。<br><span id="successOrderNumber">订单号 LW202611030028</span></p>
+
+            <div class="receipt-card">
+              <div class="receipt-head">
+                <strong>订单已确认</strong>
+                <span>待发货</span>
+              </div>
+              <div class="receipt-product">
+                <div class="receipt-thumb">
+                  <svg class="garment-svg" viewBox="0 0 240 300" aria-hidden="true"><use id="receiptGarmentUse" href="#garment-cardigan"></use></svg>
+                </div>
+                <div>
+                  <h3 id="receiptProductName">精纺美利奴羊毛圆领开衫</h3>
+                  <p id="receiptSpec">燕麦色 / M · × 1</p>
+                  <p style="margin-top:4px;color:#403c37;">实付 ¥<span id="receiptTotal">299</span></p>
+                </div>
+              </div>
+              <div class="receipt-row">
+                <span>配送方式</span>
+                <strong>门店自提 · 预计 11/05</strong>
+              </div>
+              <div class="receipt-row" style="padding-top:4px;">
+                <span>支付方式</span>
+                <strong>微信支付</strong>
+              </div>
+            </div>
+
+            <div class="success-actions">
+              <button class="order-detail-btn" id="viewOrderButton" type="button">查看订单详情</button>
+            </div>
+            <p class="demo-note">Interactive consumer journey prototype<br>本演示不产生真实交易或授权记录</p>
+          </section>
+
+          <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const products = [
+        {
+          id: "cardigan",
+          code: "LIVE ITEM 01",
+          art: "garment-cardigan",
+          name: "精纺美利奴羊毛圆领开衫",
+          subtitle: "轻盈保暖 · 日常通勤 · 可机洗",
+          price: 299,
+          colors: [
+            { name: "燕麦色", hex: "#c9bda9" },
+            { name: "深灰色", hex: "#5c5a57" },
+            { name: "酒红色", hex: "#76383d" }
+          ],
+          sizes: ["S", "M", "L", "XL"]
+        },
+        {
+          id: "tee",
+          code: "LIVE ITEM 02",
+          art: "garment-tee",
+          name: "柔滑棉质宽松 T 恤",
+          subtitle: "100% 精梳棉 · 落肩版型 · 夏日必备",
+          price: 99,
+          colors: [
+            { name: "云朵白", hex: "#f1efe8" },
+            { name: "碳黑色", hex: "#33322f" },
+            { name: "砖红色", hex: "#a7443c" }
+          ],
+          sizes: ["XS", "S", "M", "L"]
+        },
+        {
+          id: "pants",
+          code: "LIVE ITEM 03",
+          art: "garment-pants",
+          name: "高腰直筒九分牛仔裤",
+          subtitle: "弹力棉质牛仔 · 修饰腿型 · 四季可穿",
+          price: 249,
+          colors: [
+            { name: "深海蓝", hex: "#3d536d" },
+            { name: "水洗蓝", hex: "#73899d" },
+            { name: "原色黑", hex: "#3b3937" }
+          ],
+          sizes: ["24", "25", "26", "27"]
+        }
+      ];
+
+      const state = {
+        product: products[0],
+        color: null,
+        size: null,
+        loggedIn: false,
+        authorized: null,
+        currentStep: 1,
+        detailFull: false,
+        dragStartY: null,
+        dragMoved: false
+      };
+
+      const $ = (selector) => document.querySelector(selector);
+      const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+      const phone = $("#phone");
+      const entryScreen = $("#entryScreen");
+      const liveScreen = $("#liveScreen");
+      const checkoutScreen = $("#checkoutScreen");
+      const successScreen = $("#successScreen");
+      const productDrawer = $("#productDrawer");
+      const drawerTrigger = $("#drawerTrigger");
+      const detailSheet = $("#detailSheet");
+      const loginSheet = $("#loginSheet");
+      const authModal = $("#authModal");
+      const agreementModal = $("#agreementModal");
+      const paymentModal = $("#paymentModal");
+      const toast = $("#toast");
+      let toastTimer;
+
+      function icon(name) {
+        return `<svg class="icon"><use href="#icon-${name}"></use></svg>`;
+      }
+
+      function setStatusTheme(color) {
+        phone.style.setProperty("--status-color", color);
+      }
+
+      function showToast(message, duration = 2200) {
+        clearTimeout(toastTimer);
+        toast.textContent = message;
+        toast.classList.add("is-visible");
+        toastTimer = setTimeout(() => toast.classList.remove("is-visible"), duration);
+      }
+
+      function updateJourney(step) {
+        state.currentStep = step;
+        $$(".journey-step").forEach((node) => {
+          const nodeStep = Number(node.dataset.step);
+          node.classList.toggle("is-active", nodeStep === step);
+          node.classList.toggle("is-done", nodeStep < step);
+        });
+        const labels = {
+          1: "当前：进入直播间",
+          2: "当前：浏览直播商品",
+          3: "当前：选择商品规格",
+          4: "当前：会员登录",
+          5: "当前：微信授权",
+          6: "当前：确认并支付"
+        };
+        $("#sideStatus").textContent = labels[step] || labels[1];
+      }
+
+      function activateScreen(node) {
+        [entryScreen, liveScreen, checkoutScreen, successScreen].forEach((screen) => {
+          screen.classList.toggle("is-active", screen === node);
+        });
+      }
+
+      function setDrawer(open) {
+        productDrawer.classList.toggle("is-open", open);
+        drawerTrigger.setAttribute("aria-expanded", String(open));
+      }
+
+      function garmentMarkup(product) {
+        return `<svg class="garment-svg" viewBox="0 0 240 300" aria-hidden="true"><use href="#${product.art}"></use></svg>`;
+      }
+
+      function renderProductList() {
+        $("#productList").innerHTML = products.map((product) => `
+          <button class="list-product" type="button" data-product="${product.id}" aria-label="查看 ${product.name}">
+            <span class="list-product-visual" data-code="${product.code}" style="--garment:${product.colors[0].hex}">
+              ${garmentMarkup(product)}
+            </span>
+            <span class="list-product-copy">
+              <strong>${product.name}</strong>
+              <span>¥${product.price}</span>
+            </span>
+            <span class="list-product-arrow" aria-hidden="true">${icon("chevron-right")}</span>
+          </button>
+        `).join("");
+
+        $$(".list-product").forEach((button) => {
+          button.addEventListener("click", () => openProduct(button.dataset.product));
+        });
+      }
+
+      function setGarmentColor(root, hex) {
+        root.style.setProperty("--garment", hex);
+      }
+
+      function renderProduct(product) {
+        state.product = product;
+        state.color = null;
+        state.size = null;
+        $("#detailGarmentUse").setAttribute("href", `#${product.art}`);
+        $("#detailCode").textContent = product.code;
+        $("#detailName").textContent = product.name;
+        $("#detailSubtitle").textContent = product.subtitle;
+        $("#detailPrice").textContent = String(product.price);
+        $("#detailMedia").style.setProperty("--garment", product.colors[0].hex);
+        $("#checkoutGarmentUse").setAttribute("href", `#${product.art}`);
+        $("#receiptGarmentUse").setAttribute("href", `#${product.art}`);
+
+        $("#colorOptions").innerHTML = product.colors.map((color, index) => `
+          <button class="color-option" type="button" data-color="${index}" style="--swatch:${color.hex}">
+            <span class="swatch"></span>
+            <span>${color.name}</span>
+          </button>
+        `).join("");
+
+        $("#sizeOptions").innerHTML = product.sizes.map((size) => `
+          <button class="size-option" type="button" data-size="${size}">${size}</button>
+        `).join("");
+
+        $("#colorSelectionText").textContent = "请选择";
+        $("#sizeSelectionText").textContent = "请选择";
+        $("#buyButtonHint").textContent = "先选择规格";
+        $("#buyButton").classList.remove("is-ready");
+        $("#selectionNote").textContent = "请选择颜色与尺码后加入购物袋。";
+
+        $$(".color-option").forEach((button) => {
+          button.addEventListener("click", () => selectColor(Number(button.dataset.color)));
+        });
+        $$(".size-option").forEach((button) => {
+          button.addEventListener("click", () => selectSize(button.dataset.size));
+        });
+      }
+
+      function selectColor(index) {
+        const color = state.product.colors[index];
+        state.color = color;
+        setGarmentColor($("#detailMedia"), color.hex);
+        $$(".color-option").forEach((node) => {
+          node.classList.toggle("is-selected", Number(node.dataset.color) === index);
+        });
+        $("#colorSelectionText").textContent = color.name;
+        updateSelectionState();
+      }
+
+      function selectSize(size) {
+        state.size = size;
+        $$(".size-option").forEach((node) => {
+          node.classList.toggle("is-selected", node.dataset.size === size);
+        });
+        $("#sizeSelectionText").textContent = size;
+        updateSelectionState();
+      }
+
+      function updateSelectionState() {
+        const ready = Boolean(state.color && state.size);
+        $("#buyButton").classList.toggle("is-ready", ready);
+        $("#buyButtonHint").textContent = ready ? "微信安全支付" : "先选择规格";
+        if (ready) {
+          $("#selectionNote").textContent = `已选择：${state.color.name} / ${state.size} · 加入购物袋后结算`;
+        }
+      }
+
+      function openProduct(productId) {
+        const product = products.find((item) => item.id === productId) || products[0];
+        renderProduct(product);
+        setDrawer(false);
+        state.detailFull = false;
+        detailSheet.classList.remove("is-full");
+        detailSheet.classList.add("is-open");
+        setStatusTheme("#ffffff");
+        updateJourney(3);
+        setTimeout(() => {
+          $("#detailScroll").scrollTop = 0;
+        }, 50);
+      }
+
+      function setDetailFull(full) {
+        state.detailFull = full;
+        detailSheet.classList.toggle("is-full", full);
+        if (full) {
+          setDrawer(false);
+          setStatusTheme("#111111");
+        } else {
+          setStatusTheme("#ffffff");
+        }
+      }
+
+      function closeProduct() {
+        detailSheet.classList.remove("is-open", "is-full");
+        state.detailFull = false;
+        setStatusTheme("#ffffff");
+        setDrawer(true);
+        updateJourney(2);
+      }
+
+      function resetSelectionsNudge() {
+        if (!state.color) {
+          $("#colorBlock").classList.remove("is-nudged");
+          void $("#colorBlock").offsetWidth;
+          $("#colorBlock").classList.add("is-nudged");
+        }
+        if (!state.size) {
+          $("#sizeBlock").classList.remove("is-nudged");
+          void $("#sizeBlock").offsetWidth;
+          $("#sizeBlock").classList.add("is-nudged");
+        }
+      }
+
+      function openLogin() {
+        if (!state.color || !state.size) {
+          showToast("请先选择颜色与尺码");
+          setDetailFull(true);
+          resetSelectionsNudge();
+          return;
+        }
+
+        loginSheet.classList.add("is-open");
+        setStatusTheme("#111111");
+        updateJourney(4);
+      }
+
+      function closeLogin() {
+        loginSheet.classList.remove("is-open");
+        setStatusTheme(state.detailFull ? "#111111" : "#ffffff");
+      }
+
+      function setChecked(checkbox, input, checked) {
+        checkbox.classList.toggle("is-checked", checked);
+        checkbox.setAttribute("aria-checked", String(checked));
+        input.checked = checked;
+      }
+
+      function openAuth() {
+        loginSheet.classList.remove("is-open");
+        setChecked($("#authCheckbox"), $("#authConsent"), false);
+        updateAuthButton();
+        authModal.classList.add("is-open");
+        setStatusTheme("#ffffff");
+        updateJourney(5);
+      }
+
+      function updateAuthButton() {
+        const enabled = $("#authConsent").checked;
+        const button = $("#agreeAuthButton");
+        button.disabled = !enabled;
+        button.classList.toggle("is-enabled", enabled);
+      }
+
+      function showCheckout(authorized) {
+        state.authorized = authorized;
+        authModal.classList.remove("is-open");
+        paymentModal.classList.remove("is-open");
+        activateScreen(checkoutScreen);
+        checkoutScreen.scrollTop = 0;
+        setStatusTheme("#111111");
+        updateJourney(6);
+
+        const total = state.product.price;
+        const colorName = state.color.name;
+        const spec = `${colorName} / ${state.size}`;
+        $("#checkoutProductName").textContent = state.product.name;
+        $("#checkoutSpec").textContent = spec;
+        $("#checkoutPrice").textContent = `¥${state.product.price}`;
+        $("#checkoutGarmentUse").setAttribute("href", `#${state.product.art}`);
+        setGarmentColor($("#checkoutThumb"), state.color.hex);
+        $("#summarySubtotal").textContent = `¥${state.product.price}`;
+        $("#summaryTotal").textContent = String(total);
+        $("#bottomTotal").textContent = String(total);
+        $("#paymentAmount").textContent = String(total);
+        $("#receiptTotal").textContent = String(total);
+        $("#receiptProductName").textContent = state.product.name;
+        $("#receiptSpec").textContent = `${spec} · × 1`;
+        $("#receiptGarmentUse").setAttribute("href", `#${state.product.art}`);
+        setGarmentColor($(".receipt-thumb"), state.color.hex);
+
+        const card = $("#syncStatusCard");
+        if (authorized) {
+          card.classList.remove("is-off");
+          $("#syncStatusTitle").textContent = "订单同步已开启";
+          $("#syncStatusDetail").textContent = "将同步至 LIFEWEAR 直播间账号";
+        } else {
+          card.classList.add("is-off");
+          $("#syncStatusTitle").textContent = "订单同步未开启";
+          $("#syncStatusDetail").textContent = "不影响下单，售后需在小程序内处理";
+        }
+      }
+
+      function openPayment() {
+        paymentModal.classList.add("is-open");
+      }
+
+      function finishPayment() {
+        const button = $("#confirmPayButton");
+        button.classList.add("is-loading");
+        setTimeout(() => {
+          button.classList.remove("is-loading");
+          paymentModal.classList.remove("is-open");
+          activateScreen(successScreen);
+          setStatusTheme("#111111");
+          updateJourney(6);
+          successScreen.scrollTop = 0;
+        }, 1000);
+      }
+
+      function enterLive() {
+        activateScreen(liveScreen);
+        setStatusTheme("#ffffff");
+        updateJourney(2);
+        setTimeout(() => setDrawer(true), 450);
+      }
+
+      function resetDemo() {
+        state.product = products[0];
+        state.color = null;
+        state.size = null;
+        state.loggedIn = false;
+        state.authorized = null;
+        detailSheet.classList.remove("is-open", "is-full");
+        loginSheet.classList.remove("is-open");
+        authModal.classList.remove("is-open");
+        agreementModal.classList.remove("is-open");
+        paymentModal.classList.remove("is-open");
+        setChecked($("#loginCheckbox"), $("#loginConsent"), false);
+        setChecked($("#authCheckbox"), $("#authConsent"), false);
+        activateScreen(liveScreen);
+        setStatusTheme("#ffffff");
+        setDrawer(true);
+        updateJourney(2);
+        renderProduct(products[0]);
+      }
+
+      // Primary interactions
+      $("#enterLiveButton").addEventListener("click", enterLive);
+      $("#closeLiveButton").addEventListener("click", () => {
+        setDrawer(false);
+        activateScreen(entryScreen);
+        setStatusTheme("#111111");
+        updateJourney(1);
+      });
+      drawerTrigger.addEventListener("click", () => {
+        setDrawer(!productDrawer.classList.contains("is-open"));
+      });
+      $("#cartRailButton").addEventListener("click", () => setDrawer(true));
+      $("#messageButton").addEventListener("click", () => showToast("演示中：评论功能暂不开放"));
+      $("#closeDetailButton").addEventListener("click", closeProduct);
+
+      const swipeZone = $("#detailSwipeZone");
+      const grip = $("#sheetGrip");
+
+      function beginDetailDrag(event) {
+        state.dragStartY = event.clientY;
+        state.dragMoved = false;
+        if (event.currentTarget.setPointerCapture) {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }
+      }
+
+      function moveDetailDrag(event) {
+        if (state.dragStartY === null) return;
+        if (Math.abs(event.clientY - state.dragStartY) > 7) state.dragMoved = true;
+      }
+
+      function endDetailDrag(event) {
+        if (state.dragStartY === null) return;
+        const deltaY = event.clientY - state.dragStartY;
+        if (deltaY < -36) {
+          setDetailFull(true);
+        } else if (deltaY > 42 && state.detailFull) {
+          setDetailFull(false);
+        } else if (!state.dragMoved) {
+          setDetailFull(!state.detailFull);
+        }
+        state.dragStartY = null;
+        setTimeout(() => {
+          state.dragMoved = false;
+        }, 0);
+      }
+
+      [swipeZone, grip].forEach((node) => {
+        node.addEventListener("pointerdown", beginDetailDrag);
+        node.addEventListener("pointermove", moveDetailDrag);
+        node.addEventListener("pointerup", endDetailDrag);
+        node.addEventListener("pointercancel", () => {
+          state.dragStartY = null;
+        });
+      });
+
+      $("#likeButton").addEventListener("click", () => {
+        const liked = $("#likeButton").classList.toggle("is-liked");
+        $("#likeButton span").textContent = liked ? "已收藏" : "收藏";
+        showToast(liked ? "已加入收藏" : "已取消收藏", 1300);
+      });
+      $("#shareButton").addEventListener("click", () => showToast("商品分享卡片已生成（演示）"));
+      $("#buyButton").addEventListener("click", openLogin);
+      $("#closeLoginButton").addEventListener("click", closeLogin);
+      $("#otherLoginButton").addEventListener("click", () => showToast("演示中使用微信一键登录"));
+
+      $("#wechatLoginButton").addEventListener("click", () => {
+        if (!$("#loginConsent").checked) {
+          const row = $("#loginConsentRow");
+          row.classList.remove("is-shaking");
+          void row.offsetWidth;
+          row.classList.add("is-shaking");
+          showToast("请先阅读并同意会员服务协议");
+          return;
+        }
+        const button = $("#wechatLoginButton");
+        if (button.classList.contains("is-loading")) return;
+        button.classList.add("is-loading");
+        setTimeout(() => {
+          button.classList.remove("is-loading");
+          state.loggedIn = true;
+          openAuth();
+        }, 700);
+      });
+
+      [["loginCheckbox", "loginConsent"], ["authCheckbox", "authConsent"]].forEach(([boxId, inputId]) => {
+        const box = $(`#${boxId}`);
+        const input = $(`#${inputId}`);
+        const toggle = () => {
+          setChecked(box, input, !input.checked);
+          if (inputId === "authConsent") updateAuthButton();
+        };
+        box.addEventListener("click", toggle);
+        box.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggle();
+          }
+        });
+      });
+
+      $("#openAgreement").addEventListener("click", (event) => {
+        event.stopPropagation();
+        agreementModal.classList.add("is-open");
+      });
+      $("#openAgreement").addEventListener("keydown", (event) => {
+        event.stopPropagation();
+      });
+      $("#closeAgreementButton").addEventListener("click", () => agreementModal.classList.remove("is-open"));
+      $("#readAgreementButton").addEventListener("click", () => {
+        agreementModal.classList.remove("is-open");
+        setChecked($("#authCheckbox"), $("#authConsent"), true);
+        updateAuthButton();
+      });
+
+      $("#agreeAuthButton").addEventListener("click", () => {
+        if (!$("#authConsent").checked) return;
+        showCheckout(true);
+      });
+      $("#declineAuthButton").addEventListener("click", () => showCheckout(false));
+      $("#backFromCheckout").addEventListener("click", () => {
+        activateScreen(liveScreen);
+        detailSheet.classList.add("is-open");
+        setStatusTheme(state.detailFull ? "#111111" : "#ffffff");
+        updateJourney(3);
+      });
+      $("#syncStatusCard").addEventListener("click", () => {
+        if (state.authorized) {
+          showToast("授权管理中：可随时关闭订单同步");
+        } else {
+          setChecked($("#authCheckbox"), $("#authConsent"), false);
+          updateAuthButton();
+          authModal.classList.add("is-open");
+          updateJourney(5);
+        }
+      });
+      $("#syncStatusCard").addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          $("#syncStatusCard").click();
+        }
+      });
+      $("#payOrderButton").addEventListener("click", openPayment);
+      $("#cancelPayButton").addEventListener("click", () => paymentModal.classList.remove("is-open"));
+      $("#confirmPayButton").addEventListener("click", finishPayment);
+      $("#exitToLiveButton").addEventListener("click", resetDemo);
+      $("#viewOrderButton").addEventListener("click", () => showToast("订单详情已收起（演示）"));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (agreementModal.classList.contains("is-open")) {
+          agreementModal.classList.remove("is-open");
+        } else if (paymentModal.classList.contains("is-open")) {
+          paymentModal.classList.remove("is-open");
+        } else if (authModal.classList.contains("is-open")) {
+          authModal.classList.remove("is-open");
+        } else if (loginSheet.classList.contains("is-open")) {
+          closeLogin();
+        } else if (detailSheet.classList.contains("is-open")) {
+          closeProduct();
+        }
+      });
+
+      renderProductList();
+      renderProduct(products[0]);
+      updateJourney(1);
+    })();
+  </script>
+</body>
+</html>
